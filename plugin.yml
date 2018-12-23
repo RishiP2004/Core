@@ -1,0 +1,5 @@
+name: Core
+main: core\Core
+author: Derpific
+version: 1.0
+api: 3.0.0

@@ -1,0 +1,51 @@
+<?php
+
+namespace core\network\command\subCommand;
+
+use core\Core;
+
+use core\utils\SubCommand;
+
+use pocketmine\command\CommandSender;
+
+class Set extends SubCommand {
+    private $core;
+
+    public function __construct(Core $core) {
+        $this->core = $core;
+    }
+
+    public function canUse(CommandSender $sender) : bool {
+        return $sender->hasPermission("core.network.subcommand.set");
+    }
+
+    public function getUsage() : string {
+        return "<time>";
+    }
+
+    public function getName() : string {
+        return "set";
+    }
+
+    public function getDescription() : string {
+        return "Set the time for Restart";
+    }
+
+    public function getAliases() : array {
+        return [];
+    }
+
+    public function execute(CommandSender $sender, array $args) : bool {
+        if(count($args) < 1) {
+            return false;
+        }
+        if(!is_numeric($args[0])) {
+            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Numeric");
+            return false;
+        } else {
+            $this->core->getNetwork()->getTimer()->setTime($args[0]);
+            $sender->sendMessage($this->core->getPrefix() . "Set Restart Timer to " . $args[0] . " seconds");
+            return true;
+        }
+    }
+}

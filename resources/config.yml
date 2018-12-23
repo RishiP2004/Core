@@ -1,0 +1,10 @@
+---
+database:
+  type: mysql
+  mysql:
+    host: 127.0.0.1
+    username: Derpific
+    password: ""
+    schema: Core
+  worker-limit: 4
+...
