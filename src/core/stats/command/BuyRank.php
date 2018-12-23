@@ -1,17 +1,10 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Stats\Objects\GPPlayer;
+use core\Core;
+
+use core\CoreUser;
 
 use pocketmine\command\{
     PluginCommand,
@@ -19,37 +12,37 @@ use pocketmine\command\{
 };
 
 class BuyRankCommand extends PluginCommand {
-    private $GPCore;
+    private $core;
 
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("buyrank", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("buyrank", $core);
 
-        $this->GPCore = $GPCore;
+        $this->core = $core;
 
-        $this->setPermission("GPCore.Stats.Command.BuyRank");
+        $this->setPermission("core.stats.command.buyrank");
         $this->setDescription("Buy a Rank with Coins");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
-        if(!$sender instanceof GPPlayer) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
+        if(!$sender instanceof CorePlayer) {
+            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
         }
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
-        if($sender->getGPUser()->getRank()->getName() !== "Player") {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "You already have a Rank that is Gametoner or higher");
+        if($sender->getCoreUser()->getRank()->getName() !== "Player") {
+            $sender->sendMessage($this->core->getPrefix() . "You already have a Rank that is OG or higher");
             return false;
         }
-        if($sender->getGPUser()->getCoins() < $this->GPCore->getStats()->getCosts("Gametoner")) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have enough Coins");
+        if($sender->getCoreUser()->getCoins() < $this->core->getStats()->getRank("OG")->getCost()) {
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have enough Coins");
             return false;
         } else {
-            $sender->getGPUser()->setRank($this->GPCore->getStats()->getRankFromString("Gametoner"));
-            $sender->getGPUser()->setCoins($sender->getGPUser()->getCoins() - $this->GPCore->getStats()->getCosts("Gametoner"));
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "You have bought the Rank Gametoner for " . $this->GPCore->getStats()->getEconomyUnit("Coins") . $this->GPCore->getStats()->getCosts("Gametoner"));
+            $sender->getCoreUser()->setRank($this->core->getStats()->getRank("OG"));
+            $sender->getCoreUser()->setCoins($sender->getCoreUser()->getCoins() - $this->core->getStats()->getRank("OG")->getCost());
+            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . $this->core->getStats()->getEconomyUnit("Coins") . $this->core->getStats()->getRank("OG")->getCost());
             return true;
         }
     }

@@ -1,19 +1,10 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Network\Objects\GPServer;
+use core\Core;
 
-use GPCore\Stats\Objects\GPUser;
+use core\CoreUser;
 
 use pocketmine\command\{
     PluginCommand,
@@ -23,29 +14,29 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class AccountsCommand extends PluginCommand {
-    private $GPCore;
+    private $core;
 
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("accounts", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("accounts", $core);
 
-        $this->GPCore = $GPCore;
+        $this->core = $core;
 
         $this->setAliases(["accs"]);
-        $this->setPermission("GPCore.Stats.Command.Accounts");
+        $this->setPermission("core.stats.command.accounts");
         $this->setDescription("Get all registered Accounts");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         } else {
-			$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Total Accounts Registered (x" . count($this->GPCore->getStats()->getUsers()) . ")");
+			$sender->sendMessage($this->core->getPrefix() . "Total Accounts Registered (x" . count($this->core->getStats()->getCoreUsers()) . ")");
 		
 			$users = [];
 		
-			foreach($this->GPCore->getStats()->getUsers() as $user) {
-			    if($user instanceof GPUser) {
+			foreach($this->core->getStats()->getCoreUsers() as $user) {
+			    if($user instanceof CoreUser) {
                     $users[] = $user->getUsername();
                 }
 			}
