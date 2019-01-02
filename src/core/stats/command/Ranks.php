@@ -1,17 +1,10 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Stats\Objects\Rank;
+use core\Core;
+
+use core\stats\rank\Rank;
 
 use pocketmine\command\{
     PluginCommand,
@@ -20,26 +13,26 @@ use pocketmine\command\{
 
 use pocketmine\utils\TextFormat;
 
-class RanksCommand extends PluginCommand {
-    private $GPCore;
+class Ranks extends PluginCommand {
+    private $core;
     
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("ranks", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("ranks", $core);
         
-        $this->GPCore = $GPCore;
+        $this->core = $core;
         
-        $this->setPermission("GPCore.Stats.Command.Ranks");
+        $this->setPermission("core.stats.command.ranks");
         $this->setDescription("Check all the Ranks");
     }
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         } else {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Ranks:");
+            $sender->sendMessage($this->core->getPrefix() . "Ranks:");
             
-            foreach($this->GPCore->getStats()->getAllRanks() as $rank) {
+            foreach($this->core->getStats()->getRanks() as $rank) {
                 if($rank instanceof Rank) {
                     $sender->sendMessage(TextFormat::GRAY . "- " . $rank->getName() . ": " . TextFormat::YELLOW . $rank->getValue());
                 }

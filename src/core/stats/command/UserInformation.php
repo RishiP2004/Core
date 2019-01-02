@@ -1,17 +1,9 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Stats\Objects\GPPlayer;
+use core\Core;
+use core\CorePlayer;
 
 use pocketmine\command\{
     PluginCommand,
@@ -20,67 +12,49 @@ use pocketmine\command\{
 
 use pocketmine\utils\TextFormat;
 
-class UserInformationCommand extends PluginCommand {
-    private $GPCore;
+class UserInformation extends PluginCommand {
+    private $core;
 
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("userinformation", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("userinformation", $core);
 
-        $this->GPCore = $GPCore;
+        $this->core = $core;
 
         $this->setAliases(["userinfo"]);
-        $this->setPermission("GPCore.Stats.Command.UserInformation");
+        $this->setPermission("core.stats.command.userinformation");
         $this->setUsage("[player]");
         $this->setDescription("Check a Player's Information");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
         if(isset($args[0])) {
-			$user = $this->GPCore->getStats()->getGPUser($args[0]);
+			$user = $this->core->getStats()->getCoreUser($args[0]);
 		
-			if(!$user->hasAccount()) {
-				$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not a valid Player");
+			if(!$user) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;
             } else {
-				$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . $user->getUsername() . "'s Information:");
+				$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s Information:");
 				$sender->sendMessage(TextFormat::GRAY . "Register Date: " . $user->getRegisterDate());
-				
-				switch($this->GPCore->getNetwork()->getServerFromIp($sender->getServer()->getIp())->getName()) {
-					case "Lobby":
-						$sender->sendMessage(TextFormat::GRAY . "Lobby Register Date: " . $user->getRegisterDate("GPL"));
-					break;
-					case "Factions":
-						$sender->sendMessage(TextFormat::GRAY . "Factions Register Date: " . $user->getRegisterDate("GPF"));
-					break;
-				}
 				$sender->sendMessage(TextFormat::GRAY . "Xuid: " . $user->getXuid());
 				$sender->sendMessage(TextFormat::GRAY . "Ip: " . $user->getIp());
-				$sender->sendMessage(TextFormat::GRAY . "Country: " . $user->getCountry());
+				$sender->sendMessage(TextFormat::GRAY . "Locale: " . $user->getLocale());
                 return true;
             }
         }
-        if(!$sender instanceof GPPlayer) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
+        if(!$sender instanceof CorePlayer) {
+            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
         } else {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Your Information:");
-				$sender->sendMessage(TextFormat::GRAY . "Register Date: " . $sender->getGPUser()->getRegisterDate());
-				
-				switch($this->GPCore->getNetwork()->getServerFromIp($sender->getServer()->getIp())->getName()) {
-					case "Lobby":
-						$sender->sendMessage(TextFormat::GRAY . "Lobby Register Date: " . $sender->getGPUser()->getRegisterDate("GPL"));
-					break;
-					case "Factions":
-					$sender->sendMessage(TextFormat::GRAY . "Factions Register Date: " . $sender->getGPUser()->getRegisterDate("GPF"));
-					break;
-				}
-				$sender->sendMessage(TextFormat::GRAY . "Xuid: " . $sender->getGPUser()->getXuid());
-				$sender->sendMessage(TextFormat::GRAY . "Ip: " . $sender->getGPUser()->getIp());
-				$sender->sendMessage(TextFormat::GRAY . "Country: " . $sender->getGPUser()->getCountry());
+            $sender->sendMessage($this->core->getPrefix() . "Your Information:");
+				$sender->sendMessage(TextFormat::GRAY . "Register Date: " . $sender->getCoreUser()->getRegisterDate());
+				$sender->sendMessage(TextFormat::GRAY . "Xuid: " . $sender->getCoreUser()->getXuid());
+				$sender->sendMessage(TextFormat::GRAY . "Ip: " . $sender->getCoreUser()->getIp());
+				$sender->sendMessage(TextFormat::GRAY . "Locale: " . $sender->getCoreUser()->getLocale());
             return true;
         }
     }

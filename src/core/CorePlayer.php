@@ -13,6 +13,11 @@ use core\mcpe\form\{
     CustomForm
 };
 
+use core\mcpe\entity\{
+    CreatureBase,
+    Interactable
+};
+
 use core\network\server\Server;
 
 use core\stats\task\{

@@ -13,7 +13,7 @@ use pocketmine\command\{
 
 use pocketmine\utils\TextFormat;
 
-class AccountsCommand extends PluginCommand {
+class Accounts extends PluginCommand {
     private $core;
 
     public function __construct(Core $core) {
@@ -37,7 +37,7 @@ class AccountsCommand extends PluginCommand {
 		
 			foreach($this->core->getStats()->getCoreUsers() as $user) {
 			    if($user instanceof CoreUser) {
-                    $users[] = $user->getUsername();
+                    $users[] = $user->getName();
                 }
 			}
 			$sender->sendMessage(TextFormat::GRAY . implode(", ", $users));

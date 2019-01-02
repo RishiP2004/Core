@@ -3,15 +3,14 @@
 namespace core\stats\command;
 
 use core\Core;
-
-use core\CoreUser;
+use core\CorePlayer;
 
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
-class BuyRankCommand extends PluginCommand {
+class BuyRank extends PluginCommand {
     private $core;
 
     public function __construct(Core $core) {
@@ -36,13 +35,13 @@ class BuyRankCommand extends PluginCommand {
             $sender->sendMessage($this->core->getPrefix() . "You already have a Rank that is OG or higher");
             return false;
         }
-        if($sender->getCoreUser()->getCoins() < $this->core->getStats()->getRank("OG")->getCost()) {
+        if($sender->getCoreUser()->getCoins() < $this->core->getStats()->getRank("OG")->getFreePrice()) {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have enough Coins");
             return false;
         } else {
             $sender->getCoreUser()->setRank($this->core->getStats()->getRank("OG"));
-            $sender->getCoreUser()->setCoins($sender->getCoreUser()->getCoins() - $this->core->getStats()->getRank("OG")->getCost());
-            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . $this->core->getStats()->getEconomyUnit("Coins") . $this->core->getStats()->getRank("OG")->getCost());
+            $sender->getCoreUser()->setCoins($sender->getCoreUser()->getCoins() - $this->core->getStats()->getRank("OG")->getFreePrice());
+            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . $this->core->getStats()->getEconomyUnit("Coins") . $this->core->getStats()->getRank("OG")->getFreePrice());
             return true;
         }
     }

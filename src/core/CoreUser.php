@@ -155,6 +155,6 @@ class CoreUser {
     }
 
     public function save() {
-
+		//todo
     }
 }

@@ -1,62 +1,56 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Stats\Objects\GPPlayer;
+use core\Core;
+use core\CorePlayer;
 
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
-class ProfileCommand extends PluginCommand {
-    private $GPCore;
+class Profile extends PluginCommand {
+    private $core;
     
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("profile", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("profile", $core);
        
-        $this->GPCore = $GPCore;
+        $this->core = $core;
        
-        $this->setPermission("GPCore.Stats.Command.Profile");
+        $this->setPermission("core.stats.command.profile");
         $this->setUsage("[player]");
-        $this->setDescription("Check yours or a Player's Profile");
+        $this->setDescription("Check your or a Player's Profile");
     }
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
-        if(!$sender instanceof GPPlayer) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
+        if(!$sender instanceof CorePlayer) {
+            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
         }
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
         if(isset($args[0])) {
-            $user = $this->GPCore->getStats()->getGPUser($args[0]);
+            $user = $this->core->getStats()->getCoreUser($args[0]);
 
-            if(!$user->hasAccount()) {
-                $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not a valid Player");
+            if(!$user) {
+                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
                 return false;
             } else {
                 $sender->sendProfileForm($user);
                 return true;
             }
+        } else if(!isset($args[0])) {
+            if(!$sender instanceof CorePlayer) {
+                $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+                return false;
+            } else {
+                $sender->sendProfileForm();
+                return true;
+            }
         }
-        if(!$sender instanceof GPPlayer) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
-            return false;
-        } else {
-            $sender->sendProfileForm();
-            return true;
-        }
+        return false;
     }
 }

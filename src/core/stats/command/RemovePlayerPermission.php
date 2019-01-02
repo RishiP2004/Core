@@ -1,64 +1,56 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Stats\Objects\GPPlayer;
+use core\Core;
+use core\CorePlayer;
 
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
-class RemovePlayerPermissionCommand extends PluginCommand {
-    private $GPCore;
+class RemovePlayerPermission extends PluginCommand {
+    private $core;
 
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("removeplayerpermission", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("removeplayerpermission", $core);
 
-        $this->GPCore = $GPCore;
+        $this->core = $core;
 
         $this->setAliases(["removepperm"]);
-        $this->setPermission("GPCore.Stats.Command.RemovePlayerPermissions");
+        $this->setPermission("core.stats.command.removeplayerpermissions");
         $this->setUsage("<player> <permission>");
         $this->setDescription("Remove a Permission from a Player");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "Usage: /removeplayerpermission" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /removeplayerpermission" . " " . $this->getUsage());
             return false;
         }
-		$user = $this->GPCore->getStats()->getGPUser($args[0]);
+		$user = $this->core->getStats()->getCoreUser($args[0]);
 		
-		if(!$user->hasAccount()) {
-			$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not a valid Player");
+		if(!$user) {
+			$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 			return false;
 		}
         if(!$user->hasDatabasedPermission($args[1])) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . $user->getUsername() . " doesn't have the Permission " . $args[1]);
+            $sender->sendMessage($this->core->getPrefix() . $user->getName() . " doesn't have the Permission " . $args[1]);
             return false;
         } else {
             $user->removePermission($args[1]);
 
-            $player = $user->getGPPlayer();
+            $player = $this->core->getServer()->getPlayer($user->getName());
 		
-			if($player instanceof GPPlayer) {
-				$player->sendMessage($this->GPCore->getBroadcast()->getPrefix() . $sender->getName() . " Removed the Permission " . $args[1] . " from you");
+			if($player instanceof CorePlayer) {
+				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Removed the Permission " . $args[1] . " from you");
 			}
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Removed the Permission " . $args[1] . " from " . $user->getUsername());
+            $sender->sendMessage($this->core->getPrefix() . "Removed the Permission " . $args[1] . " from " . $user->getName());
             return true;
         }
     }

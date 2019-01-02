@@ -46,32 +46,23 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
         }
         if($player instanceof CorePlayer) {
             $tile = $this->getLevel()->getTile($this);
-
-            if($this->entityId === 0) {
-                if($item->getId() === Item::SPAWN_EGG) {
-                    $this->entityId = $item->getDamage();
-
-                    if(!$tile instanceof MobSpawner) {
-                        $nbt = new CompoundTag("", [
-                            new StringTag(Tile::TAG_ID, Tile::MOB_SPAWNER),
-                            new IntTag(Tile::TAG_X, $this->x),
-                            new IntTag(Tile::TAG_Y, $this->y),
-                            new IntTag(Tile::TAG_Z, $this->z),
-                        ]);
-                        $tile = Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), $nbt);
-                    }
-                    $tile->setEntityId($this->entityId);
-                    return true;
-                }
-				if(Core::getInstance()->getNetwork()->getServerFromIp(Core::getInstance()->getServer()->getIp())->getName() === "Factions") {
-                    /**if($player instanceof FactionsPlayer) {
-                        if($player->isSneaking()) {
-                            if($tile instanceof MobSpawner) {
-                                $player->sendSpawnersTierMenu($tile);
-                                return false;
-                            }
-                        }
-                    }*/
+			
+			if(!$tile instanceof MobSpawner) {
+				$nbt = MobSpawner::createNBT($this);
+				$tile = Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), $nbt);
+                    
+				if($tile instanceof MobSpawner) {
+					$tile->setEntityId($this->entityId);
+					return true;
+					
+					/**if(Core::getInstance()->getNetwork()->getServerFromIp(Core::getInstance()->getServer()->getIp())->getName() === "Factions") {
+						if($player instanceof FactionsPlayer) {
+							if($player->isSneaking()) {
+								$player->sendSpawnersTierMenu($tile);
+								return true;
+							}
+						}
+					}*/
 				}
             }
         }
@@ -81,43 +72,46 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
     public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
         parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 
-        $tile = $this->getLevel()->getTile($this);
-        $this->entityId = $item->getDamage();
-        $this->meta = 0;
+        $eID = null;
+		$nbt = MobSpawner::createNBT($this, $face, $item, $player);
 
-        $this->getLevel()->setBlock($this, $this, true, false);
+		if($item->getNamedTag()->getTag(MobSpawner::TAG_ENTITY_ID) !== null){
 
-        if(!$tile instanceof MobSpawner) {
-            /** @var CompoundTag $nbt */
-            $nbt = new CompoundTag ("", [
-                new StringTag(Tile::TAG_ID, Tile::MOB_SPAWNER),
-                new IntTag(Tile::TAG_X, (int)$this->x),
-                new IntTag(Tile::TAG_Y, (int)$this->y),
-                new IntTag(Tile::TAG_Z, (int)$this->z)
-            ]);
-            /** @var MobSpawner $tile */
-            $tile = Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), $nbt);
-
-            $tile->setEntityId($this->entityId);
-            return true;
-        }
-        return true;
-    }
-
-    public function getDrops(Item $item) : array {
-        $tile = $this->getLevel()->getTile($this);
-
-        if($tile instanceof MobSpawner) {
-            if($item->hasEnchantment(Enchantment::SILK_TOUCH)) {
-                return [
-                    ItemFactory::get($this->getItemId(), $tile->getEntityId(), 1, $this->getLevel()->getTile($this)->getCleanedNBT()->namedTag)
-                ];
-            }
-        }
-        return [];
+			foreach([MobSpawner::TAG_ENTITY_ID,
+					MobSpawner::TAG_DELAY,
+					MobSpawner::TAG_MIN_SPAWN_DELAY,
+					MobSpawner::TAG_MAX_SPAWN_DELAY,
+					MobSpawner::TAG_SPAWN_COUNT,
+					MobSpawner::TAG_SPAWN_RANGE] 
+				as $tag_name) {
+					$tag = $item->getNamedTag()->getTag($tag_name);
+				
+					if($tag !== null) {
+						$nbt->setTag($tag);
+					}
+				}
+			}
+		} else if(($meta = $item->getDamage()) != 0) {
+			$nbt->setInt(MobSpawner::TAG_ENTITY_ID, $meta);
+		} else {
+			return true;
+		}
+		Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), $nbt);
+		return true;
     }
 
     public function getSilkTouchDrops(Item $item) : array {
-        return [];
+		$tile = $this->getLevel()->getTile($this);
+
+		if($tile instanceof MobSpawner){
+			return [
+				ItemFactory::get(Item::MONSTER_SPAWNER, 0, 1, $tile->getCleanedNBT()),
+			];
+		}
+		return parent::getSilkTouchDrops($item);
     }
+
+	public function isAffectedBySilkTouch() : bool {
+		return Main::$silkSpawners;
+	}
 }

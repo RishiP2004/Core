@@ -2,7 +2,7 @@
 
 namespace core\stats\rank;
 
-use core\Core;
+use pocketmine\permission\PermissionManager;
 
 abstract class Rank {
     const DEFAULT = 0;
@@ -61,10 +61,10 @@ abstract class Rank {
     public function getInheritedPermissions() : array {
         $permissions = [];
 
-        foreach($this->getInheritances() as $parentRank) {
-            foreach($parentRank->getInheritedPermissions() as $parentPermission) {
+        $parentRank = $this->getInheritance();
+
+        foreach($parentRank->getInheritedPermissions() as $parentPermission) {
                 $permissions[] = $parentPermission;
-            }
         }
         foreach($this->getPermissions() as $permission) {
             $permissions[] = $permission;
@@ -72,14 +72,14 @@ abstract class Rank {
         if(($key = array_search("-*", $permissions)) !== false) {
             unset($permissions[$key]);
 
-            foreach(Core::getInstance()->getServer()->getPluginManager()->getPermissions() as $permission) {
+            foreach(PermissionManager::getInstance()->getPermissions() as $permission) {
                 $permissions[] = "-" . $permission->getName();
             }
         }
         if(($key = array_search("*", $permissions)) !== false) {
             unset($permissions[$key]);
 
-            foreach(Core::getInstance()->getServer()->getPluginManager()->getPermissions() as $permission) {
+            foreach(PermissionManager::getInstance()->getPermissions() as $permission) {
                 $permissions[] = $permission->getName();
             }
         }
@@ -89,10 +89,10 @@ abstract class Rank {
     public function getRecursiveInheritance() {
         $ranks = [];
 
-        foreach($this->getInheritances() as $parentRank) {
-            foreach($parentRank->getRecursiveInheritance() as $rank) {
-                $ranks[] = $rank;
-            }
+        $parentRank = $this->getInheritance();
+
+        foreach($parentRank->getRecursiveInheritance() as $rank) {
+            $ranks[] = $rank;
         }
         return array_unique($ranks);
     }

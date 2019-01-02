@@ -25,9 +25,16 @@ use pocketmine\entity\Entity;
 use pocketmine\utils\TextFormat;
 
 abstract class MobSpawner extends Spawnable implements Addon {
-    /** @var  CompoundTag */
-    private $nbt;
-
+	public const TAG_ENTITY_ID = "EntityId", TAG_SPAWN_COUNT = "SpawnCount", TAG_SPAWN_RANGE = "SpawnRange", TAG_MIN_SPAWN_DELAY = "MinSpawnDelay", TAG_MAX_SPAWN_DELAY = "MaxSpawnDelay", TAG_DELAY = "Delay";
+	
+	protected $entityId = 0;
+	protected $spawnCount = 4;
+	protected $spawnRange = 4;
+	protected $minSpawnDelay = 200;
+	protected $maxSpawnDelay = 800;
+	/** @var int */
+	protected $delay;
+	
     public function __construct(Level $level, CompoundTag $nbt) {
 		if($nbt->hasTag("SpawnCount", ShortTag::class) or $nbt->hasTag("EntityId", StringTag::class)) {
             $nbt->removeTag("EntityId");
@@ -64,7 +71,7 @@ abstract class MobSpawner extends Spawnable implements Addon {
 
     public function getName() : string {
         if($this->getEntityId() === 0) {
-            $name = TextFormat::AQUA . "monster Spawner";
+            $name = TextFormat::AQUA . "Monster Spawner";
         } else {
             if(Core::getInstance()->getNetwork()->getServerFromIp(Core::getInstance()->getServer()->getIp())->getName() === "Factions") {
                 $name = TextFormat::AQUA . ucfirst(self::TYPES[$this->getCleanedNBT()->namedTag->EntityId] ?? "monster") . " Spawner \n" . TextFormat::GOLD . " Tier:" . $this->getTier();
@@ -166,50 +173,87 @@ abstract class MobSpawner extends Spawnable implements Addon {
         return true;
     }
 
-    public function canUpdate() : bool {
-        if(!$this->getLevel()->isChunkLoaded($this->getX() >> 4, $this->getZ() >> 4)) {
-            return false;
-        }
-        if($this->getEntityId() === 0) {
-            return false;
-        }
-        $hasPlayer = false;
-        $count = 0;
+	public function canUpdate() : bool {
+		if($this->getEntityId() !== 0 && $this->getLevel()->isChunkLoaded($this->getX() >> 4, $this->getZ() >> 4)) {
+			$hasPlayer = false;
+			$count = 0;
+			
+			foreach($this->getLevel()->getEntities() as $e) {
+				if($e instanceof Player && $e->distance($this) <= 15){
+					$hasPlayer = true;
+				}
+				if($e::NETWORK_ID == $this->getEntityId()){
+					$count++;
+				}
+			}
+			return ($hasPlayer && $count < 15);
+		}
+		return false;
+	}
+
+	protected function generateRandomDelay() : int {
+		return ($this->delay = mt_rand($this->getMinSpawnDelay(), $this->getMaxSpawnDelay()));
+	}
+
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void {
+		$this->applyBaseNBT($nbt);
+	}
+
+	private function applyBaseNBT(CompoundTag &$nbt) : void {
+		$nbt->setInt(self::TAG_ENTITY_ID, $this->getEntityId());
+		$nbt->setInt(self::TAG_SPAWN_COUNT, $this->getSpawnCount());
+		$nbt->setInt(self::TAG_SPAWN_RANGE, $this->getSpawnRange());
+		$nbt->setInt(self::TAG_MIN_SPAWN_DELAY, $this->getMinSpawnDelay());
+		$nbt->setInt(self::TAG_MAX_SPAWN_DELAY, $this->getMaxSpawnDelay());
+		$nbt->setInt(self::TAG_DELAY, $this->getDelay());
+	}
+	
+	protected function readSaveData(CompoundTag $nbt) : void {
+		if($this->delay === null) {
+			$this->generateRandomDelay();
+		}
+		if($nbt->hasTag(self::TAG_SPAWN_COUNT, ShortTag::class) || $nbt->hasTag(self::TAG_ENTITY_ID, StringTag::class)) {
+			$nbt->removeTag(self::TAG_ENTITY_ID);
+			$nbt->removeTag(self::TAG_SPAWN_COUNT);
+			$nbt->removeTag(self::TAG_SPAWN_RANGE);
+			$nbt->removeTag(self::TAG_MIN_SPAWN_DELAY);
+			$nbt->removeTag(self::TAG_MAX_SPAWN_DELAY);
+			$nbt->removeTag(self::TAG_DELAY);
+		}
+		if(!$nbt->hasTag(self::TAG_ENTITY_ID, IntTag::class)) {
+			$nbt->setInt(self::TAG_ENTITY_ID, $this->entityId);
+		}
+		$this->entityId = $nbt->getInt(self::TAG_ENTITY_ID, $this->entityId);
+
+		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, IntTag::class)) {
+			$nbt->setInt(self::TAG_SPAWN_COUNT, $this->spawnCount);
+		}
+		$this->spawnCount = $nbt->getInt(self::TAG_SPAWN_COUNT, $this->spawnCount);
+
+		if(!$nbt->hasTag(self::TAG_SPAWN_RANGE, IntTag::class)) {
+			$nbt->setInt(self::TAG_SPAWN_RANGE, $this->spawnRange);
+		}
+		$this->spawnRange = $nbt->getInt(self::TAG_SPAWN_RANGE, $this->spawnRange);
+
+		if(!$nbt->hasTag(self::TAG_MIN_SPAWN_DELAY, IntTag::class)) {
+			$nbt->setInt(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
+		}
+		$this->minSpawnDelay = $nbt->getInt(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
+
+		if(!$nbt->hasTag(self::TAG_MAX_SPAWN_DELAY, IntTag::class)) {
+			$nbt->setInt(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+		}
+		$this->maxSpawnDelay = $nbt->getInt(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+
+		if(!$nbt->hasTag(self::TAG_DELAY, IntTag::class)) {
+			$nbt->setInt(self::TAG_DELAY, $this->delay);
+		}
+		$this->delay = $nbt->getInt(self::TAG_MAX_SPAWN_DELAY, $this->delay);
 		
-        foreach($this->getLevel()->getEntities() as $entity) {
-            if($entity instanceof CorePlayer) {
-                if($entity->distance($this->getBlock()) <= 15) {
-                    $hasPlayer = true;
-                }
-            }
-            if($entity::NETWORK_ID == $this->getEntityId()) {
-                $count++;
-            }
-        }
-        if($hasPlayer and $count < 15) {
-            return true;
-        }
-        return false;
-    }
+		$this->scheduleUpdate();
+	}
 
-    public function addAdditionalSpawnData(CompoundTag $nbt): void {
-        $this->baseData($nbt);
-    }
-
-    protected function readSaveData(CompoundTag $nbt): void {
-        $this->nbt = $nbt;
-    }
-
-    protected function writeSaveData(CompoundTag $nbt): void {
-        $this->baseData($nbt);
-    }
-
-    public function baseData(CompoundTag $nbt) : void {
-        $nbt->setInt("EntityId", $this->getNBT()->getInt("EntityId"));
-        $nbt->setInt("Delay", $this->getNBT()->getInt("Delay"));
-        $nbt->setInt("SpawnCount", $this->getNBT()->getInt("SpawnCount"));
-        $nbt->setInt("SpawnRange", $this->getNBT()->getInt("SpawnRange"));
-        $nbt->setInt("MinSpawnDelay", $this->getNBT()->getInt("MinSpawnDelay"));
-        $nbt->setInt("MaxSpawnDelay", $this->getNBT()->getInt("MaxSpawnDelay"));
-    }
+	protected function writeSaveData(CompoundTag $nbt) : void {
+		$this->applyBaseNBT($nbt);
+	}
 }

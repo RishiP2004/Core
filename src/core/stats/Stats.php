@@ -24,7 +24,12 @@ use core\stats\rank\{
 
 use core\utils\Entity;
 
-use core\stats\task\AFKSetterTask;
+use core\stats\task\{
+    AFKSetterTask,
+    TopCoins
+};
+
+use pocketmine\command\CommandSender;
 
 use pocketmine\entity\Skin;
 
@@ -171,6 +176,15 @@ class Stats implements Statistics {
             }
         }
         return round($transparentPixels * 100 / max(1, $pixels));
+    }
+
+    public function sendTopCoins(CommandSender $sender, int $page, array $ops, array $banned) {
+        $allCoins = [];
+
+        foreach($this->getCoreUsers() as $user) {
+            $allCoins[] = $user->getCoins();
+        }
+        $this->core->getServer()->getAsyncPool()->submitTask(new TopCoins($sender->getName(), $allCoins, $page, $ops, $banned));
     }
 
     public function initRank(Rank $rank) {

@@ -1,17 +1,10 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Stats\Commands;
 
-use GPCore\GPCore;
+namespace core\stats\command;
 
-use GPCore\Stats\Objects\Rank;
+use core\Core;
+
+use core\stats\rank\Rank;
 
 use pocketmine\command\{
     PluginCommand,
@@ -20,36 +13,36 @@ use pocketmine\command\{
 
 use pocketmine\utils\TextFormat;
 
-class RankInformationCommand extends PluginCommand {
-    private $GPCore;
+class RankInformation extends PluginCommand {
+    private $core;
 
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("rankinformation", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("rankinformation", $core);
 
-        $this->GPCore = $GPCore;
+        $this->core = $core;
 
         $this->setAliases(["rankinfo"]);
-        $this->setPermission("GPCore.Stats.Command.RankInformation");
+        $this->setPermission("core.stats.command.rankinformation");
         $this->setUsage("<rank>");
         $this->setDescription("Check a Rank's Information");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-			$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "Usage: /rankinformation" . " " . $this->getUsage());
+			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /rankinformation" . " " . $this->getUsage());
             return false;
         }
-        $rank = $this->GPCore->getStats()->getRankFromString($args[0]);
+        $rank = $this->core->getStats()->getRank($args[0]);
 
         if(!$rank instanceof Rank) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not a valid Rank");
+            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Rank");
             return false;
         } else {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Rank Information about " . $rank->getName() . ":");
+            $sender->sendMessage($this->core->getPrefix() . "Rank Information about " . $rank->getName() . ":");
             $sender->sendMessage(TextFormat::GRAY . "Chat Format: " . $rank->getChatFormat());
             $sender->sendMessage(TextFormat::GRAY . "NameTag Format: " . $rank->getNameTagFormat());
 						
@@ -69,7 +62,7 @@ class RankInformationCommand extends PluginCommand {
 			
 			$inheritances = [];
 			
-			foreach($rank->getInheritances() as $inheritance) {
+			foreach($rank->getInheritance() as $inheritance) {
 				$inheritances[] = $inheritance;
 			}
             $sender->sendMessage(TextFormat::GRAY . "Inheritances: " . implode(", ", $inheritances));
