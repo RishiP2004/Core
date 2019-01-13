@@ -31,8 +31,6 @@ class Beacon extends Transparent {
 	protected $id = self::BEACON;
 
 	public function __construct($meta = 0) {
-	    parent::__construct($meta);
-
 		$this->meta = $meta;
 	}
 
@@ -57,7 +55,7 @@ class Beacon extends Transparent {
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
-		$this->getLevel()->setBlock($this, $this, true, true);
+		$this->getLevel()->setBlock($this, $this, true);
 
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::BEACON),
@@ -80,7 +78,7 @@ class Beacon extends Transparent {
 		/** @var BeaconInventory $beacon */
 		$beacon = null;
 		
-		if($tile instanceof Tile){
+		if($tile instanceof Tile) {
 			/** @var Tile $beacon */
 			$beacon = $tile;
 		} else {

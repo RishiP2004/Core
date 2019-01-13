@@ -7,7 +7,38 @@ use pocketmine\item\enchantment\{
     Enchantment
 };
 
+use pocketmine\item\{
+    TieredTool,
+    ItemIds,
+    Tool,
+    FishingRod,
+    Armor,
+    Book,
+    Sword,
+    Bow,
+    Durable
+};
+
+use pocketmine\utils\Color;
+
 class Item extends \pocketmine\item\Item {
+    public const DYE_BLACK = 0;
+    public const DYE_RED = 1;
+    public const DYE_GREEN = 2;
+    public const DYE_BROWN = 3;
+    public const DYE_BLUE = 4;
+    public const DYE_PURPLE = 5;
+    public const DYE_CYAN = 6;
+    public const DYE_LIGHT_GRAY = 7, DYE_SILVER = 7;
+    public const DYE_GRAY = 8;
+    public const DYE_PINK = 9;
+    public const DYE_LIME = 10;
+    public const DYE_YELLOW = 11;
+    public const DYE_LIGHT_BLUE = 12;
+    public const DYE_MAGENTA = 13;
+    public const DYE_ORANGE = 14;
+    public const DYE_WHITE = 15;
+
     public static function parseItems($array) : array {
         $items = [];
         
@@ -99,13 +130,13 @@ class Item extends \pocketmine\item\Item {
 					$enchantability = 10;
 				break;
 				default:
-					$enchantability = 14; // default to iron
+					$enchantability = 14;
 				break;
 			}
 		} else if($item instanceof Tool) {
-			$enchantability = 14; // default to iron
+			$enchantability = 14;
 		} else if($item instanceof FishingRod) {
-			$enchantability = 14; // default to iron
+			$enchantability = 14;
 		} else if($item instanceof Armor) {
 			if($item->getId() === ItemIds::LEATHER_BOOTS or $item->getId() === ItemIds::LEATHER_LEGGINGS or $item->getId() === ItemIds::LEATHER_CHESTPLATE or $item->getId() === ItemIds::LEATHER_HELMET) {
 				$enchantability = 15;
@@ -118,7 +149,7 @@ class Item extends \pocketmine\item\Item {
 			} else if($item->getId() === ItemIds::DIAMOND_BOOTS or $item->getId() === ItemIds::DIAMOND_LEGGINGS or $item->getId() === ItemIds::DIAMOND_CHESTPLATE or $item->getId() === ItemIds::DIAMOND_HELMET) {
 				$enchantability = 10;
 			} else {
-				$enchantability = 9; // default to iron
+				$enchantability = 9;
 			}
 		} else if($item instanceof Book) {
 			$enchantability = 1;
@@ -199,7 +230,7 @@ class Item extends \pocketmine\item\Item {
 		}
 		$enchantments[Enchantment::VANISHING] = 1;
 		
-		$enchantments = array_filter($enchantments, function($id) { // TODO: remove when all enchantments implemented
+		$enchantments = array_filter($enchantments, function($id) {
 			return Enchantment::getEnchantment($id) !== null;
 		}, ARRAY_FILTER_USE_KEY); // filter unregistered enchantments
 		$totalWeight = 0;
@@ -217,7 +248,44 @@ class Item extends \pocketmine\item\Item {
 				break;
 			}
 		}
-		// TODO: filter valid enchantments based on $modifiedEnchantmentLevel https://minecraft.gamepedia.com/Enchanting/Levels
 		return $return;
 	}
+
+    public static function getDyeColor(int $id) : Color {
+        switch($id) {
+            case self::DYE_BLACK:
+                return new Color(30, 27, 27);
+            case self::DYE_RED:
+                return new Color(179, 49, 44);
+            case self::DYE_GREEN:
+                return new Color(61, 81, 26);
+            case self::DYE_BROWN:
+                return new Color(81, 48, 26);
+            case self::DYE_BLUE:
+                return new Color(37, 49, 146);
+            case self::DYE_PURPLE:
+                return new Color(123, 47, 190);
+            case self::DYE_CYAN:
+                return new Color(40, 118, 151);
+            case self::DYE_SILVER:
+                return new Color(153, 153, 153);
+            case self::DYE_GRAY:
+                return new Color(67, 67, 67);
+            case self::DYE_PINK:
+                return new Color(216, 129, 152);
+            case self::DYE_LIME:
+                return new Color(65, 205, 52);
+            case self::DYE_YELLOW:
+                return new Color(222, 207, 42);
+            case self::DYE_LIGHT_BLUE:
+                return new Color(102, 137, 211);
+            case self::DYE_MAGENTA:
+                return new Color(195, 84, 205);
+            case self::DYE_ORANGE:
+                return new Color(235, 136, 68);
+            case self::DYE_WHITE:
+                return new Color(240, 240, 240);
+        }
+        return new Color(0, 0, 0);
+    }
 }

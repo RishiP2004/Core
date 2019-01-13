@@ -2,7 +2,6 @@
 
 namespace core\mcpe\block;
 
-use core\Core;
 use core\CorePlayer;
 
 use core\mcpe\tile\MobSpawner;
@@ -19,15 +18,7 @@ use pocketmine\block\Block;
 
 use pocketmine\math\Vector3;
 
-use pocketmine\item\enchantment\Enchantment;
-
 use pocketmine\item\ItemFactory;
-
-use pocketmine\nbt\tag\{
-    CompoundTag,
-    StringTag,
-    IntTag
-};
 
 class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
     private $entityId = 0;
@@ -82,16 +73,14 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 					MobSpawner::TAG_MIN_SPAWN_DELAY,
 					MobSpawner::TAG_MAX_SPAWN_DELAY,
 					MobSpawner::TAG_SPAWN_COUNT,
-					MobSpawner::TAG_SPAWN_RANGE] 
-				as $tag_name) {
-					$tag = $item->getNamedTag()->getTag($tag_name);
+					MobSpawner::TAG_SPAWN_RANGE] as $tag_name) {
+                $tag = $item->getNamedTag()->getTag($tag_name);
 				
-					if($tag !== null) {
-						$nbt->setTag($tag);
-					}
-				}
-			}
-		} else if(($meta = $item->getDamage()) != 0) {
+                if($tag !== null) {
+                    $nbt->setTag($tag);
+                }
+            }
+        } else if(($meta = $item->getDamage()) !== 0) {
 			$nbt->setInt(MobSpawner::TAG_ENTITY_ID, $meta);
 		} else {
 			return true;
@@ -110,8 +99,4 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 		}
 		return parent::getSilkTouchDrops($item);
     }
-
-	public function isAffectedBySilkTouch() : bool {
-		return Main::$silkSpawners;
-	}
 }

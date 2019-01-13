@@ -16,6 +16,8 @@ use pocketmine\network\mcpe\protocol\{
     EntityEventPacket
 };
 
+use pocketmine\block\Block;
+
 class Entity extends \pocketmine\entity\Entity {
     const USABLES = [
         Item::DISPENSER,
@@ -256,4 +258,43 @@ class Entity extends \pocketmine\entity\Entity {
         return 0;
     }
 
+    public static function checkSnowGolemStructure(Block $head) : array {
+        $level = $head->getLevel();
+        $block1 = ($level->getBlock($head->subtract(0, 1, 0))->getId() === Block::SNOW_BLOCK);
+        $block2 = ($level->getBlock($head->subtract(0, 2, 0))->getId() === Block::SNOW_BLOCK);
+
+        return [
+            ($block1 && $block2),
+            "Y"
+        ];
+    }
+
+    public static function checkIronGolemStructure(Block $head) : array {
+        $level = $head->getLevel();
+        $block1 = ($level->getBlock($head->subtract(0, 1, 0))->getId() == Block::IRON_BLOCK);
+        $block2 = ($level->getBlock($head->subtract(0, 2, 0))->getId() == Block::IRON_BLOCK);
+        $block3 = $level->getBlock($head->subtract(1, 1, 0));
+        $block4 = $level->getBlock($head->add(1, -1, 0));
+        $block5 = $level->getBlock($head->subtract(0, 1, 1));
+        $block6 = $level->getBlock($head->add(0, -1, 1));
+
+        if($block1 && $block2) {
+            if($block3->getId() == Block::IRON_BLOCK && $block4->getId() == Block::IRON_BLOCK) {
+                return [
+                    true,
+                    "X"
+                ];
+            }
+            if($block5->getId() == Block::IRON_BLOCK && $block6->getId() == Block::IRON_BLOCK) {
+                return [
+                    true,
+                     "Z"
+                ];
+            }
+        }
+        return [
+            false,
+            "NULL"
+        ];
+    }
 }

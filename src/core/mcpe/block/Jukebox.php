@@ -2,61 +2,72 @@
 
 namespace core\mcpe\block;
 
-use CortexPE\item\Record;
-use CortexPE\tile\Jukebox as JukeboxTile;
-use CortexPE\tile\Tile;
-use pocketmine\block\Block;
-use pocketmine\block\BlockToolType;
+use core\mcpe\tile\Jukebox as Tile;
+
+use core\mcpe\item\Record;
+
 use pocketmine\block\Solid;
-use pocketmine\item\Item;
-use pocketmine\item\TieredTool;
+
+use pocketmine\block\BlockToolType;
+
+use pocketmine\item\{
+    TieredTool,
+    Item
+};
+
+use pocketmine\block\Block;
+
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
+
 use pocketmine\Player;
 
-class Jukebox extends Solid {
+use pocketmine\nbt\tag\{
+    CompoundTag,
+    StringTag,
+    IntTag
+};
 
+class Jukebox extends Solid {
 	/** @var int $id */
 	protected $id = self::JUKEBOX;
 
-	public function __construct(int $meta = 0){
+	public function __construct(int $meta = 0) {
 		parent::__construct(self::JUKEBOX, $meta);
 	}
 
-	public function getName(): string{
+	public function getName() : string {
 		return "Jukebox";
 	}
 
-	public function getHardness(): float{
+	public function getHardness() : float {
 		return 2;
 	}
 
-	public function getToolType(): int{
+	public function getToolType() : int {
 		return BlockToolType::TYPE_AXE;
 	}
 
-	public function getToolHarvestLevel(): int{
+	public function getToolHarvestLevel() : int {
 		return TieredTool::TIER_WOODEN;
 	}
 
-	public function getDrops(Item $item): array{
+	public function getDrops(Item $item) : array {
 		$drops = [];
 		$drops[] = Item::get(Item::JUKEBOX, 0, 1);
-
 		$tile = $this->getLevel()->getTile($this);
-		if($tile instanceof JukeboxTile){
+
+		if($tile instanceof Tile) {
 			$drops[] = $tile->getRecordItem();
 		}
-
 		return $drops;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null): bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+
 		$tile = $this->getLevel()->getTile($this);
-		if(!($tile instanceof JukeboxTile)){
+
+		if(!$tile instanceof Tile) {
 			$nbt = new CompoundTag("", [
 				new StringTag(Tile::TAG_ID, Tile::JUKEBOX),
 				new IntTag(Tile::TAG_X, (int)$this->getX()),
@@ -65,22 +76,24 @@ class Jukebox extends Solid {
 			]);
 			Tile::createTile(Tile::JUKEBOX, $this->getLevel(), $nbt);
 		}
-
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null): bool{
+	public function onActivate(Item $item, Player $player = null) : bool {
 		$tile = $this->getLevel()->getTile($this);
-		if($tile instanceof JukeboxTile){
+
+		if($tile instanceof Tile) {
 			$tile->dropMusicDisc();
-			if($item instanceof Record){
+
+			if($item instanceof Record) {
 				$tile->setRecordItem($item);
 				$tile->playMusicDisc();
-				if($player != null){
+
+				if($player != null) {
 					$item->count--;
 				}
 			}
-		}else{
+		} else {
 			$nbt = new CompoundTag("", [
 				new StringTag(Tile::TAG_ID, Tile::JUKEBOX),
 				new IntTag(Tile::TAG_X, (int)$this->getX()),
@@ -90,14 +103,14 @@ class Jukebox extends Solid {
 			/** @var JukeboxTile $tile */
 			$tile = Tile::createTile(Tile::JUKEBOX, $this->getLevel(), $nbt);
 
-			if($item instanceof Record){
+			if($item instanceof Record) {
 				$tile->setRecordItem($item);
-				if($player != null){
+
+				if($player != null) {
 					$item->count--;
 				}
 			}
 		}
-
 		return true;
 	}
 }

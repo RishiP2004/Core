@@ -179,7 +179,7 @@ abstract class MobSpawner extends Spawnable implements Addon {
 			$count = 0;
 			
 			foreach($this->getLevel()->getEntities() as $e) {
-				if($e instanceof Player && $e->distance($this) <= 15){
+				if($e instanceof CorePlayer && $e->distance($this) <= 15){
 					$hasPlayer = true;
 				}
 				if($e::NETWORK_ID == $this->getEntityId()){
