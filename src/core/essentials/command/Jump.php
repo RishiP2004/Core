@@ -13,35 +13,41 @@ use GPCore\GPCore;
 
 use GPCore\Stats\Objects\GPPlayer;
 
+use Essentials
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
-class CompassCommand extends PluginCommand {
+class Jump extends PluginCommand {
     private $GPCore;
-
+    
     public function __construct(GPCore $GPCore) {
-        parent::__construct("compass", $GPCore);
-
+        parent::__construct("jump", $GPCore);
+       
         $this->GPCore = $GPCore;
-
-        $this->setPermission("GPCore.Essentials.Command.Compass");
+       
+        $this->setPermission("GPCore.Essentials.Command.Jump");
         $this->setUsage("[player]");
-        $this->setDescription("Check what Direction you or a Player is Facing");
+        $this->setDescription("Jump yourself or a Player to the Block you are Facing");
     }
-
+    
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
+        if(!$sender instanceof GPPlayer) {
+            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
+            return false;
+        }
         if(!$sender->hasPermission($this->getPermission())) {
             $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
-        }
+        }	
         if(isset($args[0])) {
 			if(!$sender->hasPermission($this->getPermission() . ".Other")) {
 				$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
 				return false;
 			}
-			$player = $this->GPCore->getServer()->getPlayer($args[0]);
+            $player = $this->GPCore->getServer()->getPlayer($args[0]);
 
             if(!$player instanceof GPPlayer) {
                 $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not Online");
@@ -50,53 +56,64 @@ class CompassCommand extends PluginCommand {
             if(!$player->getGPUser()->hasAccount()) {
                 $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not a valid Player");
                 return false;
+            }
+            $block = $player->getTargetBlock(100, Essentials::NON_SOLID_BLOCKS);
+
+			if($block === null) {
+				$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
+				return false;
             } else {
-				switch($player->getDirection()) {
+				if(!$player->getLevel()->getBlock($block->add(0, 2))->isSolid()) {
+					$player->teleport($block->add(0, 1));
+				}
+				switch($side = $args[0]->getDirection()) {
 					case 0:
-						$direction = "South";
-					break;
 					case 1:
-						$direction = "West";
-					break;
-					case 2:
-						$direction = "North";
+						$side += 3;
 					break;
 					case 3:
-						$direction = "East";
+						$side += 2;
 					break;
 					default:
-						$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "There was an error while getting " . $player->getName() . "'s Direction");
-						return false;
 					break;
 				}
-				$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . $player->getName() . " is Facing " . $direction);
+				if(!$block->getSide($side)->isSolid()){
+					$player->teleport($block);
+				}
+				$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Jumped " . $player->getName() . " to the Facing Block");
+				$player->sendMessage($this->GPCore->getBroadcast()->getPrefix() . $sender->getName() . " Jumped you to your Facing Block");
                 return true;
             }
         }
-        if(!$sender instanceof GPPlayer) {
+        if($sender instanceof GPPlayer) {
             $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
+		}
+		$block = $sender->getTargetBlock(100, Essentials::NON_SOLID_BLOCKS);
+			
+		if($block === null) {
+			$sender->sendMessage($this->GPCore->getInstance()->getBroadcast()->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
+			return false;
         } else {
-			switch($sender->getDirection()) {
+			if(!$sender->getLevel()->getBlock($block->add(0, 2))->isSolid()) {
+				$sender->teleport($block->add(0, 1));
+			}
+			switch($side = $sender->getDirection()) {
 				case 0:
-					$direction = "South";
-				break;
 				case 1:
-					$direction = "West";
-				break;
-				case 2:
-					$direction = "North";
+					$side += 3;
 				break;
 				case 3:
-					$direction = "East";
+					$side += 2;
 				break;
 				default:
-					$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "There was an error while getting your Direction");
-					return false;
 				break;
 			}
-			$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "You are Facing " . $direction);
-            return true;
+			if(!$block->getSide($side)->isSolid()) {
+				$sender->teleport($block);
+			}
+			$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Jumped to the Facing Block");
+			return true;
         }
     }
 }
