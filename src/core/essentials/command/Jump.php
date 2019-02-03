@@ -1,19 +1,11 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Essentials\Commands;
 
-use GPCore\GPCore;
+namespace core\essentials\command;
 
-use GPCore\Stats\Objects\GPPlayer;
+use core\Core;
+use core\CorePlayer;
 
-use Essentials
+use core\utils\Entity;
 
 use pocketmine\command\{
     PluginCommand,
@@ -21,12 +13,12 @@ use pocketmine\command\{
 };
 
 class Jump extends PluginCommand {
-    private $GPCore;
+    private $core;
     
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("jump", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("jump", $core);
        
-        $this->GPCore = $GPCore;
+        $this->core = $core;
        
         $this->setPermission("GPCore.Essentials.Command.Jump");
         $this->setUsage("[player]");
@@ -34,33 +26,33 @@ class Jump extends PluginCommand {
     }
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
-        if(!$sender instanceof GPPlayer) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
+        if(!$sender instanceof CorePlayer) {
+            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
         }
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }	
         if(isset($args[0])) {
 			if(!$sender->hasPermission($this->getPermission() . ".Other")) {
-				$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
 				return false;
 			}
-            $player = $this->GPCore->getServer()->getPlayer($args[0]);
+            $player = $this->core->getServer()->getPlayer($args[0]);
 
-            if(!$player instanceof GPPlayer) {
-                $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not Online");
+            if(!$player instanceof CorePlayer) {
+                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
             }
-            if(!$player->getGPUser()->hasAccount()) {
-                $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . $args[0] . " is not a valid Player");
+            if(!$this->core->getStats()->getCoreUser($args[1])) {
+                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
                 return false;
             }
-            $block = $player->getTargetBlock(100, Essentials::NON_SOLID_BLOCKS);
+            $block = $player->getTargetBlock(100, Entity::NON_SOLID_BLOCKS);
 
 			if($block === null) {
-				$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
+				$sender->sendMessage($this->core->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
 				return false;
             } else {
 				if(!$player->getLevel()->getBlock($block->add(0, 2))->isSolid()) {
@@ -80,19 +72,19 @@ class Jump extends PluginCommand {
 				if(!$block->getSide($side)->isSolid()){
 					$player->teleport($block);
 				}
-				$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Jumped " . $player->getName() . " to the Facing Block");
-				$player->sendMessage($this->GPCore->getBroadcast()->getPrefix() . $sender->getName() . " Jumped you to your Facing Block");
+				$sender->sendMessage($this->core->getPrefix() . "Jumped " . $player->getName() . " to the Facing Block");
+				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Jumped you to your Facing Block");
                 return true;
             }
         }
-        if($sender instanceof GPPlayer) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You must be a Player to use this Command");
+        if($sender instanceof CorePlayer) {
+            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
 		}
-		$block = $sender->getTargetBlock(100, Essentials::NON_SOLID_BLOCKS);
+		$block = $sender->getTargetBlock(100, Entity::NON_SOLID_BLOCKS);
 			
 		if($block === null) {
-			$sender->sendMessage($this->GPCore->getInstance()->getBroadcast()->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
+			$sender->sendMessage($this->core->getInstance()->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
 			return false;
         } else {
 			if(!$sender->getLevel()->getBlock($block->add(0, 2))->isSolid()) {
@@ -112,7 +104,7 @@ class Jump extends PluginCommand {
 			if(!$block->getSide($side)->isSolid()) {
 				$sender->teleport($block);
 			}
-			$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Jumped to the Facing Block");
+			$sender->sendMessage($this->core->getPrefix() . "Jumped to the Facing Block");
 			return true;
         }
     }
