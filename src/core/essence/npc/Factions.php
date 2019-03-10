@@ -14,11 +14,11 @@ use pocketmine\item\Item;
 
 class Factions extends NPC {
     public function __construct() {
-        parent::__construct("LobbyGreetings");
+        parent::__construct("Factions");
     }
 
     public function getPosition() : Position {
-        return new Position(138.5, 15, 127.5, "LobbyGreetings");
+        return new Position(138.5, 15, 127.5, "Lobby");
     }
 
     public function getSize() : float {
@@ -65,7 +65,7 @@ class Factions extends NPC {
     public function getMessages() : array {
         return [
             TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::RED . " Factions" . TextFormat::DARK_GREEN . "> " . TextFormat::GRAY . "Hi {PLAYER}, Factions server is coming soon!",
-            TextFormat::GRAY . "If you want to help test, contact us on Twitter (@GratonePix) or Discord () \n" . TextFormat::GRAY . "Checkout ArchonBE NPC for now!"
+            TextFormat::GRAY . "If you want to help test, contact us on Twitter (@AthenaBE) or Discord () \n"
         ];
     }
 }

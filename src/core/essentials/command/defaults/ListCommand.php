@@ -49,6 +49,7 @@ class ListCommand extends PluginCommand {
 				}
 			}
 			$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "All Online Players:");
+            //ranks wise
 			$sender->sendMessage(implode(", ", $this->GPCore->getNetwork()->getTotalOnlinePlayers()));
             return true;
         }

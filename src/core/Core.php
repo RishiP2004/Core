@@ -5,6 +5,7 @@ namespace core;
 use core\anticheat\AntiCheat;
 use core\broadcast\Broadcast;
 use core\essence\Essence;
+use core\essentials\Essentials;
 use core\mcpe\MCPE;
 use core\network\Network;
 use core\social\Social;
@@ -27,6 +28,7 @@ class Core extends PluginBase {
     private $anticheat;
     private $broadcast;
     private $essence;
+    private $essentials;
     private $mcpe;
     private $network;
     private $social;
@@ -60,6 +62,7 @@ class Core extends PluginBase {
         $this->anticheat = new AntiCheat($this);
         $this->broadcast = new Broadcast($this);
         $this->essence = new Essence($this);
+        $this->essentials = new Essentials($this);
         $this->mcpe = new MCPE($this);
         $this->network = new Network($this);
         $this->social = new Social($this);
@@ -91,6 +94,10 @@ class Core extends PluginBase {
 
     public function getEssence() : Essence {
         return $this->essence;
+    }
+
+    public function getEssentials() : Essentials {
+        return $this->essentials;
     }
 
     public function getMCPE() : MCPE {

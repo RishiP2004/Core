@@ -14,11 +14,11 @@ use pocketmine\item\Item;
 
 class Lobby extends NPC {
     public function __construct() {
-        parent::__construct("LobbyGreetings");
+        parent::__construct("Lobby");
     }
 
     public function getPosition() : Position {
-        return new Position(132.5, 15, 128.5, "LobbyGreetings");
+        return new Position(132.5, 15, 128.5, "Lobby");
     }
 
     public function getSize() : float {
@@ -64,7 +64,7 @@ class Lobby extends NPC {
 
     public function getMessages() : array {
         return [
-            TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::GREEN . " LobbyGreetings" . TextFormat::DARK_GREEN . "> " . TextFormat::GRAY . "Hi {PLAYER}, reconnecting you to the LobbyGreetings!"
+            TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::GREEN . " Lobby" . TextFormat::DARK_GREEN . "> " . TextFormat::GRAY . "Hi {PLAYER}, reconnecting you to the Lobby!"
         ];
     }
 }

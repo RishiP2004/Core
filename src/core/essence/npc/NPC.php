@@ -80,8 +80,8 @@ abstract class NPC {
         $packet->uuid = $this->getUUID();
         $nameTag = $this->getNameTag();
 
-        if($this->getName() === "Factions" or $this->getName() === "LobbyGreetings") {
-            $server = Core::getInstance()->getNetwork()->getServerFromString($this->getName());
+        if($this->getName() === "Factions" or $this->getName() === "Lobby") {
+            $server = Core::getInstance()->getNetwork()->getServer($this->getName());
 
             if(!$server->isOnline()) {
                 $onlinePlayers = "";
