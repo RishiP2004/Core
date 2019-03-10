@@ -56,6 +56,7 @@ UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coin
 -- # 	:xuid string
 DELETE FROM stats WHERE xuid = :xuid;
 -- # }
+
 -- #}
 
 -- #{sentenced

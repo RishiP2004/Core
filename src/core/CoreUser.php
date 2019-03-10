@@ -58,8 +58,6 @@ class CoreUser {
 
     public function setName(string $name) {
         $this->name = $name;
-
-        $this->save();
     }
 
     public function getLocale() : string {
@@ -68,8 +66,6 @@ class CoreUser {
 
     public function setLocale(string $locale) {
         $this->locale = $locale;
-
-        $this->save();
     }
 
     public function getIp() : string {
@@ -78,8 +74,6 @@ class CoreUser {
 
     public function setIp(string $ip) {
         $this->ip = $ip;
-
-        $this->save();
     }
 	
     public function getServer() : ?Server {
@@ -96,8 +90,6 @@ class CoreUser {
 
     public function setCoins(int $coins) {
         $this->coins = $coins;
-
-        $this->save();
     }
 	
 	public function getRank() : Rank {
@@ -122,8 +114,6 @@ class CoreUser {
 
     public function setPermission(array $permissions) {
         $this->permissions = $permissions;
-
-        $this->save();
     }
 
     public function addPermission(string $permission) {
@@ -155,6 +145,14 @@ class CoreUser {
     }
 
     public function save() {
-		//todo
+		Core::getInstance()->getDatabase()->executeChange("stats.update", [
+		    "username" => $this->getName(),
+            "ip" => $this->getIp(),
+            "locale" => $this->getLocale(),
+            "coins" => $this->getCoins(),
+            "rank" => $this->getRank(),
+            "permissions" => $this->getPermissions(),
+            "server" => $this->getServer()
+        ]);
     }
 }

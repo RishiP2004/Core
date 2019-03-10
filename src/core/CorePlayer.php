@@ -71,7 +71,7 @@ abstract class CorePlayer extends Player {
     }
 
     public function getCoreUser() : CoreUser {
-        return $this->core->getStats()->getCoreUser($this->getName());
+        return $this->core->getStats()->getCoreUser($this->getName()) ?? $this->core->getStats()->getCoreUserXuid($this->getXuid());
     }
 
     public function join() {

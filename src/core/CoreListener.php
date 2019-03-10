@@ -405,6 +405,9 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
+            if($this->core->getStats()->getCoreUserXuid($player->getXuid())->getName() !== $player->getName()) {
+                $player->getCoreUser()->setName($player->getName());
+            }
             if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
                 $server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
 

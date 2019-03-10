@@ -36,15 +36,15 @@ class ListCommand extends PluginCommand {
             if(isset($args[0])) {
 				switch(strtolower($args[0])) {
 					case "lobby":
-						$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Online Players in Lobby:");
+						$sender->sendMessage($this->core->getBroadcast()->getPrefix() . "Online Players in Lobby:");
 						$sender->sendMessage(implode(", ", $this->GPCore->getNetwork()->getServerFromString("Lobby")->getOnlinePlayers()));
 					break;
 					case "factions":
-						$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Online Players in Factions:");
+						$sender->sendMessage($this->core->getBroadcast()->getPrefix() . "Online Players in Factions:");
 						$sender->sendMessage(implode(", ", $this->GPCore->getNetwork()->getServerFromString("Factions")->getOnlinePlayers()));
 					break;
 					default:
-						$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "No such Server in the GratonePix Network");
+						$sender->sendMessage($this->core->getBroadcast()->getErrorPrefix() . "No such Server in the GratonePix Network");
 					break;
 				}
 			}

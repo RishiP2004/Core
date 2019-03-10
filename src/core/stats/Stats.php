@@ -237,6 +237,15 @@ class Stats implements Statistics {
         return null;
     }
 
+    public function getCoreUserXuid(string $xuid) : ?CoreUser {
+        foreach($this->getCoreUsers() as $coreUser) {
+            if($coreUser->getXuid() === $xuid) {
+                return $coreUser;
+            }
+        }
+        return null;
+    }
+
     public function registerCoreUser(CorePlayer $player) {
         $this->core->getDatabase()->executeInsert("stats.register", [
             "xuid" => $player->getXuid(),
