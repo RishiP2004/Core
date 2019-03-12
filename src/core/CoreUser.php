@@ -11,10 +11,6 @@ use core\vote\ServerListQuery;
 use core\vote\task\RequestThreadTask;
 
 class CoreUser {
-    const CORE = 0;
-    const LOBBY = 1;
-    const FACTIONS = 2;
-
     public $xuid = "", $registerDate, $name = "", $ip = "", $locale = "";
 
     public $coins;

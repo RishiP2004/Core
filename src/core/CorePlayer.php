@@ -704,7 +704,6 @@ abstract class CorePlayer extends Player {
         }
         return $return;
     }
-
     /**
      * @param InventoryTransactionPacket $packet
      *

@@ -26,7 +26,7 @@ class PlayerJoin extends Task {
 		$this->player->getLevel()->broadcastLevelEvent($this->player->asPosition(), LevelEventPacket::EVENT_GUARDIAN_CURSE);
 				
 		switch($this->core->getNetwork()->getServerFromIp($this->player->getServer()->getIp())->getName()) {
-			case "LobbyGreetings":
+			case "Lobby":
 				$this->player->addTitle($this->core->getPrefix(), TextFormat::GRAY . "Lobby");
 				$this->player->sendMessage(TextFormat::GRAY . "Welcome to the GratonePix Lobby!");
 			break;

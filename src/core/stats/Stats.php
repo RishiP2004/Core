@@ -207,20 +207,20 @@ class Stats implements Statistics {
     }
 	
     public function initUsers() {
-        $this->core->getDatabase()->executeSelect("stats.get", [], function(array $rows) {
-            $users = [];
+    $this->core->getDatabase()->executeSelect("stats.get", [], function(array $rows) {
+        $users = [];
 
-            foreach($rows as [
+        foreach($rows as [
                 "xuid" => $xuid,
-            ]) {
-                $coreUser = new CoreUser($xuid);
-                $users[$xuid] = $coreUser;
+        ]) {
+            $coreUser = new CoreUser($xuid);
+            $users[$xuid] = $coreUser;
 
-                $coreUser->load($rows);
-            }
-            $this->coreUsers = $users;
-        });
-    }
+            $coreUser->load($rows);
+        }
+        $this->coreUsers = $users;
+    });
+}
     /**
      * @return CoreUser[]
      */
