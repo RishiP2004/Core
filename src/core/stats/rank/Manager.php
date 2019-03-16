@@ -9,6 +9,9 @@ class Manager extends Rank {
         parent::__construct("Manager");
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

@@ -11,6 +11,9 @@ class Eonive extends Rank {
         $this->setPaidPrice(5);
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

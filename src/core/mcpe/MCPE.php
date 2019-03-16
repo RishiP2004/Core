@@ -59,6 +59,12 @@ class MCPE implements Addon {
         Tile::registerTile(HopperTile::class);
         Tile::registerTile(MobSpawner::class);
     }
+    /**
+     * @return Entity[]
+     */
+    public function getRegisteredEntities() : array {
+        return $this->registeredEntities;
+    }
 
     public function getSpawnCount() : int {
         return self::SPAWN_COUNT;

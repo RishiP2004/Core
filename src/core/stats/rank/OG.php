@@ -11,6 +11,9 @@ class OG extends Rank {
         $this->setFreePrice(10000);
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

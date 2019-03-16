@@ -26,6 +26,8 @@ use core\essentials\permission\{
 class Essentials {
     private $core;
 
+    public $timingStart = 0;
+
     public function __construct(Core $core) {
         $this->core = $core;
 

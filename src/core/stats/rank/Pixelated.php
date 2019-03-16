@@ -11,6 +11,9 @@ class Pixelated extends Rank {
         $this->setPaidPrice(20);
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

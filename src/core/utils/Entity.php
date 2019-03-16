@@ -24,8 +24,6 @@ use pocketmine\block\{
     BlockFactory
 };
 
-use pocketmine\math\Vector3;
-
 use pocketmine\level\particle\{
     AngryVillagerParticle,
     BlockForceFieldParticle,
@@ -45,6 +43,7 @@ use pocketmine\level\particle\{
     ItemBreakParticle,
     LavaDripParticle,
     LavaParticle,
+    Particle,
     PortalParticle,
     RainSplashParticle,
     RedstoneParticle,
@@ -53,8 +52,7 @@ use pocketmine\level\particle\{
     SporeParticle,
     TerrainParticle,
     WaterDripParticle,
-    WaterParticle
-};
+    WaterParticle};
 
 class Entity extends \pocketmine\entity\Entity {
     const USABLES = [
@@ -363,94 +361,90 @@ class Entity extends \pocketmine\entity\Entity {
         ];
     }
 
-    public function getParticle(string $name, Vector3 $position, float $xd, float $yd, float $zd, int $data = null) {
+    public static function getParticle(string $name, ?int $data = null) : ?Particle{
         switch($name){
             case "explode":
-                return new ExplodeParticle($position);
+                return new ExplodeParticle();
             case "hugeexplosion":
-                return new HugeExplodeParticle($position);
+                return new HugeExplodeParticle();
             case "hugeexplosionseed":
-                return new HugeExplodeSeedParticle($position);
+                return new HugeExplodeSeedParticle();
             case "bubble":
-                return new BubbleParticle($position);
+                return new BubbleParticle();
             case "splash":
-                return new SplashParticle($position);
+                return new SplashParticle();
             case "wake":
             case "water":
-                return new WaterParticle($position);
+                return new WaterParticle();
             case "crit":
-                return new CriticalParticle($position);
+                return new CriticalParticle();
             case "smoke":
-                return new SmokeParticle($position, $data ?? 0);
+                return new SmokeParticle($data ?? 0);
             case "spell":
-                return new EnchantParticle($position);
+                return new EnchantParticle();
             case "instantspell":
-                return new InstantEnchantParticle($position);
+                return new InstantEnchantParticle();
             case "dripwater":
-                return new WaterDripParticle($position);
+                return new WaterDripParticle();
             case "driplava":
-                return new LavaDripParticle($position);
+                return new LavaDripParticle();
             case "townaura":
             case "spore":
-                return new SporeParticle($position);
+                return new SporeParticle();
             case "portal":
-                return new PortalParticle($position);
+                return new PortalParticle();
             case "flame":
-                return new FlameParticle($position);
+                return new FlameParticle();
             case "lava":
-                return new LavaParticle($position);
+                return new LavaParticle();
             case "reddust":
-                return new RedstoneParticle($position, $data ?? 1);
+                return new RedstoneParticle($data ?? 1);
             case "snowballpoof":
-                return new ItemBreakParticle($position, ItemFactory::get(Item::SNOWBALL));
+                return new ItemBreakParticle(ItemFactory::get(Item::SNOWBALL));
             case "slime":
-                return new ItemBreakParticle($position, ItemFactory::get(Item::SLIMEBALL));
+                return new ItemBreakParticle(ItemFactory::get(Item::SLIMEBALL));
             case "itembreak":
-                if($data !== null && $data !== 0) {
-                    return new ItemBreakParticle($position, ItemFactory::get($data));
+                if($data !== null and $data !== 0) {
+                    return new ItemBreakParticle(ItemFactory::get($data));
                 }
                 break;
             case "terrain":
-                if($data !== null && $data !== 0) {
-                    return new TerrainParticle($position, BlockFactory::get($data));
+                if($data !== null and $data !== 0) {
+                    return new TerrainParticle(BlockFactory::get($data));
                 }
                 break;
             case "heart":
-                return new HeartParticle($position, $data ?? 0);
+                return new HeartParticle($data ?? 0);
             case "ink":
-                return new InkParticle($position, $data ?? 0);
+                return new InkParticle($data ?? 0);
             case "droplet":
-                return new RainSplashParticle($position);
+                return new RainSplashParticle();
             case "enchantmenttable":
-                return new EnchantmentTableParticle($position);
+                return new EnchantmentTableParticle();
             case "happyvillager":
-                return new HappyVillagerParticle($position);
+                return new HappyVillagerParticle();
             case "angryvillager":
-                return new AngryVillagerParticle($position);
+                return new AngryVillagerParticle();
             case "forcefield":
-                return new BlockForceFieldParticle($position, $data ?? 0);
+                return new BlockForceFieldParticle($data ?? 0);
         }
         if(strpos($name, "iconcrack_") === 0) {
             $d = explode("_", $name);
 
             if(count($d) === 3) {
-                return new ItemBreakParticle($position, ItemFactory::get((int) $d[1], (int) $d[2]));
+                return new ItemBreakParticle(ItemFactory::get((int) $d[1], (int) $d[2]));
             }
         } else if(strpos($name, "blockcrack_") === 0) {
             $d = explode("_", $name);
 
             if(count($d) === 2) {
-                return new TerrainParticle($position, BlockFactory::get($d[1] & 0xff, $d[1] >> 12));
+                return new TerrainParticle(BlockFactory::get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
             }
         } else if(strpos($name, "blockdust_") === 0) {
             $d = explode("_", $name);
 
-            if(count($d) >= 4){
-                $d = explode("_", $name);
-
-                if(count($d) >= 4) {
-                    return new DustParticle($position, $d[1] & 0xff, $d[2] & 0xff, $d[3] & 0xff, isset($d[4]) ? $d[4] & 0xff : 255);
-                }
+            if(count($d) >= 4) {
+                return new DustParticle(((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255);
             }
         }
         return null;

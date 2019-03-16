@@ -9,12 +9,16 @@ class Administrator extends Rank {
         parent::__construct("Administrator");
     }
 
+    public function getFormat() : string {
+        return TextFormat::BOLD . TextFormat::DARK_AQUA . "{ADMINISTRATOR}" . TextFormat::RESET;
+    }
+
     public function getChatFormat() : string {
-        return TextFormat::BOLD . TextFormat::DARK_AQUA . "[ADMINISTRATOR] " . TextFormat::RESET . "{DISPLAY_NAME}" . TextFormat::GREEN . ": " . TextFormat::GRAY . "{MESSAGE}";
+        return $this->getFormat() . "{DISPLAY_NAME}" . TextFormat::GREEN . ": " . TextFormat::GRAY . "{MESSAGE}";
     }
 
     public function getNameTagFormat() : string {
-        return TextFormat::BOLD . TextFormat::DARK_AQUA . "[ADMINISTRATOR] " . TextFormat::RESET . "{DISPLAY_NAME}";
+        return $this->getFormat() . "{DISPLAY_NAME}";
     }
 
     public function getPermissions() : array {

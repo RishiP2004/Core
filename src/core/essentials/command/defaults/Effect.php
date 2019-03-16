@@ -23,7 +23,7 @@ class Effect extends PluginCommand {
 
         $this->setPermission("core.essentials.defaults.effect.command");
         $this->setUsage("<effect : clear> <player> [seconds] [amplifier] [hideParticles]");
-        $this->setDescription("Add a Particle");
+        $this->setDescription("Add an Effect to you or another Player");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {

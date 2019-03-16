@@ -9,6 +9,9 @@ class Staff extends Rank {
         parent::__construct("Staff");
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

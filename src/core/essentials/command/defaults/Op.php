@@ -11,7 +11,7 @@ use pocketmine\command\{
     CommandSender
 };
 
-class Deop extends PluginCommand {
+class Op extends PluginCommand {
     private $core;
 
     public function __construct(Core $core) {
@@ -19,9 +19,9 @@ class Deop extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.deop.command");
+        $this->setPermission("core.essentials.defaults.op.command");
         $this->setUsage("<player>");
-        $this->setDescription("Deop a Player");
+        $this->setDescription("Op a Player");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
@@ -30,7 +30,7 @@ class Deop extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /deop" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /op" . " " . $this->getUsage());
             return false;
         }
         if(!$user = $this->core->getStats()->getCoreUser($args[1])) {
@@ -43,13 +43,13 @@ class Deop extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Op");
             return false;
         } else {
-            $player->setOp(false);
+            $player->setOp(true);
 
             if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Deoped you");
+                $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Oped you");
             }
-            $sender->sendMessage($this->core->getPrefix() . $user->getName() . " is now Deoped");
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Deoped by " . $sender->getName());
+            $sender->sendMessage($this->core->getPrefix() . $user->getName() . " is now Op");
+            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Oped by " . $sender->getName());
             return true;
         }
     }

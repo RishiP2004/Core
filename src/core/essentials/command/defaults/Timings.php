@@ -1,17 +1,10 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Essentials\Defaults\Commands;
 
-use GPCore\GPCore;
+namespace core\essentials\command\defaults;
 
-use GPCore\Stats\Objects\GPPlayer;
+use core\Core;
+
+use core\CorePlayer;
 
 use pocketmine\command\{
     PluginCommand,
@@ -24,43 +17,43 @@ use pocketmine\scheduler\BulkCurlTask;
 
 use pocketmine\Server;
 
-class TimingsCommand extends PluginCommand {
-    private $GPCore;
+class Timings extends PluginCommand {
+    private $core;
 
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("timings", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("timings", $core);
 
-        $this->GPCore = $GPCore;
+        $this->core = $core;
 
-        $this->setPermission("GPCore.Essentials.Defaults.Command.Reload");
+        $this->setPermission("core.essentials.defaults.reload.command");
         $this->setUsage("<reload : on : off : paste>");
         $this->setDescription("Timings Command");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "Usage: /timings" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /timings" . " " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {
                 case "reload":
                     TimingsHandler::reload();
-                    $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Timings Reloaded");
+                    $sender->sendMessage($this->core->getPrefix() . "Timings Reloaded");
                 break;
                 case "on":
                     TimingsHandler::setEnabled(true);
-                    $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Timings Enabled");
+                    $sender->sendMessage($this->core->getPrefix() . "Timings Enabled");
                 break;
                 case "off":
                     TimingsHandler::setEnabled(false);
-                    $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Timings Disabled");
+                    $sender->sendMessage($this->core->getPrefix() . "Timings Disabled");
                 break;
                 case "paste":
-                    $sampleTime = \microtime(\true) - $this->GPCore->getEssentials()->getDefaults()->timingStart;
+                    $sampleTime = \microtime(true) - $this->core->getEssentials()->timingStart;
                     $index = 0;
                     $timingFolder = $sender->getServer()->getDataPath() . "timings/";
 
@@ -101,7 +94,7 @@ class TimingsCommand extends PluginCommand {
                             public function onCompletion(Server $server) {
                                 $sender = $this->fetchLocal();
 
-                                if($sender instanceof GPPlayer and !$sender->isOnline()){
+                                if($sender instanceof CorePlayer and !$sender->isOnline()) {
                                     return;
                                 }
                                 $result = $this->getResult()[0];
@@ -118,19 +111,17 @@ class TimingsCommand extends PluginCommand {
                                         break;
                                     }
                                 }
-                                $Broadcast = GPCore::getInstance()->getBroadcast();
-
                                 if(!isset($pasteId)) {
-                                    $sender->sendMessage($Broadcast->getPrefix() . "Timings Error");
+                                    $sender->sendMessage(Core::getInstance()->getPrefix() . "Timings Error");
                                 } else {
-                                    $sender->sendMessage($Broadcast->getPrefix() . "Timings Uploaded to " . "http://paste.ubuntu.com/" . $pasteId . "/");
-                                    $sender->sendMessage($Broadcast->getPrefix() . "Timings Read: " . "http://" . $sender->getServer()->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . \urlencode($pasteId));
+                                    $sender->sendMessage(Core::getInstance()->getPrefix() . "Timings Uploaded to " . "http://paste.ubuntu.com/" . $pasteId . "/");
+                                    $sender->sendMessage(Core::getInstance()->getPrefix() . "Timings Read: " . "http://" . $sender->getServer()->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . \urlencode($pasteId));
                                 }
                             }
                         });
                     } else {
                         fclose($fileTimings);
-                        $sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Timings Written to " . $timings);
+                        $sender->sendMessage($this->core->getPrefix() . "Timings Written to " . $timings);
                     }
                 break;
             }

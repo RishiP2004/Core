@@ -9,6 +9,9 @@ class Player extends Rank {
         parent::__construct("Player");
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

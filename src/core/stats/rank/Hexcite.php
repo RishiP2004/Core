@@ -11,6 +11,9 @@ class Hexcite extends Rank {
         $this->setPaidPrice(15);
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

@@ -11,6 +11,9 @@ class Athener extends Rank {
         $this->setPaidPrice(25);
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

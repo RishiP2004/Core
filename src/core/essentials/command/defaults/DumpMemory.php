@@ -29,7 +29,7 @@ class DumpMemory extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
-        if(count($args) < 2) {
+        if(count($args) < 1) {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /dumpmemory" . " " . $this->getUsage());
             return false;
         }

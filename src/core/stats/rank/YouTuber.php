@@ -9,6 +9,9 @@ class YouTuber extends Rank {
         parent::__construct("YouTuber");
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
         return "";
     }

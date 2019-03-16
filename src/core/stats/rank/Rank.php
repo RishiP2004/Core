@@ -22,6 +22,8 @@ abstract class Rank {
         return $this->name;
     }
 
+    public abstract function getFormat() : string;
+
     public abstract function getChatFormat() : string;
 
     public abstract function getNameTagFormat() : string;

@@ -9,6 +9,9 @@ class Owner extends Rank {
         parent::__construct("Owner");
     }
 
+    public function getFormat() : string {
+    }
+
     public function getChatFormat() : string {
     }
 

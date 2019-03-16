@@ -1,15 +1,8 @@
 <?php
-/**
- *    ___________________________
- *   /  _____/\______   \_   ___ \  ___________   ____
- *  /   \  ___ |     ___/    \  \/ /  _ \_  __ \_/ __ \
- *  \    \_\  \|    |   \     \___(  <_> )  | \/\  ___/
- *   \______  /|____|    \______  /\____/|__|    \___  >
- *          \/                  \/                   \/
- */
-namespace GPCore\Essentials\Defaults\Commands;
 
-use GPCore\GPCore;
+namespace core\essentials\command\defaults;
+
+use core\Core;
 
 use pocketmine\command\{
     PluginCommand,
@@ -19,22 +12,22 @@ use pocketmine\command\{
 
 use pocketmine\utils\TextFormat;
 
-class HelpCommand extends PluginCommand {
-    private $GPCore;
+class Help extends PluginCommand {
+    private $core;
     
-    public function __construct(GPCore $GPCore) {
-        parent::__construct("help", $GPCore);
+    public function __construct(Core $core) {
+        parent::__construct("help", $core);
        
-        $this->GPCore = $GPCore;
+        $this->core = $core;
        
-        $this->setPermission("GPCore.Essentials.Defaults.Command.Help");
+        $this->setPermission("core.essentials.defaults.help.command");
         $this->setUsage("[page]");
         $this->setDescription("Check all the Commands on the Server");
     }
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }	
 		if(count($args) === 0) {
@@ -70,7 +63,7 @@ class HelpCommand extends PluginCommand {
 			if($pageNumber < 1) {
 				$pageNumber = 1;
 			}
-			$sender->sendMessage($this->GPCore->getBroadcast()->getPrefix() . "Help (" . $pageNumber . "/" . count($commands) . ")");
+			$sender->sendMessage($this->core->getPrefix() . "Help (" . $pageNumber . "/" . count($commands) . ")");
 			
 			if(isset($commands[$pageNumber - 1])) {
 				foreach($commands[$pageNumber - 1] as $command) {
@@ -82,11 +75,11 @@ class HelpCommand extends PluginCommand {
 			$cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($command));
 
 			if(!$cmd instanceof Command) {
-				$sender->sendMessage($this->GPCore->getBroadcast()->getErrorPrefix() . "No Help for the Command: " . strtolower($command));
+				$sender->sendMessage($this->core->getErrorPrefix() . "No Help for the Command: " . strtolower($command));
 				return false;
 			} else {
 				if($cmd->testPermissionSilent($sender)) {
-					$message = $this->GPCore->getBroadcast()->getErrorPrefix() . "Help for Command: /" . $cmd->getName();
+					$message = $this->core->getErrorPrefix() . "Help for Command: /" . $cmd->getName();
 					$message .= TextFormat::GRAY . "Description: " . $cmd->getDescription() . "\n";
 					$message .= TextFormat::GRAY . "Usage: " . implode("\n", explode("\n", $cmd->getUsage())) . "\n";
 					$sender->sendMessage($message);
