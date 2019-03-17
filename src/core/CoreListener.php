@@ -14,6 +14,7 @@ use core\mcpe\entity\{
     CreatureBase
 };
 
+use core\utils\Math;
 use pocketmine\event\Listener;
 
 use pocketmine\event\player\{
@@ -114,6 +115,63 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
+            $muteList = $this->core->getEssentials()->getNameMutes();
+            $ipMuteList = $this->core->getEssentials()->getIpMutes();
+
+            if($muteList->isBanned($player)) {
+                $entries = $muteList->getEntries();
+                $entry = $entries[strtolower($player->getName())];
+                $reason = $entry->getReason();
+
+                if($entry->getExpires() === null) {
+                    if($reason !== null or $reason !== "") {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Muted for " . $reason;
+                    } else {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Muted";
+                    }
+                } else {
+                    $expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
+
+                    if($entry->hasExpired()) {
+                        $muteList->remove($entry->getName());
+                        return;
+                    }
+                    if($reason !== null or $reason !== "") {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Muted for " . $reason . " until " . $expiry;
+                    } else {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Muted until " . $expiry;
+                    }
+                }
+                $event->setCancelled(true);
+                $player->sendMessage($muteMessage);
+            }
+            if($ipMuteList->isBanned($player->getAddress())) {
+                $entries = $ipMuteList->getEntries();
+                $entry = $entries[strtolower($player->getAddress())];
+                $reason = $entry->getReason();
+
+                if($entry->getExpires() === null) {
+                    if($reason != null or $reason != "") {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted for " . $reason;
+                    } else {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted";
+                    }
+                } else {
+                    $expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
+
+                    if($entry->hasExpired()) {
+                        $ipMuteList->remove($entry->getName());
+                        return;
+                    }
+                    if($reason !== null or $reason !== "") {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted for " . $reason . " until " . $expiry;
+                    } else {
+                        $muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted until " . $expiry;
+                    }
+                }
+                $event->setCancelled(true);
+                $player->sendMessage($muteMessage);
+            }
             $area = $player->getArea();
 
             if($area->getName() !== "") {
@@ -134,6 +192,11 @@ class CoreListener implements Listener {
                 }
                 $event->setRecipients($difference);
             }
+            if(!$player->canChat()) {
+                $event->setCancelled(true);
+                $player->sendMessage($this->core->getErrorPrefix() . "You are currently in Chat cool down. Upgrade your Rank to reduce this cool down!");
+            }
+            $player->setChatTime();
         }
     }
 
@@ -141,16 +204,78 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
-            $area = $player->getArea();
+            $blockList = $this->core->getEssentials()->getNameBlocks();
+            $ipBlockList = $this->core->getEssentials()->getIpBlocks();
+            $str = str_split($event->getMessage());
 
-            if($area->getName() !== "") {
-                if(!$player->hasPermission("core.world.area.playercommandpreprocess")) {
-                    $command = explode(" ", $event->getMessage())[0];
+            if($str[0] !== "/") {
+                return;
+            }
+            if($blockList->isBanned($player->getName())) {
+                $entries = $blockList->getEntries();
+                $entry = $entries[strtolower($player->getName())];
+                $reason = $entry->getReason();
 
-                    if(substr($command, 0, 1) === "/") {
-                        if(in_array($command, $area->getBlockedCommands())) {
-                            $player->sendMessage($this->core->getErrorPrefix() . "You cannot use " . $command . " in the Area: " . $area->getName());
-                            $event->setCancelled();
+                if($entry->getExpires() === null) {
+                    if($reason !== null or $reason !== "") {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked for " . $reason;
+                    } else {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked";
+                    }
+                } else {
+                    $expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
+
+                    if($entry->hasExpired()) {
+                        $blockList->remove($entry->getName());
+                        return;
+                    }
+                    if($reason !== null or $reason !== "") {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked for " . $reason . " until " . $expiry;
+                    } else {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked until " . $expiry;
+                    }
+                }
+                $event->setCancelled(true);
+                $player->sendMessage($blockMessage);
+            }
+            if($ipBlockList->isBanned($player->getAddress())) {
+                $entries = $ipBlockList->getEntries();
+                $entry = $entries[strtolower($player->getAddress())];
+                $reason = $entry->getReason();
+
+                if($entry->getExpires() == null) {
+                    if($reason !== null or $reason !== "") {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked for " . $reason;
+                    } else {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked";
+                    }
+                } else {
+                    $expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
+
+                    if($entry->hasExpired()) {
+                        $ipBlockList->remove($entry->getName());
+                        return;
+                    }
+                    if($reason !== null or $reason !== "") {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked for " . $reason . " until " . $expiry;
+                    } else {
+                        $blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked until " . $expiry;
+                    }
+                }
+                $event->setCancelled(true);
+                $player->sendMessage($blockMessage);
+
+                $area = $player->getArea();
+
+                if($area->getName() !== "") {
+                    if(!$player->hasPermission("core.world.area.playercommandpreprocess")) {
+                        $command = explode(" ", $event->getMessage())[0];
+
+                        if(substr($command, 0, 1) === "/") {
+                            if(in_array($command, $area->getBlockedCommands())) {
+                                $player->sendMessage($this->core->getErrorPrefix() . "You cannot use " . $command . " in the Area: " . $area->getName());
+                                $event->setCancelled();
+                            }
                         }
                     }
                 }
@@ -407,6 +532,69 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             if($this->core->getStats()->getCoreUserXuid($player->getXuid())->getName() !== $player->getName()) {
                 $player->getCoreUser()->setName($player->getName());
+            }
+            $banList = $this->core->getEssentials()->getNameBans();
+            $ipBanList = $this->core->getEssentials()->getIpBans();
+
+            if($banList->isBanned($player)) {
+                $entries = $banList->getEntries();
+                $entry = $entries[strtolower($player->getName())];
+
+                if($entry->getExpires() === null) {
+                    $reason = $entry->getReason();
+
+                    if($reason !== null or $reason !== "") {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Banned for " . $reason;
+                    } else {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Banned";
+                    }
+                } else {
+                    $expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
+
+                    if($entry->hasExpired()) {
+                        $banList->remove($entry->getName());
+                        return;
+                    }
+                    $banReason = $entry->getReason();
+
+                    if($banReason !== null || $banReason !== "") {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Banned for " . $banReason . " until " . $expiry;
+                    } else {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Banned until " . $expiry;
+                    }
+                }
+                $event->setCancelled(true);
+                $player->sendMessage($banMessage);
+            }
+            if($ipBanList->isBanned($player)) {
+                $entries = $ipBanList->getEntries();
+                $entry = $entries[strtolower($player->getName())];
+
+                if($entry->getExpires() === null) {
+                    $reason = $entry->getReason();
+
+                    if($reason !== null or $reason !== "") {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned for " . $reason;
+                    } else {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned";
+                    }
+                } else {
+                    $expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
+
+                    if($entry->hasExpired()) {
+                        $ipBanList->remove($entry->getName());
+                        return;
+                    }
+                    $banReason = $entry->getReason();
+
+                    if($banReason !== null || $banReason !== "") {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned for " . $banReason . " until " . $expiry;
+                    } else {
+                        $banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned until " . $expiry;
+                    }
+                }
+                $event->setCancelled(true);
+                $player->sendMessage($banMessage);
             }
             if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
                 $server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());

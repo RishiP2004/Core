@@ -52,7 +52,8 @@ use pocketmine\level\particle\{
     SporeParticle,
     TerrainParticle,
     WaterDripParticle,
-    WaterParticle};
+    WaterParticle
+};
 
 class Entity extends \pocketmine\entity\Entity {
     const USABLES = [

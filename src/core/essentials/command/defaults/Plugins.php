@@ -1,5 +1,7 @@
 <?php
 
+namespace core\essentials\command\defaults;
+
 use core\Core;
 
 use pocketmine\command\{

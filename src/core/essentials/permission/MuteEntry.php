@@ -2,8 +2,6 @@
 
 namespace core\essentials\permission;
 
-use pocketmine\permission\BanEntry;
-
 class MuteEntry extends BanEntry {
     public function __construct(string $name) {
         parent::__construct($name);

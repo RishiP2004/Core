@@ -4,9 +4,9 @@ namespace core\essentials\permission;
 
 use pocketmine\permission\BanEntry;
 
-class MuteList extends BanList {
+class BanList extends \pocketmine\permission\BanList {
     /**
-     * @var MuteEntry[]
+     * @var \core\essentials\permission\BanEntry[]
      */
     public $list = [];
 
@@ -25,7 +25,7 @@ class MuteList extends BanList {
     }
 
     public function add(BanEntry $entry) {
-        if($entry instanceof MuteEntry) {
+        if($entry instanceof \core\essentials\permission\BanEntry) {
             throw new \InvalidArgumentException();
         }
         $this->list[$entry->getName()] = $entry;
@@ -33,7 +33,7 @@ class MuteList extends BanList {
     }
 
     public function addBan(string $target, string $reason = null, \DateTime $expires = null, string $source = null) : BanEntry {
-        $entry = new MuteEntry($target);
+        $entry = new \core\essentials\permission\BanEntry($target);
 
         $entry->setReason($reason ?? $entry->getReason());
         $entry->setExpires($expires);
