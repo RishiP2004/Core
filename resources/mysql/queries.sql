@@ -1,5 +1,5 @@
 -- #!mysql
--- #{stats
+-- #{ stats
 
 -- # { init
 CREATE TABLE IF NOT EXISTS stats (
@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS stats (
 	  permissions TEXT,
 		server VARCHAR(32)
 )
+-- # }
+
+-- # { get
+SELECT xuid, registerDate, username, ip, locale, coins, rank, permissions, server FROM stats;
 -- # }
 
 -- # { register
@@ -36,10 +40,6 @@ INSERT INTO stats (
 )
 -- # }
 
--- # { get
-SELECT xuid, registerDate, username, ip, locale, coins, rank, permissions, server FROM stats;
--- # }
-
 -- # { update
 -- #    :username string
 -- #    :ip string
@@ -53,12 +53,61 @@ UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coin
 -- # }
 
 -- # { delete
--- # 	:xuid string
+-- # 	  :xuid string
 DELETE FROM stats WHERE xuid = :xuid;
 -- # }
 
 -- #}
 
--- #{sentenced
+-- #{ sentences
+
+-- # { init
+CREATE TABLE IF NOT EXISTS sentences (
+    xuid VARCHAR(16) PRIMARY KEY,
+    registerDate VARCHAR(11),
+    type INT(1),
+    username VARCHAR(16),
+    sentencer VARCHAR(16),
+    reason TEXT,
+    expires TIME
+)
+
+-- # { get
+SELECT xuid, registerDate, type, username, sentencer, reason, expires FROM stats;
+-- # }
+
+-- # }
+
+-- # { register
+-- #    :xuid string
+-- #    :registerDate string
+-- #    :type int
+-- #    :username string
+-- #    :sentencer string
+-- #    :reason string
+-- #    :expires int
+INSERT INTO sentences (
+    xuid,
+    registerDate,
+    type,
+    username,
+    sentencer,
+    reason,
+    expires
+) VALUES (
+    :xuid,
+    :registerDate,
+    :type,
+    :username,
+    :sentencer,
+    :reason,
+    :expires
+)
+-- # }
+
+-- # { delete
+-- # 	:xuid string
+DELETE FROM sentences WHERE xuid = :xuid;
+-- # }
 
 -- #}

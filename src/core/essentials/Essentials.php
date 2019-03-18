@@ -4,6 +4,9 @@ namespace core\essentials;
 
 use core\Core;
 
+use core\CoreUser;
+use core\CorePlayer;
+
 use core\essentials\command\{
     AFK,
     ClearInventory,
@@ -70,8 +73,17 @@ class Essentials {
 
     public $timingStart = 0;
 
+    const IP = "ip";
+    const NAME = "name";
+
+    const BAN = 0;
+    const BLOCK = 1;
+    const MUTE = 2;
+
     public function __construct(Core $core) {
         $this->core = $core;
+
+        $this->core->getDatabase()->executeGeneric("sentences.init");
 
         $this->core->getServer()->getCommandMap()->register(AFK::class, new AFK($this->core));
         $this->core->getServer()->getCommandMap()->register(ClearInventory::class, new ClearInventory($this->core));
@@ -181,42 +193,42 @@ class Essentials {
     }
 
     public function getNameBans() : \core\essentials\permission\BanList {
-        $banList = new \core\essentials\permission\BanList();
+        $banList = new \core\essentials\permission\BanList(self::NAME);
 
         $banList->load();
         return $banList;
     }
 
     public function getIpBans() : \core\essentials\permission\BanList {
-        $banList = new \core\essentials\permission\BanList();
+        $banList = new \core\essentials\permission\BanList(self::IP);
 
         $banList->load();
         return $banList;
     }
 
     public function getNameBlocks() : \core\essentials\permission\BlockList {
-        $blockList = new \core\essentials\permission\BlockList();
+        $blockList = new \core\essentials\permission\BlockList(self::NAME);
 
         $blockList->load();
         return $blockList;
     }
 
     public function getIpBlocks() : \core\essentials\permission\BlockList {
-        $blockList = new \core\essentials\permission\BlockList();
+        $blockList = new \core\essentials\permission\BlockList(self::IP);
 
         $blockList->load();
         return $blockList;
     }
 
     public function getNameMutes() : \core\essentials\permission\MuteList {
-        $muteList = new \core\essentials\permission\MuteList();
+        $muteList = new \core\essentials\permission\MuteList(self::NAME);
 
         $muteList->load();
         return $muteList;
     }
 
     public function getIpMutes() : \core\essentials\permission\MuteList {
-        $muteList = new \core\essentials\permission\MuteList();
+        $muteList = new \core\essentials\permission\MuteList(self::NAME);
 
         $muteList->load();
         return $muteList;
