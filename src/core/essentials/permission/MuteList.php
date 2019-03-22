@@ -62,7 +62,7 @@ class MuteList extends \pocketmine\permission\BanList {
     }
 
     public function addBan(string $target, string $reason = null, \DateTime $expires = null, string $source = null) : BanEntry {
-        $entry = new \core\essentials\permission\BanEntry($target);
+        $entry = new MuteEntry($target);
 
         $entry->setReason($reason !== null ? $reason : $entry->getReason());
         $entry->setExpires($expires);

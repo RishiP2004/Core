@@ -7,7 +7,7 @@ use core\CorePlayer;
 
 use pocketmine\scheduler\Task;
 
-class AFKKickTask extends Task {
+class AFKKick extends Task {
     private $core;
 
     private $player;

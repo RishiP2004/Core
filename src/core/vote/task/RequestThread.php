@@ -11,7 +11,7 @@ use core\vote\ServerListQuery;
 
 use pocketmine\scheduler\AsyncTask;
 
-class RequestThreadTask extends AsyncTask {
+class RequestThread extends AsyncTask {
     private $name = "";
 
     protected $queries, $rewards, $error;

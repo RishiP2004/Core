@@ -25,7 +25,7 @@ use core\stats\rank\{
 use core\utils\Entity;
 
 use core\stats\task\{
-    AFKSetterTask,
+    AFKSetter,
     TopCoins
 };
 
@@ -45,11 +45,11 @@ class Stats implements Statistics {
 
         $core->saveResource("/stats/fallback.png");
 
-        $image = imagecreatefrompng($core->getDataFolder() . "/stats/fallback.png");
-        $fallbackSkin = new Skin("Fallback", Entity::skinFromImage($image) ?? "", "", "geometry.humanoid.custom", "");
+        $fallbackSkin = new Skin("fallback", Entity::skinFromImage($core->getDataFolder() . "/stats/fallback.png"));
 
-        imagedestroy($image);
-
+        if(!$fallbackSkin->isValid()) {
+            $fallbackSkin = new Skin('fallback', Entity::skinFromImage($core->getDataFolder() . "/stats/fallback.png"));
+        }
         $this->fallbackSkinData = $fallbackSkin->getSkinData();
         $cubes = Entity::getCubes(json_decode(file_get_contents($core->getDataFolder() . "/stats/humanoid.json"), true)["geometry.humanoid"]);
         $this->skinBounds[self::BOUNDS_64_64] = Entity::getSkinBounds($cubes);
@@ -264,7 +264,7 @@ class Stats implements Statistics {
 
     public function scheduleAFKSetter() {
         if($this->getAFKAutoSet() > 0) {
-            $this->core->getScheduler()->scheduleDelayedTask(new AFKSetterTask($this->core), 600);
+            $this->core->getScheduler()->scheduleDelayedTask(new AFKSetter($this->core), 600);
         }
     }
 }

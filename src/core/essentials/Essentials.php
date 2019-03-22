@@ -119,7 +119,6 @@ class Essentials {
             "pardon-ip",
             "particle",
             "plugins",
-            "reload",
             "save",
             "save-off",
             "save-on",

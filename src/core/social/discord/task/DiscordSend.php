@@ -41,7 +41,7 @@ class DiscordSend extends AsyncTask {
         }
         $result = ["response" => $response, "error" => $error, "success" => $success];
         
-        $this->setResult($result, true);
+        $this->setResult($result);
     }
     
     public function onCompletion() : void {

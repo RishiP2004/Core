@@ -4,7 +4,7 @@ namespace core\social\twitter;
 
 use core\Core;
 
-use core\social\twitter\task\TwitterTask;
+use core\social\twitter\task\TwitterSend;
 
 use pocketmine\command\ConsoleCommandSender;
 
@@ -34,15 +34,15 @@ class Twitter implements Access {
     }
 
     public function postTweet(string $tweet) {
-        $this->core->getServer()->getAsyncPool()->submitTask(new TwitterTask('statuses/update', null, $tweet));
+        $this->core->getServer()->getAsyncPool()->submitTask(new TwitterSend('statuses/update', null, $tweet));
     }
 
     public function sendDirectMessage(string $username, string $message) {
-        $this->core->getServer()->getAsyncPool()->submitTask(new TwitterTask('direct_messages/new', $username, $message));
+        $this->core->getServer()->getAsyncPool()->submitTask(new TwitterSend('direct_messages/new', $username, $message));
     }
 	
 	public function follow(string $username) {
-        $this->core->getServer()->getAsyncPool()->submitTask(new TwitterTask('friendships/create', $username));
+        $this->core->getServer()->getAsyncPool()->submitTask(new TwitterSend('friendships/create', $username));
     }
 
     public function notifyTwitter($sender, $result) {
@@ -60,9 +60,9 @@ class Twitter implements Access {
             }
         }
         if($result["Success"]) {
-            $sender->sendMessage($this->core->getPrefix() . "Twitter success");
+            $sender->sendMessage($this->core->getPrefix() . "TwitterSend success");
         } else {
-            $this->core->getServer()->getLogger()->error($this->core->getErrorPrefix() . "Twitter wasn't Sent, Error: " . $result["Error"]);
+            $this->core->getServer()->getLogger()->error($this->core->getErrorPrefix() . "TwitterSend wasn't Sent, Error: " . $result["Error"]);
         }
     }
 }

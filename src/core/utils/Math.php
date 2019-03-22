@@ -69,7 +69,7 @@ class Math {
     public static function expirationStringToTimer(string $format) : \DateTime {
         if(is_numeric($format)) {
             if(intval($format) <= 0) {
-                throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
             }
             $dateTime = new \DateTime();
             $dateTime->setTimestamp($dateTime->getTimestamp() + intval($format));
@@ -97,33 +97,33 @@ class Math {
             switch (strtolower($formatChars[$i])) {
                 case "s":
                     if($currentCharacters === "") {
-                        throw new \InvalidArgumentException("Please enter a valid time format.");
+                        throw new \InvalidArgumentException("Please enter a valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     $second = intval($currentCharacters);
                     $currentCharacters = "";
                     break;
                 case "m":
                     if($currentCharacters === "") {
-                        throw new \InvalidArgumentException("Please enter a valid time format.");
+                        throw new \InvalidArgumentException("Please enter a valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     if(isset($formatChars[$i + 1])) {
                         if(!is_numeric($formatChars[$i + 1])) {
                             switch(strtolower($formatChars[$i + 1])) {
                                 case "o":
                                     if(intval($currentCharacters) <= 0) {
-                                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                                     }
                                     $month = intval($currentCharacters);
                                     $currentCharacters = "";
                                     break;
                                 default:
-                                    throw new \InvalidArgumentException("Please enter a valid time format.");
+                                    throw new \InvalidArgumentException("Please enter a valid time format");
                             }
                             $i += 1;
                             break;
@@ -134,36 +134,36 @@ class Math {
                     break;
                 case "h":
                     if($currentCharacters === "") {
-                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                        throw new \InvalidArgumentException("Please enter an valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     $hour = intval($currentCharacters);
                     $currentCharacters = "";
                     break;
                 case "d":
                     if($currentCharacters == "") {
-                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                        throw new \InvalidArgumentException("Please enter an valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     if(isset($formatChars[$i + 1])) {
                         if(!is_numeric($formatChars[$i + 1])) {
                             switch(strtolower($formatChars[$i + 1])) {
                                 case "c":
                                     if(intval($currentCharacters) <= 0) {
-                                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                                     }
                                     if($currentCharacters === "") {
-                                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                                        throw new \InvalidArgumentException("Please enter an valid time format");
                                     }
                                     $decade = intval($currentCharacters);
                                     $currentCharacters = "";
                                     break;
                                 default:
-                                    throw new \InvalidArgumentException("Please enter an valid time format.");
+                                    throw new \InvalidArgumentException("Please enter an valid time format");
                             }
                             $i += 1;
                             break;
@@ -174,54 +174,54 @@ class Math {
                     break;
                 case "w":
                     if($currentCharacters === "") {
-                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                        throw new \InvalidArgumentException("Please enter an valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     $week = intval($currentCharacters);
                     $currentCharacters = "";
                     break;
                 case "y":
                     if($currentCharacters === "") {
-                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                        throw new \InvalidArgumentException("Please enter an valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     $year = intval($currentCharacters);
                     $currentCharacters = "";
                     break;
                 case "c":
                     if($currentCharacters === "") {
-                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                        throw new \InvalidArgumentException("Please enter an valid time format");
                     }
                     if(intval($currentCharacters) <= 0) {
-                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                     }
                     if(isset($formatChars[$i + 1])) {
                         if(!is_numeric($formatChars[$i + 1])) {
                             switch(strtolower($formatChars[$i + 1])) {
                                 case "t":
                                     if($currentCharacters == "") {
-                                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                                        throw new \InvalidArgumentException("Please enter an valid time format");
                                     }
                                     if(intval($currentCharacters) <= 0) {
-                                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format.");
+                                        throw new \InvalidArgumentException("0 and negative values are not allowed in time format");
                                     }
                                     $century = intval($currentCharacters);
                                     $currentCharacters = "";
                                     break;
                                 default:
-                                    throw new \InvalidArgumentException("Please enter an valid time format.");
+                                    throw new \InvalidArgumentException("Please enter an valid time format");
                             }
                             $i += 1;
                             break;
                         }
-                        throw new \InvalidArgumentException("Please enter an valid time format.");
+                        throw new \InvalidArgumentException("Please enter an valid time format");
                     }
                 default:
-                    throw new \InvalidArgumentException("Please enter an valid time format.");
+                    throw new \InvalidArgumentException("Please enter an valid time format");
             }
         }
         while($second >= 60) {

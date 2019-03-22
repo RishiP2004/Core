@@ -42,7 +42,7 @@ class Timer implements Restarting {
         switch($mode) {
             case self::NORMAL:
                 foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
-                    if($this->core->getServer()->getIp() === $this->core->getNetwork()->getServer("LobbyGreetings")->getIp() and $this->core->getServer()->getPort() === 19132) {
+                    if($this->core->getServer()->getIp() === $this->core->getNetwork()->getServer("Lobby")->getIp() and $this->core->getServer()->getPort() === 19132) {
                         $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted, you will be rejoined");
                     }
                     $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted, you will be transferred to the LobbyGreetings");
@@ -51,7 +51,7 @@ class Timer implements Restarting {
             break;
             case self::OVERLOADED:
                 foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
-                    if($this->core->getServer()->getIp() === $this->core->getNetwork()->getServer("LobbyGreetings")->getIp() and $this->core->getServer()->getPort() === 19132) {
+                    if($this->core->getServer()->getIp() === $this->core->getNetwork()->getServer("Lobby")->getIp() and $this->core->getServer()->getPort() === 19132) {
                         $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted because of Overload, you will be rejoined");
                     }
                     $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted because of Overload, you will be transferred to the LobbyGreetings");

@@ -10,7 +10,7 @@ use core\social\twitter\oAuth\TwitterOAuth;
 
 use pocketmine\scheduler\AsyncTask;
 
-class TwitterTask extends AsyncTask implements Access {
+class TwitterSend extends AsyncTask implements Access {
     private $url = "", $message = "";
     /**
      * @var string|null

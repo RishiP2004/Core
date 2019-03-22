@@ -22,7 +22,7 @@ use core\network\server\Server;
 
 use core\stats\task\{
     PlayerJoin,
-    AFKKickTask
+    AFKKick
 };
 
 use core\world\area\Area;
@@ -267,7 +267,7 @@ abstract class CorePlayer extends Player {
             $this->core->getScheduler()->cancelTask($id);
             $this->setAFKKickTaskId(null);
         } else if($AFK && (is_int($time) && $time > 0) && !$this->hasPermission("core.stats.afk.kick")) {
-            $task = $this->core->getScheduler()->scheduleDelayedTask(new AFKKickTask($this->core, $this), $time * 20);
+            $task = $this->core->getScheduler()->scheduleDelayedTask(new AFKKick($this->core, $this), $time * 20);
 
             $this->setAFKKickTaskID($task->getTaskId());
         }

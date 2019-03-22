@@ -65,7 +65,7 @@ class Factions extends NPC {
     public function getMessages() : array {
         return [
             TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::RED . " Factions" . TextFormat::DARK_GREEN . "> " . TextFormat::GRAY . "Hi {PLAYER}, Factions server is coming soon!",
-            TextFormat::GRAY . "If you want to help test, contact us on Twitter (@AthenaBE) or Discord () \n"
+            TextFormat::GRAY . "If you want to help test, contact us on TwitterSend (@AthenaBE) or Discord () \n"
         ];
     }
 }

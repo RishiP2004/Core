@@ -166,21 +166,22 @@ class Entity extends \pocketmine\entity\Entity {
         return null;
     }
     
-    public static function skinFromImage($image) : string {
-        $combine = [];
-       
-        for($y = 0; $y < imagesy($image); $y++) {
-            for($x = 0; $x < imagesx($image); $x++) {
-                $color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
-                $color["alpha"] = (($color["alpha"] << 1) ^ 0xff) - 1;
-                $combine[] = sprintf("%02x%02x%02x%02x", $color["red"], $color["green"], $color["blue"], $color["alpha"] ?? 0);
+    public static function skinFromImage(string $path) : string {
+        $img = imagecreatefrompng($path);
+        [$k, $l] = getimagesize($path);
+        $bytes = '';
+
+        for($y = 0; $y < $l; ++$y) {
+            for($x = 0; $x < $k; ++$x) {
+                $argb = imagecolorat($img, $x, $y);
+                $bytes .= chr(($argb >> 16) & 0xff).\chr(($argb >> 8) & 0xff).\chr($argb & 0xff).\chr((~($argb >> 24) << 1) & 0xff);
             }
         }
-        $data = hex2bin(implode("", $combine));
-        return $data;
+        imagedestroy($img);
+        return $bytes;
     }
 
-    public static function getCubes(array $geometryData): array{
+    public static function getCubes(array $geometryData) : array {
         $cubes = [];
 
         foreach($geometryData["bones"] as $bone) {

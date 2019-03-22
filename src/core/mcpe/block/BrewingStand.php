@@ -39,12 +39,12 @@ class BrewingStand extends \pocketmine\block\BrewingStand {
         return $parent;
     }
 
-    public function getLightLevel() : int {
-        return 1;
-    }
-
     public function getBlastResistance() : float {
         return 2.5;
+    }
+
+    public function getLightLevel() : int {
+        return 1;
     }
 
     public function onActivate(Item $item, Player $player = null) : bool {

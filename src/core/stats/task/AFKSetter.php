@@ -7,7 +7,7 @@ use core\CorePlayer;
 
 use pocketmine\scheduler\Task;
 
-class AFKSetterTask extends Task {
+class AFKSetter extends Task {
 	private $core;
 
 	public function __construct(Core $core) {

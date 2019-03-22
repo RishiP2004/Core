@@ -41,7 +41,7 @@ class Discord implements Access {
         return self::USERNAME;
     }
 
-    public function sendMessageToDiscord(string $webHook, string $message, string $sender = "nolog", string $username = null) {
+    public function sendMessageToDiscord(string $webHook, string $message, string $sender = null, string $username = null) {
         if(!isset($username)) {
             $username = $this->getUsername();
         }

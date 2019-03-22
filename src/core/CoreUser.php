@@ -8,7 +8,7 @@ use core\stats\rank\Rank;
 
 use core\vote\ServerListQuery;
 
-use core\vote\task\RequestThreadTask;
+use core\vote\task\RequestThread;
 
 class CoreUser {
     public $xuid = "", $registerDate, $name = "", $ip = "", $locale = "";
@@ -135,7 +135,7 @@ class CoreUser {
                 $requests[] = new ServerListQuery($list["Check"], $list["Claim"]);
             }
         }
-        $query = new RequestThreadTask($this->getName(), $requests);
+        $query = new RequestThread($this->getName(), $requests);
 
         Core::getInstance()->getServer()->getAsyncPool()->submitTask($query);
     }

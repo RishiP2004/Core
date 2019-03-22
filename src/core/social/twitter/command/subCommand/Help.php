@@ -38,7 +38,7 @@ class Help extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Twitter Help:");
+        $sender->sendMessage($this->core->getPrefix() . "TwitterSend Help:");
         $sender->sendMessage(TextFormat::GRAY . "/twitter help");
         $sender->sendMessage(TextFormat::GRAY . "/twitter follow <username>");
         $sender->sendMessage(TextFormat::GRAY . "/twitter directmessage <user> <message>");
