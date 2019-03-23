@@ -1,6 +1,6 @@
 <?php
 
-namespace core\mcpe\entity\monster\swimming;
+namespace core\mcpe\entity\monster\flying;
 
 use core\mcpe\entity\{
     MonsterBase,

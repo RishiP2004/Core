@@ -32,29 +32,29 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
     }
 
     public function onActivate(Item $item, Player $player = null) : bool {
-        if($this->entityId !== 0 or $item->getId() !== Item::SPAWN_EGG) {
-            return false;
-        }
-        if($player instanceof CorePlayer) {
+        if($item->getId() === Item::SPAWN_EGG) {
             $tile = $this->getLevel()->getTile($this);
-			
-			if(!$tile instanceof MobSpawner) {
-				$nbt = MobSpawner::createNBT($this);
-				$tile = Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), $nbt);
-                    
-				if($tile instanceof MobSpawner) {
-					$tile->setEntityId($this->entityId);
-					return true;
-					
-					/**if(Core::getInstance()->getNetwork()->getServerFromIp(Core::getInstance()->getServer()->getIp())->getName() === "Factions") {
-						if($player instanceof FactionsPlayer) {
-							if($player->isSneaking()) {
-								$player->sendSpawnersTierMenu($tile);
-								return true;
-							}
-						}
-					}*/
-				}
+
+            if(!$tile instanceof MobSpawner) {
+                $nbt = MobSpawner::createNBT($this);
+                $tile = Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), $nbt);
+
+                if($tile instanceof MobSpawner) {
+                    $tile->setEntityId($item->getDamage());
+
+                    if(!$player->isCreative()) {
+                        $item->pop();
+                    }
+                    return true;
+                    /**if(Core::getInstance()->getNetwork()->getServerFromIp(Core::getInstance()->getServer()->getIp())->getName() === "Factions") {
+                        if($player instanceof FactionsPlayer) {
+                            if($player->isSneaking()) {
+                                $player->sendSpawnersTierMenu($tile);
+                                return true;
+                            }
+                        }
+                    }*/
+                }
             }
         }
         return false;
@@ -66,8 +66,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
         $eID = null;
 		$nbt = MobSpawner::createNBT($this, $face, $item, $player);
 
-		if($item->getNamedTag()->getTag(MobSpawner::TAG_ENTITY_ID) !== null){
-
+		if($item->getNamedTag()->getTag(MobSpawner::TAG_ENTITY_ID) !== null) {
 			foreach([MobSpawner::TAG_ENTITY_ID,
 					MobSpawner::TAG_DELAY,
 					MobSpawner::TAG_MIN_SPAWN_DELAY,

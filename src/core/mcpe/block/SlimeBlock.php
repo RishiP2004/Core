@@ -10,24 +10,21 @@ use pocketmine\block\{
 use pocketmine\item\Item;
 
 class SlimeBlock extends Solid {
-	/**
-	 * @var int $id
-	 */
 	protected $id = Block::SLIME_BLOCK;
 
 	public function __construct($meta = 0) {
 		$this->meta = $meta;
 	}
 
-	public function getName(): string{
+	public function getName() : string {
 		return "Slime Block";
 	}
 
-	public function getHardness(): float{
+	public function getHardness() : float {
 		return 0;
 	}
 
-	public function hasEntityCollision(): bool{
+	public function hasEntityCollision() : bool {
 		return true;
 	}
 

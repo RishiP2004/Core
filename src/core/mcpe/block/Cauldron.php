@@ -117,17 +117,18 @@ class Cauldron extends Transparent {
                     break;
                 }
                 $col = \core\utils\Item::getDyeColor($item->getDamage());
-                $col->setA(127); // for some reason, using the default value (255) makes it puke out NBT out of range errors -_-
-                if($tile->hasCustomColor()){
+
+                $col->setA(127);
+
+                if($tile->hasCustomColor()) {
                     $color = Color::mix($tile->getCustomColor(), $col);
-                }else{
+                } else {
                     $color = $col;
                 }
-                if($player->isSurvival()){
+                if($player->isSurvival()) {
                     $item->pop();
                 }
                 $tile->setCustomColor($color);
-                //$this->getLevel()->setBlock($this, $this, true);
                 $this->getLevel()->broadcastLevelEvent($this, LevelEventPacket::EVENT_CAULDRON_ADD_DYE);
             break;
             case Item::LEATHER_CAP:
@@ -263,7 +264,7 @@ class Cauldron extends Transparent {
         return $this->meta >= 6;
     }
 
-    public function isEmpty(): bool {
+    public function isEmpty() : bool {
         return $this->meta == 0;
     }
 }

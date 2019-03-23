@@ -15,7 +15,6 @@ use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\block\Block;
 
 class EnchantingTable extends \pocketmine\block\EnchantingTable {
-
 	public function onActivate(Item $item, Player $player = null) : bool {
         if($player instanceof Player) {
             $this->getLevel()->setBlock($this, $this, true, true);

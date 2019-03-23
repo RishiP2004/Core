@@ -2,6 +2,11 @@
 
 namespace core\utils;
 
+use core\mcpe\block\{
+    NetherPortal,
+    EndPortal
+};
+
 use pocketmine\entity\{
     Effect,
     Human
@@ -319,8 +324,25 @@ class Entity extends \pocketmine\entity\Entity {
             case Entity::LIGHTNING_BOLT:
                 return 0;
         }
-
         return 0;
+    }
+
+    public static function isInsideOfPortal(Entity $entity) : bool {
+        $block = $entity->getLevel()->getBlock($entity->floor());
+
+        if($block instanceof NetherPortal) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function isInsideOfEndPortal(Entity $entity) : bool {
+        $block = $entity->getLevel()->getBlock($entity);
+
+        if($block instanceof EndPortal){
+            return true;
+        }
+        return false;
     }
 
     public static function checkSnowGolemStructure(Block $head) : array {

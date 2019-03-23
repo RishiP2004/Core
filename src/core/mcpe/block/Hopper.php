@@ -30,16 +30,16 @@ class Hopper extends Transparent {
         parent::__construct($meta);
 	}
 
-	public function canBeActivated() : bool {
+    public function getName() : string {
+        return "Hopper";
+    }
+
+    public function canBeActivated() : bool {
 		return true;
 	}
 
 	public function getToolType() : int {
 		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getName() : string {
-		return "Hopper";
 	}
 
 	public function getHardness() : float {

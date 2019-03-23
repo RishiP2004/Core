@@ -4,10 +4,22 @@ namespace core\mcpe;
 
 use core\Core;
 
-use core\mcpe\block\{
-    Beacon as BeaconBlock,
+use core\mcpe\block\{Beacon as BeaconBlock,
+    Bed,
+    BrewingStand as BrewingStandBlock,
+    Cauldron as CauldronBlock,
+    EnchantingTable,
+    EndPortal,
+    EndPortalFrame,
     Hopper as HopperBlock,
-    MonsterSpawner
+    Jukebox as JukeboxBlock,
+    LitPumpkin,
+    MonsterSpawner,
+    Obsidian,
+    NetherPortal,
+    Pumpkin,
+    ShulkerBox as ShulkerBoxBlock,
+    SlimeBlock
 };
 
 use core\mcpe\entity\{
@@ -17,15 +29,23 @@ use core\mcpe\entity\{
 
 use core\mcpe\tile\{
     Beacon as BeaconTile,
+    BrewingStand as BrewingStandTile,
+    Cauldron as CauldronTile,
     Hopper as HopperTile,
-    MobSpawner
+    Jukebox as JukeboxTile,
+    MobSpawner,
+    Shulkerbox as ShulkerboxTile
 };
+
+use core\mcpe\level\generator\ender\Ender;
 
 use pocketmine\entity\Entity;
 
 use pocketmine\block\BlockFactory;
 
 use pocketmine\tile\Tile;
+
+use pocketmine\level\generator\GeneratorManager;
 
 use pocketmine\level\{
     Level,
@@ -42,6 +62,16 @@ class MCPE implements Addon {
     public $registeredEntities = [];
 
 	private $runs = 0;
+    /** @var int[] */
+    public static $onPortal = [];
+
+    public static $netherName = "nether";
+    /** @var Level */
+    public static $netherLevel;
+
+    public static $endName = "ender";
+    /** @var Level */
+    public static $endLevel;
 	
     public function __construct(Core $core) {
         $this->core = $core;
@@ -51,13 +81,41 @@ class MCPE implements Addon {
 
             $this->registeredEntities[] = $className;
         }
-        //register rest
         BlockFactory::registerBlock(new BeaconBlock(), true);
+        BlockFactory::registerBlock(new Bed(), true);
+        BlockFactory::registerBlock(new BrewingStandBlock(), true);
+        BlockFactory::registerBlock(new CauldronBlock(), true);
+        BlockFactory::registerBlock(new EnchantingTable(), true);
+        BlockFactory::registerBlock(new EndPortal(), true);
         BlockFactory::registerBlock(new HopperBlock(), true);
+        BlockFactory::registerBlock(new JukeboxBlock(), true);
+        BlockFactory::registerBlock(new LitPumpkin(), true);
         BlockFactory::registerBlock(new MonsterSpawner(), true);
+        BlockFactory::registerBlock(new Obsidian(), true);
+        BlockFactory::registerBlock(new NetherPortal(), true);
+        BlockFactory::registerBlock(new Pumpkin(), true);
+        BlockFactory::registerBlock(new ShulkerBoxBlock(), true);
+        BlockFactory::registerBlock(new SlimeBlock(), true);;
+
         Tile::registerTile(BeaconTile::class);
+        Tile::registerTile(BrewingStandTile::class);
+        Tile::registerTile(CauldronTile::class);
         Tile::registerTile(HopperTile::class);
+        Tile::registerTile(JukeboxTile::class);
         Tile::registerTile(MobSpawner::class);
+        Tile::registerTile(ShulkerboxTile::class);
+
+        GeneratorManager::addGenerator(Ender::class, "ender");
+
+        if(!$this->core->getServer()->loadLevel(self::$netherName)) {
+            $this->core->getServer()->generateLevel(self::$netherName, time(), GeneratorManager::getGenerator("nether"));
+        }
+        self::$netherLevel = $this->core->getServer()->getLevelByName(self::$netherName);
+
+        if(!$this->core->getServer()->loadLevel(self::$endName)){
+            $this->core->getServer()->generateLevel(self::$endName, time(), GeneratorManager::getGenerator("ender"));
+        }
+        self::$endLevel = $this->core->getServer()->getLevelByName(self::$endName);
     }
     /**
      * @return Entity[]

@@ -12,6 +12,7 @@ use core\mcpe\entity\animal\jumping\{
 };
 
 use core\mcpe\entity\animal\swimming\{
+    Dolphin,
     Squid
 };
 
@@ -70,6 +71,19 @@ use core\mcpe\entity\monster\walking\{
     Zombie,
     ZombiePigman,
     ZombieVillager
+};
+
+use core\mcpe\entity\object\{
+    ArmorStand,
+    EndCrystal
+};
+
+use core\mcpe\entity\projectile\FishingHook;
+
+use core\mcpe\entity\vehicle\{
+    Boat,
+    BrokenMinecart,
+    Minecart
 };
 
 use pocketmine\level\biome\Biome;
@@ -176,55 +190,6 @@ interface Addon {
         104 => "evocation_illager",
         105 => "vex"
     ];
-    const ENTITIES = [
-        "Bat",
-        "Parrot",
-        "Rabbit",
-        "Squid",
-        "Chicken",
-        "Cow",
-        "Donkey",
-        "Horse",
-        "Llama",
-        "Mooshroom",
-        "Mule",
-        "Ocelot",
-        "Pig",
-        "Rabbit",
-        "Sheep",
-        "Skeleton Horse",
-        "Villager",
-        "Blaze",
-        "Ender Dragon",
-        "Ghast",
-        "Vex",
-        "Magma Cube",
-        "Slime",
-        "Elder Guardian",
-        "Guardian",
-        "Cave Spider",
-        "Creeper",
-        "Enderman",
-        "Endermite",
-        "Evoker",
-        "Husk",
-        "Iron Golem",
-        "Polar Bear",
-        "Shulker",
-        "Silverfish",
-        "Skeleton",
-        "Snow Golem",
-        "Spider",
-        "Stray",
-        "Vindicator",
-        "Witch",
-        "Wither",
-        "Wither Skeleton",
-        "Wolf",
-        "Zombie",
-        "Zombie Pigman",
-        "Zombie Villager"
-    ];
     const ENTITY_CLASSES = [
         Bat::class,
         Parrot::class,
@@ -271,12 +236,15 @@ interface Addon {
         Wolf::class,
         Zombie::class,
         ZombiePigman::class,
-        ZombieVillager::class
+        ZombieVillager::class,
+        ArmorStand::class,
+        EndCrystal::class,
+        FishingHook::class
     ];
     public const BIOME_ENTITIES = [
 		Biome::OCEAN => [
+		    Dolphin::NETWORK_ID,
 			Squid::NETWORK_ID
-			// TODO: water mobs
 		],
 		Biome::PLAINS => [
 			Zombie::NETWORK_ID,
@@ -322,7 +290,6 @@ interface Addon {
 		],
 		Biome::RIVER => [
 			Squid::NETWORK_ID
-			// TODO: water mobs
 		],
 		Biome::HELL => [
 			ZombiePigman::NETWORK_ID,
@@ -353,8 +320,7 @@ interface Addon {
 	];
 	public const BIOME_HOSTILE_MOBS = [
 		Biome::OCEAN => [
-			Squid::NETWORK_ID // Temporary to fix empty array messages
-			// TODO: water mobs
+			Squid::NETWORK_ID
 		],
 		Biome::PLAINS => [
 			Zombie::NETWORK_ID,
@@ -400,8 +366,7 @@ interface Addon {
 			Witch::NETWORK_ID
 		],
 		Biome::RIVER => [
-			Squid::NETWORK_ID // Temporary to fix empty array messages
-			// TODO: water mobs
+			Squid::NETWORK_ID
 		],
 		Biome::HELL => [
 			ZombiePigman::NETWORK_ID,
@@ -432,9 +397,8 @@ interface Addon {
 	];
 	public const BIOME_ANIMALS = [
 		Biome::OCEAN => [
-			Squid::NETWORK_ID,
-			Dolphin::NETWORK_ID
-			// TODO: water mobs
+            Dolphin::NETWORK_ID,
+			Squid::NETWORK_ID
 		],
 		Biome::PLAINS => [
 			Cow::NETWORK_ID,
@@ -478,10 +442,8 @@ interface Addon {
 		],
 		Biome::RIVER => [
 			Squid::NETWORK_ID
-			// TODO: water mobs
 		],
 		Biome::HELL => [
-			// none spawn
 		],
 		Biome::ICE_PLAINS => [
 			Cow::NETWORK_ID,

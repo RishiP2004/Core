@@ -2,7 +2,12 @@
 
 namespace core\utils;
 
+use core\Core;
+
+use core\CorePlayer;
 use pocketmine\level\format\Chunk;
+
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
 class Level extends \pocketmine\level\Level {
 	public static function getClumpedRegionalDifficulty(\pocketmine\level\Level $level, Chunk $chunk) : float {
@@ -89,4 +94,25 @@ class Level extends \pocketmine\level\Level {
 		}
 		return $regionalDifficulty;
 	}
+
+    public static function isDelayedTeleportCancellable(CorePlayer $player, int $destinationDimension) : bool {
+        switch($destinationDimension) {
+            case DimensionIds::NETHER:
+                return (!Entity::isInsideOfPortal($player));
+            case DimensionIds::THE_END:
+                return (!Entity::isInsideOfEndPortal($player));
+            case DimensionIds::OVERWORLD:
+                return (!Entity::isInsideOfEndPortal($player) && !Entity::isInsideOfPortal($player));
+        }
+        return false;
+    }
+
+    public static function getDimension(\pocketmine\level\Level $level) : int {
+	    if($level->getName() === Core::getInstance()->getMCPE()::$netherLevel->getName()) {
+	        return DimensionIds::NETHER;
+	    } else if($level->getName() === Core::getInstance()->getMCPE()::$endLevel->getName()) {
+	        return DimensionIds::THE_END;
+	    }
+        return DimensionIds::OVERWORLD;
+    }
 }
