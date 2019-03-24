@@ -60,8 +60,8 @@ class EndPortal extends Solid {
         if($entity->getLevel()->getSafeSpawn()->distance($entity->asVector3()) <= 0.1) {
             return;
         }
-        if(!isset(Core::getInstance()->getMCPE()::$onPortal[$entity->getId()])) {
-            Core::getInstance()->getMCPE()::$onPortal[$entity->getId()] = true;
+        if(!isset(Core::getInstance()->getMCPE()->onPortal[$entity->getId()])) {
+            Core::getInstance()->getMCPE()->onPortal[$entity->getId()] = true;
 
             if($entity instanceof CorePlayer) {
                 if($entity->getLevel() instanceof Level) {

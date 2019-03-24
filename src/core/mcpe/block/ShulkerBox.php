@@ -79,7 +79,7 @@ class ShulkerBox extends Transparent {
 			$itemNBT->setTag($tile->getNBT()->getTag(Container::TAG_ITEMS));
 			$item->setNamedTag($itemNBT);
 			$this->getLevel()->dropItem($this->asVector3(), $item);
-			$tile->getInventory()->clearAll(); // dont drop the items
+			$tile->getInventory()->clearAll();
 		}
 		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 		return true;

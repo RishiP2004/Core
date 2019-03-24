@@ -63,7 +63,7 @@ class MCPE implements Addon {
 
 	private $runs = 0;
     /** @var int[] */
-    public static $onPortal = [];
+    public $onPortal = [];
 
     public static $netherName = "nether";
     /** @var Level */

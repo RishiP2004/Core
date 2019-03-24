@@ -73,7 +73,7 @@ class MuteList extends \pocketmine\permission\BanList {
 
         Core::getInstance()->getDatabase()->executeInsert("sentences.register", [
             "xuid" => $player->getXuid(),
-            "registerDate",
+            "registerDate" => date("m:d:y h:A"),
             "listType" => "mute",
             "type" => $this->type,
             "username" => $player->getName(),

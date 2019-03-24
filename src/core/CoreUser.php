@@ -11,7 +11,9 @@ use core\vote\ServerListQuery;
 use core\vote\task\RequestThread;
 
 class CoreUser {
-    public $xuid = "", $registerDate, $name = "", $ip = "", $locale = "";
+    public $xuid = "", $name = "", $ip = "", $locale = "";
+
+    public $registerDate;
 
     public $coins;
 

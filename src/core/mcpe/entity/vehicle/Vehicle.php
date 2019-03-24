@@ -5,6 +5,7 @@ namespace core\mcpe\entity\vehicle;
 use core\CorePlayer;
 
 use core\utils\Math;
+
 use pocketmine\entity\Entity;
 
 use pocketmine\level\Level;
@@ -15,6 +16,8 @@ use pocketmine\event\entity\{
     EntityDamageEvent,
     EntityDamageByEntityEvent
 };
+
+use pocketmine\math\Vector3;
 
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 

@@ -249,7 +249,7 @@ class Stats implements Statistics {
     public function registerCoreUser(CorePlayer $player) {
         $this->core->getDatabase()->executeInsert("stats.register", [
             "xuid" => $player->getXuid(),
-            "registerDate",
+            "registerDate" => date("m:d:y h:A"),
             "username" => $player->getName(),
             "ip" => $player->getAddress(),
             "locale"

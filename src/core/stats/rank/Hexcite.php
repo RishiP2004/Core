@@ -8,7 +8,7 @@ class Hexcite extends Rank {
     public function __construct() {
         parent::__construct("Hexcite");
 
-        $this->setPaidPrice(15);
+        $this->setFreePrice(5000);
     }
 
     public function getFormat() : string {

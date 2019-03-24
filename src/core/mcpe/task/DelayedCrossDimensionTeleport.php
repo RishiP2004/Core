@@ -38,7 +38,7 @@ class DelayedCrossDimensionTeleport extends Task {
     public function onRun(int $currentTick) {
         if($this->player instanceof CorePlayer) {
             if(Level::isDelayedTeleportCancellable($this->player, $this->dimension)) {
-                unset(Core::getInstance()->getMCPE()::$onPortal[$this->player->getId()]);
+                unset(Core::getInstance()->getMCPE()->onPortal[$this->player->getId()]);
                 return false;
             }
             $packet = new ChangeDimensionPacket();
@@ -49,7 +49,7 @@ class DelayedCrossDimensionTeleport extends Task {
             $this->player->dataPacket($packet);
             $this->player->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
             $this->player->teleport($this->position);
-            unset(Core::getInstance()->getMCPE()::$onPortal[$this->player->getId()]);
+            unset(Core::getInstance()->getMCPE()->onPortal[$this->player->getId()]);
         }
         return true;
     }
