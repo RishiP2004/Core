@@ -4,7 +4,7 @@ namespace core\mcpe\form;
 
 use core\mcpe\form\element\CustomFormElement;
 
-use core\utils\MathUtils;
+use core\utils\Math;
 
 use pocketmine\Player;
 
@@ -14,7 +14,7 @@ abstract class CustomForm extends BaseForm {
     private $elementMap = [];
 
     public function __construct(string $title, array $elements) {
-        assert(MathUtils::validateObjectArray($elements, CustomFormElement::class));
+        assert(Math::validateObjectArray($elements, CustomFormElement::class));
 		
         parent::__construct($title);
 		
