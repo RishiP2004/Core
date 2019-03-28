@@ -2,28 +2,26 @@
 
 namespace core\mcpe\form;
 
-abstract class ServerSettingsForm extends CustomForm {
-    private $icon;
+use core\mcpe\form\element\Image;
 
-    public function __construct(string $title, array $elements, ?FormIcon $icon = null) {
-        parent::__construct($title, $elements);
-		
-        $this->icon = $icon;
+class ServerSettingsForm extends CustomForm {
+    /** @var Image|null */
+    protected $image;
+
+    public function __construct(string $title, $elements, ?Image $image, \Closure $onSubmit, ?\Closure $onClose = null) {
+        parent::__construct($title, $elements, $onSubmit, $onClose);
+        $this->image = $image;
     }
 
-    public function hasIcon() : bool {
-        return $this->icon !== null;
+    public function hasImage() : bool {
+        return $this->image !== null;
     }
 
-    public function getIcon() : ?FormIcon {
-        return $this->icon;
-    }
-
-    protected function serializeFormData() : array {
+    public function serializeFormData() : array {
         $data = parent::serializeFormData();
-		
-        if($this->hasIcon()) {
-            $data["icon"] = $this->icon;
+
+        if($this->hasImage()) {
+            $data["icon"] = $this->image;
         }
         return $data;
     }

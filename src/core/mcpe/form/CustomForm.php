@@ -2,85 +2,67 @@
 
 namespace core\mcpe\form;
 
-use core\mcpe\form\element\CustomFormElement;
+use core\mcpe\form\element\Element;
 
-use core\utils\Math;
+use pocketmine\utils\Utils;
+
+use pocketmine\form\FormValidationException;
 
 use pocketmine\Player;
 
-abstract class CustomForm extends BaseForm {
+abstract class CustomForm extends Form {
+    /** @var Element[] */
     private $elements;
+    /** @var \Closure */
+    private $onSubmit;
+    /** @var \Closure|null */
+    private $onClose;
 
-    private $elementMap = [];
-
-    public function __construct(string $title, array $elements) {
-        assert(Math::validateObjectArray($elements, CustomFormElement::class));
-		
+    public function __construct(string $title, array $elements, \Closure $onSubmit, ?\Closure $onClose = null) {
         parent::__construct($title);
-		
-        $this->elements = array_values($elements);
-		
-        foreach($this->elements as $element) {
-            if(isset($this->elements[$element->getName()])) {
-                throw new \InvalidArgumentException("Multiple elements cannot have the same name, found \"" . $element->getName() . "\" more than once");
-            }
-            $this->elementMap[$element->getName()] = $element;
+
+        $this->elements = $elements;
+        $this->onSubmit = $onSubmit;
+        $this->onClose = $onClose;
+
+        Utils::validateCallableSignature(function(Player $player, CustomFormResponse $response) : void{}, $onSubmit);
+
+        $this->onSubmit = $onSubmit;
+
+        if($onClose !== null) {
+            Utils::validateCallableSignature(function(Player $player) : void{}, $onClose);
+            $this->onClose = $onClose;
         }
     }
 
-    public function getElement(int $index) : ?CustomFormElement {
-        return $this->elements[$index] ?? null;
-    }
-	
-    public function getElementByName(string $name) : ?CustomFormElement {
-        return $this->elementMap[$name] ?? null;
-    }
-
-    public function getAllElements() : array {
-        return $this->elements;
-    }
-
-    public function onSubmit(Player $player, CustomFormResponse $data) : void {
-    }
-
-    public function onClose(Player $player) : void {
-    }
-
-    public function handleResponse(Player $player, $data) : void {
-        if($data === null) {
-            $this->onClose($player);
-        } else if(is_array($data)) {
-            if(($actual = count($data)) !== ($expected = count($this->elements))) {
-                throw new FormValidationException("Expected $expected result data, got $actual");
-            }
-            $values = [];
-            /** @var array $data */
-            foreach($data as $index => $value) {
-                if(!isset($this->elements[$index])) {
-                    throw new FormValidationException("element at offset $index does not exist");
-                }
-                $element = $this->elements[$index];
-				
-                try {
-                    $element->validateValue($value);
-                } catch(FormValidationException $e) {
-                    throw new FormValidationException("Validation failed for element \"" . $element->getName() . "\": " . $e->getMessage(), 0, $e);
-                }
-                $values[$element->getName()] = $value;
-            }
-            $this->onSubmit($player, new CustomFormResponse($values));
-        } else {
-			throw new FormValidationException("Expected array or null, got " . gettype($data));
-		}
-    }
-
-    protected function getType() : string {
-        return "custom_form";
+    final public function getType() : string {
+        return self::TYPE_CUSTOM_FORM;
     }
 
     protected function serializeFormData() : array {
         return [
             "content" => $this->elements
         ];
+    }
+
+    final public function handleResponse(Player $player, $data) : void {
+        if($data === null) {
+            if($this->onClose !== null) {
+                ($this->onClose)($player);
+            }
+        } else if(is_array($data)) {
+            foreach($data as $index => $value) {
+                if(!isset($this->elements[$index])) {
+                    throw new FormValidationException("Element at index $index does not exist");
+                }
+                $element = $this->elements[$index];
+
+                $element->validate($value);
+                $element->setValue($value);
+            }
+            ($this->onSubmit)($player, new CustomFormResponse($this->elements));
+        } else {
+            throw new FormValidationException("Expected array or null, got " . gettype($data));
+        }
     }
 }

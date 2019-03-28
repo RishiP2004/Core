@@ -7,8 +7,7 @@ use core\utils\Item;
 use core\essence\npc\NPC;
 
 use core\mcpe\form\{
-    MenuOption,
-    FormIcon,
+    Form,
     MenuForm,
     CustomForm
 };
@@ -35,7 +34,8 @@ use pocketmine\network\mcpe\protocol\{
     SetPlayerGameTypePacket,
     EntityPickRequestPacket,
     InteractPacket,
-    InventoryTransactionPacket
+    InventoryTransactionPacket,
+    ServerSettingsResponsePacket
 };
 
 use pocketmine\entity\Entity;
@@ -103,11 +103,11 @@ abstract class CorePlayer extends Player {
     public function sendBossBar(int $eid, string $title) {
         $this->core->getBroadcast()->getBossBar()->remove([$this], $eid);
 
-        $packet = new AddEntityPacket();
-        $packet->entityRuntimeId = $eid;
-        $packet->type = $this->core->getBroadcast()->getBossBar()->getEntity();
-        $packet->position = $this->getPosition()->asVector3()->subtract(0, 28);
-        $packet->metadata = [
+        $pk = new AddEntityPacket();
+        $pk->entityRuntimeId = $eid;
+        $pk->type = $this->core->getBroadcast()->getBossBar()->getEntity();
+        $pk->position = $this->getPosition()->asVector3()->subtract(0, 28);
+        $pk->metadata = [
             Entity::DATA_LEAD_HOLDER_EID => [
                 Entity::DATA_TYPE_LONG, -1
             ],
@@ -128,7 +128,7 @@ abstract class CorePlayer extends Player {
             ]
         ];
 
-        $this->sendDataPacket($packet);
+        $this->sendDataPacket($pk);
 
         $bpk = new BossEventPacket();
         $bpk->bossEid = $eid;
@@ -555,10 +555,10 @@ abstract class CorePlayer extends Player {
             if($oldArea->getFly() === Area::FLY_SUPERVISED) {
                 $this->setAllowFlight(false);
 
-                $packet = new SetPlayerGameTypePacket();
-                $packet->gamemode = $this->gamemode & 0x01;
+                $pk = new SetPlayerGameTypePacket();
+                $pk->gamemode = $this->gamemode & 0x01;
 
-                $this->sendDataPacket($packet);
+                $this->sendDataPacket($pk);
                 $this->setFlying(false);
                 $this->sendSettings();
             }
@@ -569,10 +569,10 @@ abstract class CorePlayer extends Player {
                     if($gamemode === 0 or $gamemode === 2) {
                         $this->setAllowFlight(false);
 
-                        $packet = new SetPlayerGameTypePacket();
-                        $packet->gamemode = $this->gamemode & 0x01;
+                        $pk = new SetPlayerGameTypePacket();
+                        $pk->gamemode = $this->gamemode & 0x01;
 
-                        $this->sendDataPacket($packet);
+                        $this->sendDataPacket($pk);
                         $this->setFlying(false);
                         $this->sendSettings();
                     }
@@ -608,10 +608,10 @@ abstract class CorePlayer extends Player {
                     if($gamemode === 0 or $gamemode === 2) {
                         $this->setAllowFlight(false);
 
-                        $packet = new SetPlayerGameTypePacket();
-                        $packet->gamemode = $this->gamemode & 0x01;
+                        $pk = new SetPlayerGameTypePacket();
+                        $pk->gamemode = $this->gamemode & 0x01;
 
-                        $this->sendDataPacket($packet);
+                        $this->sendDataPacket($pk);
                         $this->setFlying(false);
                         $this->sendSettings();
                     }
@@ -628,10 +628,10 @@ abstract class CorePlayer extends Player {
                     case $newArea::FLY_DISABLE:
                         $this->setAllowFlight(false);
 
-                        $packet = new SetPlayerGameTypePacket();
-                        $packet->gamemode = $this->gamemode & 0x01;
+                        $pk = new SetPlayerGameTypePacket();
+                        $pk->gamemode = $this->gamemode & 0x01;
 
-                        $this->sendDataPacket($packet);
+                        $this->sendDataPacket($pk);
                         $this->setFlying(false);
                         $this->sendSettings();
                     break;
@@ -639,6 +639,35 @@ abstract class CorePlayer extends Player {
             }
         }
         return true;
+    }
+
+    public function sendSetting(Form $form) {
+        $reflection = new \ReflectionObject($this);
+
+        $idProperty = $reflection->getProperty("formIdCounter");
+
+        $idProperty->setAccessible(true);
+
+        $idPropertyValue = $idProperty->getValue($this);
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        $id = $idPropertyValue++;
+
+        $idProperty->setValue($this, $id);
+
+        $pk = new ServerSettingsResponsePacket();
+        $pk->formId = $id;
+        $pk->formData = json_encode($form);
+
+        if($this->sendDataPacket($pk)) {
+            $formsProperty = $reflection->getProperty("forms");
+
+            $formsProperty->setAccessible(true);
+
+            $formsValue = $formsProperty->getValue($this);
+            $formsValue[$id] = $form;
+
+            $formsProperty->setValue($this, $formsValue);
+        }
     }
 
     public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool {
@@ -663,8 +692,8 @@ abstract class CorePlayer extends Player {
         return false;
     }
 
-    public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool {
-        $target = $this->level->getEntity($packet->entityUniqueId);
+    public function handleEntityPickRequest(EntityPickRequestPacket $pk) : bool {
+        $target = $this->level->getEntity($pk->entityUniqueId);
 
         if($target === null)
             return false;
@@ -674,20 +703,20 @@ abstract class CorePlayer extends Player {
             if(!empty($target->getNameTag())) {
                 $item->setCustomName($target->getNameTag());
             }
-            $this->getInventory()->setItem($packet->hotbarSlot, $item);
+            $this->getInventory()->setItem($pk->hotbarSlot, $item);
         }
         return true;
     }
 
-    public function handleInteract(InteractPacket $packet) : bool {
-        $return = parent::handleInteract($packet);
+    public function handleInteract(InteractPacket $pk) : bool {
+        $return = parent::handleInteract($pk);
 
-        switch($packet->action) {
+        switch($pk->action) {
             case InteractPacket::ACTION_LEAVE_VEHICLE:
                 // TODO: entity linking
             break;
             case InteractPacket::ACTION_MOUSEOVER:
-                $target = $this->level->getEntity($packet->target);
+                $target = $this->level->getEntity($pk->target);
 
                 $this->setTargetEntity($target);
 
@@ -704,23 +733,19 @@ abstract class CorePlayer extends Player {
         }
         return $return;
     }
-    /**
-     * @param InventoryTransactionPacket $packet
-     *
-     * @return bool
-     */
-    public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool {
-        $return = parent::handleInventoryTransaction($packet);
 
-        if($packet->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY) {
-            $type = $packet->trData->actionType;
+    public function handleInventoryTransaction(InventoryTransactionPacket $pk) : bool {
+        $return = parent::handleInventoryTransaction($pk);
+
+        if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY) {
+            $type = $pk->trData->actionType;
 
             switch($type) {
                 case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-                    $target = $this->level->getEntity($packet->trData->entityRuntimeId);
+                    $target = $this->level->getEntity($pk->trData->entityRuntimeId);
 
                     $this->setTargetEntity($target);
-                    $this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
+                    $this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
 
                     if($target instanceof Interactable) {
                         $target->onPlayerInteract($this);

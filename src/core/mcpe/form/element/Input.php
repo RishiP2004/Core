@@ -1,41 +1,45 @@
 <?php
 
-namespace core\mcpe\form;
+namespace core\mcpe\form\element;
 
-use core\mcpe\form\FormValidationException;
+use pocketmine\form\FormValidationException;
 
-class Input extends CustomFormElement {
-    private $hint, $default;
+class Input extends Element {
+    protected $placeholder = "", $default = "";
 
-    public function __construct(string $name, string $text, string $hintText = "", string $defaultText = "") {
-        parent::__construct($name, $text);
-		
-        $this->hint = $hintText;
-        $this->default = $defaultText;
+    public function __construct(string $text, string $placeholder, string $default = "") {
+        parent::__construct($text);
+
+        $this->placeholder = $placeholder;
+        $this->default = $default;
     }
 
     public function getType() : string {
         return "input";
     }
 
-    public function validateValue($value): void {
-        if(!is_string($value)) {
-            throw new FormValidationException("Expected string, got " . gettype($value));
-        }
+    public function getValue() : ?string {
+        return parent::getValue();
     }
 
-    public function getHintText() : string {
-        return $this->hint;
+    public function getPlaceholder() : string {
+        return $this->placeholder;
     }
 
-    public function getDefaultText() : string {
+    public function getDefault() : string {
         return $this->default;
     }
 
-    protected function serializeElementData() : array {
+    public function serializeElementData() : array {
         return [
-            "placeholder" => $this->hint,
+            "placeholder" => $this->placeholder,
             "default" => $this->default
         ];
+    }
+
+    public function validate($value) : void {
+        if(!is_string($value)) {
+            throw new FormValidationException("Expected string, got " . gettype($value));
+        }
     }
 }

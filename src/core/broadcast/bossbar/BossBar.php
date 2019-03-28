@@ -68,10 +68,10 @@ class BossBar implements Messages {
             return null;
         }
         $eid = Entity::$entityCount++;
-        $packet = new AddEntityPacket();
-        $packet->entityRuntimeId = $eid;
-        $packet->type = $this->getEntity();
-        $packet->metadata = [
+        $pk = new AddEntityPacket();
+        $pk->entityRuntimeId = $eid;
+        $pk->type = $this->getEntity();
+        $pk->metadata = [
             Entity::DATA_LEAD_HOLDER_EID => [
                 Entity::DATA_TYPE_LONG, -1
             ],
@@ -94,7 +94,7 @@ class BossBar implements Messages {
 
         foreach($players as $player) {
             if($player instanceof CorePlayer) {
-                $pk = clone $packet;
+                $pk = clone $pk;
                 $pk->position = $player->getPosition()->asVector3()->subtract(0, 28);
 
                 $player->sendDataPacket($pk);
@@ -121,11 +121,11 @@ class BossBar implements Messages {
         if(!count($players) > 0) {
             return;
         }
-        $upk = new UpdateAttributesPacket();
-        $upk->entries[] = new Values(1, 600, max(1, min([$percentage, 100])) / 100 * 600, 'minecraft:health');
-        $upk->entityRuntimeId = $eid;
+        $pk = new UpdateAttributesPacket();
+        $pk->entries[] = new Values(1, 600, max(1, min([$percentage, 100])) / 100 * 600, 'minecraft:health');
+        $pk->entityRuntimeId = $eid;
 
-        $this->core->getServer()->broadcastPacket($players, $upk);
+        $this->core->getServer()->broadcastPacket($players, $pk);
 
         $bpk = new BossEventPacket();
         $bpk->bossEid = $eid;
@@ -144,10 +144,10 @@ class BossBar implements Messages {
         if(empty($players)) {
             return;
         }
-        $packet = new RemoveEntityPacket();
-        $packet->entityUniqueId = $eid;
+        $pk = new RemoveEntityPacket();
+        $pk->entityUniqueId = $eid;
 
-        $this->core->getServer()->broadcastPacket($players, $packet);
+        $this->core->getServer()->broadcastPacket($players, $pk);
     }
 
     public function send() {
@@ -206,15 +206,15 @@ class BossBar implements Messages {
         if(!count($this->core->getServer()->getOnlinePlayers()) > 0) {
             return;
         }
-        $npk = new SetEntityDataPacket();
-        $npk->metadata = [
+        $pk = new SetEntityDataPacket();
+        $pk->metadata = [
             Entity::DATA_NAMETAG => [
                 Entity::DATA_TYPE_STRING, $title
             ]
         ];
-        $npk->entityRuntimeId = $eid;
+        $pk->entityRuntimeId = $eid;
 
-        $this->core->getServer()->getInstance()->broadcastPacket($players, $npk);
+        $this->core->getServer()->getInstance()->broadcastPacket($players, $pk);
 
         $bpk = new BossEventPacket();
         $bpk->bossEid = $eid;

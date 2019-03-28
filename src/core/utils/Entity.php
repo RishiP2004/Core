@@ -260,7 +260,7 @@ class Entity extends \pocketmine\entity\Entity {
         $level->addChunkPacket($chunkX, $chunkZ, $pk2);
     }
 
-    public static function getXpDropsForEntity(Entity $e) : int {
+    public static function getXpDropsForEntity(\pocketmine\entity\Entity $e) : int {
         switch($e::NETWORK_ID){
             case Entity::CHICKEN:
             case Entity::COW:

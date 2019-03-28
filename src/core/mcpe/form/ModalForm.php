@@ -2,48 +2,56 @@
 
 namespace core\mcpe\form;
 
+use pocketmine\utils\Utils;
+
 use pocketmine\Player;
 
-abstract class ModalForm extends BaseForm {
-    private $content;
+use pocketmine\form\FormValidationException;
 
-    private $button1, $button2;
+class ModalForm extends Form {
 
-    public function __construct(string $title, string $text, string $yesButtonText = "gui.yes", string $noButtonText = "gui.no") {
+    protected $text = "";
+
+    private $yesButton = "", $noButton = "";
+    /** @var \Closure */
+    private $onSubmit;
+
+    public function __construct(string $title, string $text, \Closure $onSubmit, $yesButton = "gui.yes", string $noButton = "gui.no") {
         parent::__construct($title);
-		
-        $this->content = $text;
-        $this->button1 = $yesButtonText;
-        $this->button2 = $noButtonText;
+
+        $this->text = $text;
+        $this->yesButton = $yesButton;
+        $this->noButton = $noButton;
+
+        Utils::validateCallableSignature(function(Player $player, bool $response) : void{}, $onSubmit);
+
+        $this->onSubmit = $onSubmit;
+    }
+
+    final public function getType() : string {
+        return self::TYPE_MODAL;
     }
 
     public function getYesButtonText() : string {
-        return $this->button1;
+        return $this->yesButton;
     }
 
     public function getNoButtonText() : string {
-        return $this->button2;
+        return $this->noButton;
     }
 
-    public function onSubmit(Player $player, bool $choice) : void {
+    protected function serializeFormData() : array {
+        return [
+            "content" => $this->text,
+            "button1" => $this->yesButton,
+            "button2" => $this->noButton
+        ];
     }
 
     final public function handleResponse(Player $player, $data) : void {
         if(!is_bool($data)) {
             throw new FormValidationException("Expected bool, got " . gettype($data));
         }
-        $this->onSubmit($player, $data);
-    }
-
-    protected function getType() : string {
-        return "modal";
-    }
-
-    protected function serializeFormData() : array {
-        return [
-            "content" => $this->content,
-            "button1" => $this->button1,
-            "button2" => $this->button2
-        ];
+        ($this->onSubmit)($player, $data);
     }
 }

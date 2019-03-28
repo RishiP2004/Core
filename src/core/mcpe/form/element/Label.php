@@ -2,16 +2,20 @@
 
 namespace core\mcpe\form\element;
 
-class Label extends CustomFormElement {
+use pocketmine\form\FormValidationException;
+
+class Label extends Element {
     public function getType() : string {
         return "label";
     }
 
-    public function validateValue($value) : void {
-        assert($value === null);
+    public function serializeElementData() : array {
+        return [];
     }
 
-    protected function serializeElementData() : array {
-        return [];
+    public function validate($value) : void {
+        if($value !== null) {
+            throw new FormValidationException("Expected null, got " . gettype($value));
+        }
     }
 }

@@ -18,7 +18,7 @@ class Athie extends NPC {
     }
 
     public function getPosition() : Position {
-        return new Position(138.5, 15, 127.5, "LobbyGreetings");
+        return new Position(138.5, 15, 127.5, "Lobby");
     }
 
     public function getSize() : float {

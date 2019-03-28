@@ -2,34 +2,42 @@
 
 namespace core\mcpe\form\element;
 
-use core\mcpe\form\FormValidationException;
+use pocketmine\form\FormValidationException;
 
-class Toggle extends CustomFormElement {
-    private $default;
+class Toggle extends Element {
+    protected $default = false;
 
-    public function __construct(string $name, string $text, bool $defaultValue = false) {
-        parent::__construct($name, $text);
-		
-        $this->default = $defaultValue;
+    public function __construct(string $text, bool $default = false) {
+        parent::__construct($text);
+
+        $this->default = $default;
     }
 
-    public function getType(): string {
+    public function getType() : string {
         return "toggle";
     }
 
-    public function getDefaultValue(): bool {
+    public function getValue() : ?bool {
+        return parent::getValue();
+    }
+
+    public function hasChanged() : bool {
+        return $this->default !== $this->value;
+    }
+
+    public function getDefault() : bool {
         return $this->default;
     }
 
-    public function validateValue($value): void {
-        if(!is_bool($value)) {
-            throw new FormValidationException("Expected bool, got " . gettype($value));
-        }
-    }
-
-    protected function serializeElementData(): array {
+    public function serializeElementData() : array {
         return [
             "default" => $this->default
         ];
+    }
+
+    public function validate($value) : void {
+        if(!is_bool($value)){
+            throw new FormValidationException("Expected bool, got " . gettype($value));
+        }
     }
 }

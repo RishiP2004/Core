@@ -10,7 +10,9 @@ use pocketmine\utils\TextFormat;
 
 use pocketmine\command\CommandSender;
 
-class PocketMine {
+use pocketmine\utils\Utils;
+
+class PocketMine extends Utils {
     public const MAX_COORD = 30000000;
     public const MIN_COORD = -30000000;
 

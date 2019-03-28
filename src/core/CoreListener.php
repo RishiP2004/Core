@@ -16,6 +16,8 @@ use core\mcpe\entity\{
 
 use core\utils\Math;
 
+use core\mcpe\event\ServerSettingsRequestEvent;
+
 use pocketmine\event\Listener;
 
 use pocketmine\event\player\{
@@ -71,7 +73,8 @@ use pocketmine\entity\Living;
 use pocketmine\network\mcpe\protocol\{
     LoginPacket,
     ProtocolInfo,
-    InventoryTransactionPacket
+    InventoryTransactionPacket,
+    ServerSettingsRequestPacket
 };
 
 use pocketmine\inventory\transaction\action\SlotChangeAction;
@@ -84,6 +87,8 @@ use pocketmine\inventory\{
 use pocketmine\math\Vector3;
 
 use pocketmine\level\Position;
+
+use const pocketmine\IS_DEVELOPMENT_BUILD;
 
 class CoreListener implements Listener {
     private $core;
@@ -700,8 +705,8 @@ class CoreListener implements Listener {
     }
 
 
-    public function onEntityDeath(EntityDeathEvent $event){
-        $xp = Entity::getXpDrops($event->getEntity());
+    public function onEntityDeath(EntityDeathEvent $event) {
+        $xp = Entity::getXpDropsForEntity($event->getEntity());
 
         if($xp > 0) {
             $event->getEntity()->getLevel()->dropExperience($event->getEntity()->asVector3(), $xp);
@@ -780,11 +785,22 @@ class CoreListener implements Listener {
 
     public function onDataPacketReceive(DataPacketReceiveEvent $event) {
         $player = $event->getPlayer();
-        $packet = $event->getPacket();
+        $release = !IS_DEVELOPMENT_BUILD;
+        $pk = $event->getPacket();
 
         if($player instanceof CorePlayer) {
-            if($packet instanceof LoginPacket) {
-                if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
+            if($pk instanceof ServerSettingsRequestPacket) {
+                $ev = new ServerSettingsRequestEvent($player = $release ? $player : $event->getOrigin()->getPlayer());
+                $release ? $this->core->getServer()->getPluginManager()->callEvent($event) : $event->call();
+
+                if(($form = $ev->getForm()) !== null) {
+                    if($player instanceof CorePlayer) {
+                        $player->sendSetting($form);
+                    }
+                }
+            }
+            if($pk instanceof LoginPacket) {
+                if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
                     if(!empty($this->core->getBroadcast()->getKicks("outdated")["client"])) {
                         $message = str_replace([
                             "{PLAYER}",
@@ -797,7 +813,7 @@ class CoreListener implements Listener {
                         $player->close($message);
                         $event->setCancelled(true);
                     }
-                } else if($packet->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
+                } else if($pk->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
                     if(!empty($this->core->getBroadcast()->getKicks("outdated")["server"])) {
                         $message = str_replace([
                             "{PLAYER}",
@@ -812,9 +828,9 @@ class CoreListener implements Listener {
                     }
                 }
             }
-            if($packet instanceof InventoryTransactionPacket) {
-                if($packet->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY && $packet->trData->actionType === InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT) {
-                    $entity = $packet->trData;
+            if($pk instanceof InventoryTransactionPacket) {
+                if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY && $pk->trData->actionType === InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT) {
+                    $entity = $pk->trData;
 
                     foreach($this->core->getEssence()->getNPCs() as $NPC) {
                         if($entity->entityRuntimeId === $NPC->getEID()) {
