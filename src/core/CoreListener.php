@@ -455,7 +455,7 @@ class CoreListener implements Listener {
         }
     }
 
-    public function onPlayerItemHeld(PlayerItemHeldEvent $event){
+    public function onPlayerItemHeld(PlayerItemHeldEvent $event) {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
@@ -469,15 +469,14 @@ class CoreListener implements Listener {
         }
     }
 
-    public function onPlayerJoin(PlayerJoinEvent $event)
-    {
+    public function onPlayerJoin(PlayerJoinEvent $event) {
         $player = $event->getPlayer();
 
-        if ($player instanceof CorePlayer) {
+        if($player instanceof CorePlayer) {
             $player->setCore($this->core);
 
-            if (in_array($player->getLevel(), Messages::WORLDS)) {
-                if ($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
+            if(in_array($player->getLevel(), Messages::WORLDS)) {
+                if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
                     $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$player], str_replace("{PREFIX}", $this->core->getPrefix(), Messages::NOT_REGISTERED_MESSAGE));
                 } else {
                     $player->sendBossBar($this->core->getBroadcast()->getBossBar()->entityRuntimeId, $player->getBossBarText());
@@ -485,8 +484,8 @@ class CoreListener implements Listener {
             }
             $message = "";
 
-            if (!$player->hasPlayedBefore()) {
-                if (!empty(Broadcasts::JOINS["First"])) {
+            if(!$player->hasPlayedBefore()) {
+                if(!empty(Broadcasts::JOINS["First"])) {
                     $message = str_replace([
                         "{PLAYER}",
                         "{TIME}",
@@ -498,8 +497,8 @@ class CoreListener implements Listener {
                     ], $this->core->getBroadcast()->getJoins("first"));
                 }
             }
-            if ($player->hasPermission("core.stats.join")) {
-                if (!empty($this->core->getBroadcast()->getJoins("normal"))) {
+            if($player->hasPermission("core.stats.join")) {
+                if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
                     $message = str_replace([
                         "{PLAYER}",
                         "{TIME}",
