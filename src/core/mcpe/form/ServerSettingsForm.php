@@ -10,6 +10,7 @@ class ServerSettingsForm extends CustomForm {
 
     public function __construct(string $title, $elements, ?Image $image, \Closure $onSubmit, ?\Closure $onClose = null) {
         parent::__construct($title, $elements, $onSubmit, $onClose);
+
         $this->image = $image;
     }
 

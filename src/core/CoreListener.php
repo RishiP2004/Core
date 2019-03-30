@@ -88,7 +88,7 @@ use pocketmine\math\Vector3;
 
 use pocketmine\level\Position;
 
-use const pocketmine\IS_DEVELOPMENT_BUILD;
+use pocketmine\block\Block;
 
 class CoreListener implements Listener {
     private $core;
@@ -697,7 +697,7 @@ class CoreListener implements Listener {
                 }
             }
             if($event->getCause() === EntityDamageEvent::CAUSE_FALL) {
-                if($event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() == Block::SLIME_BLOCK) {
+                if($event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === Block::SLIME_BLOCK) {
                     $event->setCancelled(true);
                 }
             }
@@ -785,19 +785,17 @@ class CoreListener implements Listener {
 
     public function onDataPacketReceive(DataPacketReceiveEvent $event) {
         $player = $event->getPlayer();
-        $release = !IS_DEVELOPMENT_BUILD;
         $pk = $event->getPacket();
 
         if($player instanceof CorePlayer) {
             if($pk instanceof ServerSettingsRequestPacket) {
-                $ev = new ServerSettingsRequestEvent($player = $release ? $player : $event->getOrigin()->getPlayer());
-                $release ? $this->core->getServer()->getPluginManager()->callEvent($event) : $event->call();
+				$ev = new ServerSettingsRequestEvent($player);
 
-                if(($form = $ev->getForm()) !== null) {
-                    if($player instanceof CorePlayer) {
-                        $player->sendSetting($form);
-                    }
-                }
+				$this->core->getServer()->getPluginManager()->callEvent($event);
+
+				if(!$form = $ev->getForm()) {
+					$player->sendSetting($form);
+				}
             }
             if($pk instanceof LoginPacket) {
                 if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
@@ -851,7 +849,7 @@ class CoreListener implements Listener {
             if($area->getName() !== "") {
                 if(!$player->hasPermission("core.world.area.blockbreak")) {
                     if(!$area->editable()) {
-                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Break Blocks the Area: " . $area->getName());
+                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Break Blocks in the Area: " . $area->getName());
                         $event->setCancelled();
                     }
                 }
@@ -868,7 +866,7 @@ class CoreListener implements Listener {
             if($area->getName() !== "") {
                 if(!$player->hasPermission("core.world.area.blockplace")) {
                     if(!$area->editable()) {
-                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Place Blocks the Area: " . $area->getName());
+                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Place Blocks in the Area: " . $area->getName());
                         $event->setCancelled();
                     }
                 }

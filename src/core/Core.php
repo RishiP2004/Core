@@ -46,8 +46,12 @@ class Core extends PluginBase {
     }
 
     public function onEnable() {
-        @mkdir($this->getDataFolder());
-        @mkdir($this->getDataFolder() . DIRECTORY_SEPARATOR . "mysql");
+        if(!mkdir($concurrentDirectory = $this->getDataFolder()) && !is_dir($concurrentDirectory)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
+        if(!mkdir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mysql") && !is_dir($concurrentDirectory)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
         $this->saveDefaultConfig();
         $this->saveResource("mysql/queries.sql");
 

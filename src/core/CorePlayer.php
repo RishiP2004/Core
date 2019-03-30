@@ -728,7 +728,7 @@ abstract class CorePlayer extends Player {
                 $return = true;
             break;
             default:
-                $this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
+                $this->server->getLogger()->debug("Unhandled/unknown interaction type " . $pk->action . "received from " . $this->getName());
                 $return = false;
         }
         return $return;
