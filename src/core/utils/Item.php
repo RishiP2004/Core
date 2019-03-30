@@ -85,7 +85,7 @@ class Item extends \pocketmine\item\Item {
         return $items;
     }
     
-    public static function parseItem(string $string) {
+    public static function parseItem(string $string) : ?\pocketmine\item\Item {
         $array = explode(",", $string);
         
         foreach($array as $key => $value) {
@@ -102,13 +102,13 @@ class Item extends \pocketmine\item\Item {
         return null;
     }
     
-    public static function getRandomItems(array $items) {
+    public static function getRandomItems(array $items) : \pocketmine\item\Item {
         $items = self::parseItems($items);
         return $items[array_rand($items)];
     }
 	
 	public function getRandomEnchantment(int $experienceLevel, Item $item): EnchantmentInstance {
-		$return = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)); // default
+		$return = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS));
 		
 		if($experienceLevel <= 8) {
 			$bookShelves = 0;

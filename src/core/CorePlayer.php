@@ -6,10 +6,17 @@ use core\utils\Item;
 
 use core\essence\npc\NPC;
 
+use core\mcpe\network\PlayerNetworkSessionAdapter;
+
 use core\mcpe\form\{
     Form,
     MenuForm,
     CustomForm
+};
+
+use core\mcpe\form\element\{
+	Button,
+	Image
 };
 
 use core\mcpe\entity\{
@@ -26,6 +33,8 @@ use core\stats\task\{
 
 use core\world\area\Area;
 
+use pocketmine\network\SourceInterface;
+
 use pocketmine\Player;
 
 use pocketmine\network\mcpe\protocol\{
@@ -34,6 +43,7 @@ use pocketmine\network\mcpe\protocol\{
     SetPlayerGameTypePacket,
     EntityPickRequestPacket,
     InteractPacket,
+	PlayerInputPacket,
     InventoryTransactionPacket,
     ServerSettingsResponsePacket
 };
@@ -66,7 +76,13 @@ abstract class CorePlayer extends Player {
 
     private $AFK = false, $fishing = false;
 
-    public function setCore(Core $core) {
+    public function __construct(SourceInterface $interface, string $ip, int $port) {
+		parent::__construct($interface, $ip, $port);
+
+		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
+	}
+
+	public function setCore(Core $core) {
         $this->core = $core;
     }
 
@@ -392,9 +408,17 @@ abstract class CorePlayer extends Player {
                 $name = TextFormat::GRAY . $server->getName() . "\n" . TextFormat::GRAY . "Online: " . $online . "\n" . TextFormat::GRAY . $onlinePlayers . $maxSlots;
 
                 if(empty($server->getIcon())) {
-                    $options[] = new MenuOption($name);
+                    $b1 = new Button($name);
+
+                    $b1->setId($server->getName());
+
+                    $options[] = $b1;
                 }
-                $options[] = new MenuOption($name, new FormIcon(FormIcon::IMAGE_TYPE_URL, $server->getIcon()));
+				$b2 = new Button($name, new Image($server->getIcon(), Image::TYPE_URL));
+
+				$b2->setId($server->getName());
+
+                $options[] = $b2;
             }
         }
         $this->sendForm(new class(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options) extends MenuForm {
@@ -402,11 +426,9 @@ abstract class CorePlayer extends Player {
                 parent::__construct($title, $text, $options);
             }
 
-            public function onSubmit(Player $player, int $selectedOption) : void {
-                $selectedOptionText = $this->getOption($selectedOption)->getText();
-
+            public function onSubmit(Player $player, Button $selectedOption) : void {;
                 if($player instanceof CorePlayer) {
-                    $server = Core::getInstance()->getNetwork()->getServerFromString($selectedOptionText);
+                    $server = Core::getInstance()->getNetwork()->getServer($selectedOption->getId());
 
                     if($server instanceof Server) {
                         if(!$player->hasPermission("core.network." . $server->getName())) {
@@ -433,11 +455,23 @@ abstract class CorePlayer extends Player {
             case "profile":
                 $this->sendMessage($this->core->getPrefix() . "Opened Profile menu");
 
-                $options = [];
-                $options[] = new MenuOption("Global");
-                $options[] = new MenuOption("Lobby", new FormIcon($this->core->getNetwork()->getServer("Lobby")->getIcon()));
-                $options[] = new MenuOption("Factions", new FormIcon($this->core->getNetwork()->getServer("Factions")->getIcon()));
+                $b1 = new Button(TextFormat::GRAY . "Global");
 
+                $b1->setId(1);
+
+                $b2 = new Button("Lobby", new Image($this->core->getNetwork()->getServer("Lobby")->getIcon(), Image::TYPE_URL));
+
+                $b2->setId(2);
+
+                $b3 = new Button("Factions", new Image($this->core->getNetwork()->getServer("Factions")->getIcon()));
+
+                $b3->setId(3);
+
+                $options = [
+                	$b1,
+					$b2,
+					$b3
+				];
                 $this->sendForm(new class(TextFormat::GOLD . $user = null ? $user->getName() . "'s Profile" : "Your Profile", TextFormat::GRAY . "Select an Option", $options, $user) extends MenuForm {
                     private $user;
 
@@ -447,9 +481,9 @@ abstract class CorePlayer extends Player {
                         $this->user = $user;
                     }
 
-                    public function onSubmit(Player $player, int $selectedOption) : void {
+                    public function onSubmit(Player $player, Button $selectedOption) : void {
                         if($player instanceof CorePlayer) {
-                            switch($this->getOption($selectedOption)->getText()) {
+                            switch($selectedOption->getId()) {
                                 case "Global":
                                     $player->sendProfileForm("Global", $this->user);
                                 break;
@@ -488,13 +522,11 @@ abstract class CorePlayer extends Player {
                 $this->sendForm(new class(TextFormat::GOLD . $profile . TextFormat::BLUE . "Global", $data, $user) extends CustomForm {
                     private $user;
 
-                    public function __construct($title, $data, $user) {
-                        parent::__construct($title, $data);
+                    public function __construct(string $title, array $elements, \Closure $onSubmit, ?\Closure $onClose = null) {
+						parent::__construct($title, $elements, $onSubmit, $onClose);
+					}
 
-                        $this->user = $user;
-                    }
-
-                    public function onClose(Player $player) : void {
+					public function onClose(Player $player) : void {
                         $player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
                     }
                 });
@@ -692,11 +724,16 @@ abstract class CorePlayer extends Player {
         return false;
     }
 
+	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
+		return false; // TODO
+	}
+
     public function handleEntityPickRequest(EntityPickRequestPacket $pk) : bool {
         $target = $this->level->getEntity($pk->entityUniqueId);
 
-        if($target === null)
-            return false;
+        if($target === null) {
+			return false;
+		}
         if($this->isCreative()) {
             $item = Item::get(Item::MONSTER_EGG, $target::NETWORK_ID, 64);
 
@@ -723,8 +760,9 @@ abstract class CorePlayer extends Player {
                 if($target instanceof CreatureBase) {
                     // TODO: check player looking at head and if wearing jack 'o lantern
                     $target->onPlayerLook($this);
-                }elseif($target === null)
-                    $this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
+                } else if($target === null) {
+					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
+				}
                 $return = true;
             break;
             default:

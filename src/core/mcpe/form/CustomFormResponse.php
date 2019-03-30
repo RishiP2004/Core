@@ -2,7 +2,7 @@
 
 namespace core\mcpe\form;
 
-use core\mcpe\form\{
+use core\mcpe\form\element\{
     Element,
     Label,
     Dropdown,

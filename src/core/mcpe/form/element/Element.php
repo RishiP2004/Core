@@ -8,6 +8,8 @@ abstract class Element implements \JsonSerializable {
     protected $text = "";
     /** @var null|mixed */
     protected $value;
+    /** @var mixed */
+    protected $id;
 
     public function __construct(string $text) {
         $this->text = $text;
@@ -15,13 +17,23 @@ abstract class Element implements \JsonSerializable {
 
     abstract public function getType() : ?string;
 
-    public function getValue() : ?int {
+    public function getValue() {
         return $this->value;
     }
-    /** @var int|null $value */
+
     public function setValue($value) {
         $this->value = $value;
     }
+	/**
+	 * @return mixed
+	 */
+    public function getId() {
+    	return $this->id;
+	}
+
+	public function setId($id) {
+    	$this->id = $id;
+	}
 
     final public function jsonSerialize() : array {
         $array = [

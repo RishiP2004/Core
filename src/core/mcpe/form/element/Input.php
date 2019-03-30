@@ -18,7 +18,7 @@ class Input extends Element {
         return "input";
     }
 
-    public function getValue() : ?string {
+    public function getValue() {
         return parent::getValue();
     }
 
