@@ -465,4 +465,9 @@ interface Addon {
 			Chicken::NETWORK_ID
 		]
 	];
+
+	public const BANE_OF_ARTHROPODS_AFFECTED_ENTITIES = [
+		"Spider", "Cave Spider",
+		"Silverfish", "Endermite"
+	];
 }

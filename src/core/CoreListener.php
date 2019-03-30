@@ -6,7 +6,11 @@ use core\broadcast\bossbar\Messages;
 
 use core\broadcast\Broadcasts;
 
-use core\utils\Entity;
+use core\utils\{
+	Entity,
+	Level,
+	Math
+};
 
 use core\mcpe\entity\{
     AnimalBase,
@@ -14,9 +18,11 @@ use core\mcpe\entity\{
     CreatureBase
 };
 
-use core\utils\Math;
-
 use core\mcpe\event\ServerSettingsRequestEvent;
+
+use core\mcpe\entity\vehicle\Minecart;
+
+use core\mcpe\block\SlimeBlock;
 
 use pocketmine\event\Listener;
 
@@ -54,6 +60,7 @@ use pocketmine\event\block\{
 
 use pocketmine\event\server\{
     DataPacketReceiveEvent,
+	DataPacketSendEvent,
     QueryRegenerateEvent
 };
 
@@ -74,7 +81,10 @@ use pocketmine\network\mcpe\protocol\{
     LoginPacket,
     ProtocolInfo,
     InventoryTransactionPacket,
-    ServerSettingsRequestPacket
+    ServerSettingsRequestPacket,
+	StartGamePacket,
+	PlayerActionPacket,
+	PlayerInputPacket
 };
 
 use pocketmine\inventory\transaction\action\SlotChangeAction;
@@ -84,11 +94,11 @@ use pocketmine\inventory\{
     PlayerCursorInventory
 };
 
+use pocketmine\item\enchantment\Enchantment;
+
 use pocketmine\math\Vector3;
 
 use pocketmine\level\Position;
-
-use pocketmine\block\Block;
 
 class CoreListener implements Listener {
     private $core;
@@ -680,9 +690,14 @@ class CoreListener implements Listener {
     }
 
     public function onEntityDamage(EntityDamageEvent $event) {
-        $player = $event->getEntity();
+        $entity = $event->getEntity();
 
-        if($player instanceof CorePlayer) {
+        if($event->isCancelled()) {
+        	return;
+		}
+        if($entity instanceof CorePlayer) {
+        	$player = $entity;
+
             if($event instanceof EntityDamageByEntityEvent) {
                 $area = $player->getArea();
 
@@ -694,9 +709,33 @@ class CoreListener implements Listener {
                         }
                     }
                 }
+				$damager = $event->getDamager();
+
+				if(!$damager instanceof Entity or !$damager->isAlive()) {
+					return;
+				}
+				if($damager instanceof CorePlayer && $player instanceof Living) {
+					$itemInHand = $damager->getInventory()->getItemInHand();
+					$damage = $event->getModifier(EntityDamageEvent::MODIFIER_ARMOR);
+
+					foreach($itemInHand->getEnchantments() as $enchantment) {
+						$level = $enchantment->getLevel();
+
+						switch($enchantment->getId()) {
+							case Enchantment::BANE_OF_ARTHROPODS:
+								if(in_array(strtolower($player->getName()), array_map("strtolower", self::BANE_OF_ARTHROPODS_AFFECTED_ENTITIES))) {
+									$event->setModifier($damage + ($level * 2.5), EntityDamageEvent::MODIFIER_ARMOR);
+								}
+							break;
+							case Enchantment::SMITE:
+								$event->setModifier($damage + ($level * 2.5), EntityDamageEvent::MODIFIER_ARMOR);
+							break;
+						}
+					}
+				}
             }
             if($event->getCause() === EntityDamageEvent::CAUSE_FALL) {
-                if($event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === Block::SLIME_BLOCK) {
+                if($event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === SlimeBlock::class) {
                     $event->setCancelled(true);
                 }
             }
@@ -787,57 +826,101 @@ class CoreListener implements Listener {
         $pk = $event->getPacket();
 
         if($player instanceof CorePlayer) {
-            if($pk instanceof ServerSettingsRequestPacket) {
-				$ev = new ServerSettingsRequestEvent($player);
+        	switch(true) {
+				case $pk instanceof ServerSettingsRequestPacket:
+					$ev = new ServerSettingsRequestEvent($player);
 
-				$this->core->getServer()->getPluginManager()->callEvent($event);
+					$this->core->getServer()->getPluginManager()->callEvent($event);
 
-				if(!$form = $ev->getForm()) {
-					$player->sendSetting($form);
-				}
-            }
-            if($pk instanceof LoginPacket) {
-                if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
-                    if(!empty($this->core->getBroadcast()->getKicks("outdated")["client"])) {
-                        $message = str_replace([
-                            "{PLAYER}",
-                            "{TIME}"
-                        ], [
-                            $player->getName(),
-                            date($this->core->getBroadcast()->getFormats("date_time"))
-                        ], $this->core->getBroadcast()->getKicks("outdated")["client"]);
+					if(!$form = $ev->getForm()) {
+						$player->sendSetting($form);
+					}
+				break;
+				case $pk instanceof LoginPacket:
+					if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
+						if(!empty($this->core->getBroadcast()->getKicks("outdated")["client"])) {
+							$message = str_replace([
+								"{PLAYER}",
+								"{TIME}"
+							], [
+								$player->getName(),
+								date($this->core->getBroadcast()->getFormats("date_time"))
+							], $this->core->getBroadcast()->getKicks("outdated")["client"]);
 
-                        $player->close($message);
-                        $event->setCancelled(true);
-                    }
-                } else if($pk->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
-                    if(!empty($this->core->getBroadcast()->getKicks("outdated")["server"])) {
-                        $message = str_replace([
-                            "{PLAYER}",
-                            "{TIME}"
-                        ], [
-                            $player->getName(),
-                            date($this->core->getBroadcast()->getFormats("date_time"))
-                        ], $this->core->getBroadcast()->getKicks("outdated")["server"]);
+							$player->close($message);
+							$event->setCancelled(true);
+						}
+					} else if($pk->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
+						if(!empty($this->core->getBroadcast()->getKicks("outdated")["server"])) {
+							$message = str_replace([
+								"{PLAYER}",
+								"{TIME}"
+							], [
+								$player->getName(),
+								date($this->core->getBroadcast()->getFormats("date_time"))
+							], $this->core->getBroadcast()->getKicks("outdated")["server"]);
 
-                        $player->close($message);
-                        $event->setCancelled(true);
-                    }
-                }
-            }
-            if($pk instanceof InventoryTransactionPacket) {
-                if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY && $pk->trData->actionType === InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT) {
-                    $entity = $pk->trData;
+							$player->close($message);
+							$event->setCancelled(true);
+						}
+					}
+				break;
+				case $pk instanceof InventoryTransactionPacket:
+					if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY && $pk->trData->actionType === InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT) {
+						$entity = $pk->trData;
 
-                    foreach($this->core->getEssence()->getNPCs() as $NPC) {
-                        if($entity->entityRuntimeId === $NPC->getEID()) {
-                            $NPC->onInteract($player);
-                        }
-                    }
-                }
-            }
+						foreach($this->core->getEssence()->getNPCs() as $NPC) {
+							if($entity->entityRuntimeId === $NPC->getEID()) {
+								$NPC->onInteract($player);
+							}
+						}
+						$entityq = $player->getLevel()->getEntity($pk->trData->entityRuntimeId);
+						$item = $player->getInventory()->getItemInHand();
+						$slot = $pk->trData->hotbarSlot;
+						$clickPos = $pk->trData->clickPos;
+
+						if(method_exists($entity, "onInteract")) {
+							$entity->onInteract($player, $item, $slot, $clickPos);
+						}
+					}
+				break;
+				case $pk instanceof PlayerActionPacket:
+					switch($pk->action) {
+						case PlayerActionPacket::ACTION_DIMENSION_CHANGE_ACK:
+						case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
+							$pk->action = PlayerActionPacket::ACTION_RESPAWN;
+						break;
+						case PlayerActionPacket::ACTION_START_SWIMMING:
+							$player->setGenericFlag(CorePlayer::DATA_FLAG_SWIMMING, true);
+						break;
+						case PlayerActionPacket::ACTION_STOP_SWIMMING:
+							$player->setGenericFlag(CorePlayer::DATA_FLAG_SWIMMING, false);
+						break;
+					}
+				break;
+				case $pk instanceof PlayerInputPacket:
+					if(isset($player->riding) && $player->riding instanceof Minecart) {
+						/** @var $riding Minecart */
+						$riding = $player->riding;
+
+						$riding->setCurrentSpeed($pk->motionY);
+					}
+					$event->setCancelled();
+				break;
+			}
         }
     }
+
+	public function onDataPacketSend(DataPacketSendEvent $event) {
+		$pk = $event->getPacket();
+		$player = $event->getPlayer();
+
+		switch(true) {
+			case $pk instanceof StartGamePacket:
+				$pk->dimension = Level::getDimension($player->getLevel());
+			break;
+		}
+	}
 
     public function onBlockBreak(BlockBreakEvent $event) {
         $player = $event->getPlayer();

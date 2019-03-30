@@ -45,10 +45,16 @@ abstract class CustomForm extends Form {
         ];
     }
 
+	public function onSubmit(Player $player, CustomFormResponse $data) : void {
+	}
+
+	public function onClose(Player $player) : void {
+	}
+
     final public function handleResponse(Player $player, $data) : void {
         if($data === null) {
             if($this->onClose !== null) {
-                ($this->onClose)($player);
+                $this->onClose($player);
             }
         } else if(is_array($data)) {
             foreach($data as $index => $value) {
@@ -60,7 +66,7 @@ abstract class CustomForm extends Form {
                 $element->validate($value);
                 $element->setValue($value);
             }
-            ($this->onSubmit)($player, new CustomFormResponse($this->elements));
+            $this->onSubmit($player, new CustomFormResponse($this->elements));
         } else {
             throw new FormValidationException("Expected array or null, got " . gettype($data));
         }

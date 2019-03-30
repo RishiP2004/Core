@@ -49,10 +49,16 @@ class MenuForm extends Form {
         ];
     }
 
+	public function onSubmit(Player $player, int $selectedOption) : void {
+	}
+
+	public function onClose(Player $player) : void {
+	}
+
     final public function handleResponse(Player $player, $data) : void {
         if($data === null) {
             if($this->onClose !== null) {
-                ($this->onClose)($player, $data);
+                $this->onClose($player);
             }
         } else if(is_int($data)) {
             if(!isset($this->buttons[$data])) {
@@ -62,7 +68,7 @@ class MenuForm extends Form {
                 $button = $this->buttons[$data];
 
                 $button->setValue($data);
-                ($this->onSubmit)($player, $button);
+                $this->onSubmit($player, $button);
             }
         } else {
             throw new FormValidationException("Expected int or null, got " . gettype($data));

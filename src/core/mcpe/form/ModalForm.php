@@ -48,10 +48,13 @@ class ModalForm extends Form {
         ];
     }
 
+	public function onSubmit(Player $player, bool $choice) : void {
+	}
+
     final public function handleResponse(Player $player, $data) : void {
         if(!is_bool($data)) {
             throw new FormValidationException("Expected bool, got " . gettype($data));
         }
-        ($this->onSubmit)($player, $data);
+        $this->onSubmit($player, $data);
     }
 }
