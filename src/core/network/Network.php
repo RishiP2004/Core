@@ -10,9 +10,14 @@ use core\network\server\{
     Lobby
 };
 
-use core\network\command\Restarter;
+use core\network\command\{
+	Backup,
+	Restarter
+};
 
-class Network implements Restarting {
+use pocketmine\scheduler\Task;
+
+class Network implements Networking {
     private $core;
 
     private $timer;
@@ -29,6 +34,7 @@ class Network implements Restarting {
 
         $this->initServer(new Factions());
         $this->initServer(new Lobby());
+        $core->getServer()->getCommandMap()->register("backup", new Backup($core));
         $core->getServer()->getCommandMap()->register("restarter", new Restarter($core));
     }
 
@@ -59,6 +65,18 @@ class Network implements Restarting {
     public function getMessages() : array {
         return self::MESSAGES;
     }
+
+    public function tick() {
+    	if(is_int(self::SERVER_BACKUP)) {
+    		$this->core->getScheduler()->scheduleRepeatingTask(new class extends Task {
+    			public function onRun(int $currentTick) {
+					$backThread = new BackThread;
+
+					$backThread->run();
+				}
+			}, self::SERVER_BACKUP)	;
+		}
+	}
 
     public function initServer(Server $server) {
         $this->servers[$server->getName()] = $server;

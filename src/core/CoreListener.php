@@ -874,7 +874,7 @@ class CoreListener implements Listener {
 								$NPC->onInteract($player);
 							}
 						}
-						$entityq = $player->getLevel()->getEntity($pk->trData->entityRuntimeId);
+						$entity = $player->getLevel()->getEntity($entity->entityRuntimeId);
 						$item = $player->getInventory()->getItemInHand();
 						$slot = $pk->trData->hotbarSlot;
 						$clickPos = $pk->trData->clickPos;
@@ -1024,12 +1024,17 @@ class CoreListener implements Listener {
 
         if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
             $biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-            $entityList = $this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId];
+
+			if(array_key_exists($biomeId, $this->core->getMCPE()::BIOME_ANIMALS)) {
+				$entityList = $this->core->getMCPE()::BIOME_ANIMALS[$biomeId];
+			} else {
+				$entityList = $this->core->getMCPE()::BIOME_ANIMALS[$biomeId = 1];
+			}
 			
 			if(empty($entityList)) {
 				return;
 			}
-			$entityId = $entityList[array_rand($this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId])];
+			$entityId = $entityList[array_rand($this->core->getMCPE()::BIOME_ANIMALS[$biomeId])];
 
             if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
                 for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
@@ -1049,7 +1054,12 @@ class CoreListener implements Listener {
             }
         } else if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7) {
             $biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-            $entityList = $this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId];
+
+			if(array_key_exists($biomeId, $this->core->getMCPE()::BIOME_ANIMALS)) {
+				$entityList = $this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId];
+			} else {
+				$entityList =$this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId = 1];
+			}
 			
 			if(empty($entityList)) {
 				return;

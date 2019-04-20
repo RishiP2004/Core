@@ -4,19 +4,10 @@ namespace core\mcpe\entity\monster\walking;
 
 use core\Core;
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\item\Item;
 
 class Stray extends Skeleton {
     const NETWORK_ID = self::STRAY;
-
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
-
-        $this->width = 0.875;
-        $this->height = 2.0;
-    }
 
     public function getName() : string {
         return "Stray";

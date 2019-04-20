@@ -55,6 +55,10 @@ class Beacon extends Spawnable implements InventoryHolder {
 		$this->scheduleUpdate();
 	}
 
+	public function getInventory() {
+		return $this->inventory;
+	}
+
 	public function saveNBT() : CompoundTag {
 		return parent::saveNBT();
 	}
@@ -62,7 +66,6 @@ class Beacon extends Spawnable implements InventoryHolder {
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void {
 		$nbt->setInt(self::TAG_PRIMARY, $this->getNBT()->getInt(self::TAG_PRIMARY));
 		$nbt->setInt(self::TAG_SECONDARY, $this->getNBT()->getInt(self::TAG_SECONDARY));
-		//ToDo: isMovable
 	}
 
 	public function getNBT() : CompoundTag {
@@ -84,7 +87,12 @@ class Beacon extends Spawnable implements InventoryHolder {
 	}
 
 	public function isPaymentItem(Item $item){ //ToDo: When FloatingInventory implemented, remove item
-		return in_array($item->getId(), [Item::DIAMOND, Item::IRON_INGOT, Item::GOLD_INGOT, Item::EMERALD]);
+		return in_array($item->getId(), [
+			Item::DIAMOND,
+			Item::IRON_INGOT,
+			Item::GOLD_INGOT,
+			Item::EMERALD
+		]);
 	}
 
 	public function isSecondaryAvailable() {
@@ -118,7 +126,12 @@ class Beacon extends Spawnable implements InventoryHolder {
 	public function checkShape(Vector3 $pos, $layer = 1) {
 		for($x = $pos->x - $layer; $x <= $pos->x + $layer; $x++) {
 			for($z = $pos->z - $layer; $z <= $pos->z + $layer; $z++) {
-				if(!in_array($this->getLevel()->getBlockIdAt($x, $pos->y, $z), [Block::DIAMOND_BLOCK, Block::IRON_BLOCK, Block::EMERALD_BLOCK, Block::GOLD_BLOCK])) {
+				if(!in_array($this->getLevel()->getBlockIdAt($x, $pos->y, $z), [
+					Block::DIAMOND_BLOCK,
+					Block::IRON_BLOCK,
+					Block::EMERALD_BLOCK,
+					Block::GOLD_BLOCK
+				])) {
 					return false;
 				}
 			}
@@ -143,7 +156,10 @@ class Beacon extends Spawnable implements InventoryHolder {
 	}
 
 	public function getEffects() {
-		return [$this->getPrimaryEffect(), $this->getSecondaryEffect()];
+		return [
+			$this->getPrimaryEffect(),
+			$this->getSecondaryEffect()
+		];
 	}
 
 	public function getPrimaryEffect() {
@@ -175,7 +191,6 @@ class Beacon extends Spawnable implements InventoryHolder {
 	}
 
 	public function applyEffects(Vector3 $pos) {
-		//TODO: Apply stronger effects on secondary.
 		$layers = $this->getLayers();
 
 		foreach($this->getLevel()->getCollidingEntities(new AxisAlignedBB($pos->x - (10 + 10 * $layers), 0, $pos->z - (10 + 10 * $layers), $pos->x + (10 + 10 * $layers), Level::Y_MAX, $pos->z + (10 + 10 * $layers))) as $player) {
@@ -214,10 +229,6 @@ class Beacon extends Spawnable implements InventoryHolder {
 			default:
 				return false;
 		}
-	}
-
-	public function getInventory() {
-		return $this->inventory;
 	}
 
 	protected function readSaveData(CompoundTag $nbt) : void {

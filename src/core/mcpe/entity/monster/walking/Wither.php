@@ -22,8 +22,8 @@ class Wither extends MonsterBase implements Collidable{
 
     public $width = 0.9, $height = 3.5;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

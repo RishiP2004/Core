@@ -23,12 +23,12 @@ use pocketmine\item\Item;
 class Witch extends MonsterBase implements Collidable {
     use CollisionCheckingTrait, ItemHolderTrait;
 
-    const NETWORK_ID = self::ZOMBIE_VILLAGER;
+    const NETWORK_ID = self::WITCH;
 
     public $width = 0.6, $height = 1.95;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

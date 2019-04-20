@@ -4,13 +4,15 @@ namespace core\mcpe;
 
 use core\Core;
 
-use core\mcpe\block\{Beacon as BeaconBlock,
+use core\mcpe\inventory\BrewingManager;
+
+use core\mcpe\block\{
+	Beacon as BeaconBlock,
     Bed,
     BrewingStand as BrewingStandBlock,
     Cauldron as CauldronBlock,
     EnchantingTable,
     EndPortal,
-    EndPortalFrame,
     Hopper as HopperBlock,
     Jukebox as JukeboxBlock,
     LitPumpkin,
@@ -23,8 +25,34 @@ use core\mcpe\block\{Beacon as BeaconBlock,
 };
 
 use core\mcpe\entity\{
-    MonsterBase,
-    AnimalBase
+	MonsterBase,
+	AnimalBase
+};
+
+use core\mcpe\entity\monster\flying\EnderDragon;
+
+use core\mcpe\entity\monster\walking\{
+	Wither,
+	Endermite,
+	SnowGolem,
+	IronGolem
+};
+
+use core\mcpe\entity\monster\swimming\ElderGuardian;
+
+use core\mcpe\entity\object\Item;
+
+use core\mcpe\item\{
+	ArmorStand,
+	Bucket,
+	EndCrystal,
+	FireCharge,
+	FishingRod,
+	FlintSteel,
+	GlassBottle,
+	LingeringPotion,
+	Minecart,
+	Record,
 };
 
 use core\mcpe\tile\{
@@ -39,9 +67,22 @@ use core\mcpe\tile\{
 
 use core\mcpe\level\generator\ender\Ender;
 
+use core\mcpe\network\{
+	CraftingDataPacket,
+	InventoryTransactionPacket,
+	PlayerNetworkSessionAdapter
+};
+
 use pocketmine\entity\Entity;
 
 use pocketmine\block\BlockFactory;
+
+use pocketmine\item\{
+	ItemFactory,
+	SpawnEgg
+};
+
+use pocketmine\network\mcpe\protocol\PacketPool;
 
 use pocketmine\tile\Tile;
 
@@ -56,8 +97,12 @@ use pocketmine\level\format\Chunk;
 
 use pocketmine\math\Vector3;
 
+use pocketmine\utils\Config;
+
 class MCPE implements Addon {
     private $core;
+
+    private $brewingManager;
 
     public $registeredEntities = [];
 
@@ -75,12 +120,10 @@ class MCPE implements Addon {
 	
     public function __construct(Core $core) {
         $this->core = $core;
+		$this->brewingManager = new BrewingManager();
 
-        foreach(self::ENTITY_CLASSES as $className) {
-            Entity::registerEntity($className, true);
+		\core\utils\Level::$chunkCounter = $core->getConfig()->getAll();
 
-            $this->registeredEntities[] = $className;
-        }
         BlockFactory::registerBlock(new BeaconBlock(), true);
         BlockFactory::registerBlock(new Bed(), true);
         BlockFactory::registerBlock(new BrewingStandBlock(), true);
@@ -91,11 +134,46 @@ class MCPE implements Addon {
         BlockFactory::registerBlock(new JukeboxBlock(), true);
         BlockFactory::registerBlock(new LitPumpkin(), true);
         BlockFactory::registerBlock(new MonsterSpawner(), true);
-        BlockFactory::registerBlock(new Obsidian(), true);
         BlockFactory::registerBlock(new NetherPortal(), true);
+		BlockFactory::registerBlock(new Obsidian(), true);
         BlockFactory::registerBlock(new Pumpkin(), true);
         BlockFactory::registerBlock(new ShulkerBoxBlock(), true);
-        BlockFactory::registerBlock(new SlimeBlock(), true);;
+        BlockFactory::registerBlock(new SlimeBlock(), true);
+
+		foreach(self::ENTITIES as $className => $saveNames) {
+			Entity::registerEntity($className, true, $saveNames);
+
+			if(!in_array($className, [
+				EnderDragon::class,
+				Wither::class,
+				ElderGuardian::class,
+				Endermite::class,
+				Item::class,
+				SnowGolem::class,
+				IronGolem::class
+			])) {
+				$item = new SpawnEgg(constant($className . "::NETWORK_ID"));
+
+				if(!\pocketmine\item\Item::isCreativeItem($item)) {
+					\pocketmine\item\Item::addCreativeItem($item);
+				}
+			}
+			$this->registeredEntities[] = $className;
+		}
+		ItemFactory::registerItem(new ArmorStand(), true);
+		ItemFactory::registerItem(new Bucket(), true);
+		ItemFactory::registerItem(new EndCrystal(), true);
+		ItemFactory::registerItem(new FireCharge(), true);
+		ItemFactory::registerItem(new FishingRod(), true);
+		ItemFactory::registerItem(new FlintSteel(), true);
+		ItemFactory::registerItem(new GlassBottle(), true);
+		ItemFactory::registerItem(new LingeringPotion(), true);
+		ItemFactory::registerItem(new Minecart(), true);
+		ItemFactory::registerItem(new Record(), true);
+		Item::initCreativeItems();
+
+		PacketPool::registerPacket(new CraftingDataPacket());
+		PacketPool::registerPacket(new InventoryTransactionPacket());
 
         Tile::registerTile(BeaconTile::class);
         Tile::registerTile(BrewingStandTile::class);
@@ -104,8 +182,6 @@ class MCPE implements Addon {
         Tile::registerTile(JukeboxTile::class);
         Tile::registerTile(MobSpawner::class);
         Tile::registerTile(ShulkerboxTile::class);
-
-        GeneratorManager::addGenerator(Ender::class, "ender");
 
         if(!$this->core->getServer()->loadLevel(self::$netherName)) {
             $this->core->getServer()->generateLevel(self::$netherName, time(), GeneratorManager::getGenerator("nether"));
@@ -116,28 +192,52 @@ class MCPE implements Addon {
             $this->core->getServer()->generateLevel(self::$endName, time(), GeneratorManager::getGenerator("ender"));
         }
         self::$endLevel = $this->core->getServer()->getLevelByName(self::$endName);
+
+		$properties = new Config($this->core->getServer()->getDataPath() . "server.properties", Config::PROPERTIES, [
+			"motd" => \pocketmine\NAME . " Server",
+			"server-port" => 19132,
+			"white-list" => false,
+			"announce-player-achievements" => true,
+			"spawn-protection" => 16,
+			"max-players" => 20,
+			"spawn-animals" => true,
+			"spawn-mobs" => true,
+			"gamemode" => 0,
+			"force-gamemode" => false,
+			"hardcore" => false,
+			"pvp" => true,
+			"difficulty" => 1,
+			"generator-settings" => "",
+			"level-name" => "world",
+			"level-seed" => "",
+			"level-type" => "DEFAULT",
+			"enable-query" => true,
+			"enable-rcon" => false,
+			"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
+			"auto-save" => true,
+			"view-distance" => 8,
+			"xbox-auth" => true,
+			"language" => "eng"
+		]);
+		if(!$properties->exists("spawn-animals")) {
+			$properties->set("spawn-animals", true);
+		}
+		if(!$properties->exists("spawn-mobs")) {
+			$properties->set("spawn-mobs", true);
+		}
+		if($properties->hasChanged()) {
+			$properties->save();
+		}
     }
+
+    public function getBrewingManager() : BrewingManager {
+    	return $this->brewingManager;
+	}
     /**
      * @return Entity[]
      */
     public function getRegisteredEntities() : array {
         return $this->registeredEntities;
-    }
-
-    public function getSpawnCount() : int {
-        return self::SPAWN_COUNT;
-    }
-
-    public function getSpawnRange() : int {
-        return self::SPAWN_RANGE;
-    }
-
-    public function getMinSpawnDelay() : int {
-        return self::MIN_SPAWN_DELAY;
-    }
-
-    public function getMaxSpawnDelay() : int {
-        return self::MAX_SPAWN_DELAY;
     }
 
     public function drops() : bool {
@@ -234,7 +334,7 @@ class MCPE implements Addon {
                                     break;
                                 }
                             }
-                            // TODO: check age
+                            //TODO: Check Age
                             if($entity instanceof MonsterBase and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) > 8 and !$entity->isPersistent()) {
                                 $entity->flagForDespawn();
                             } else if($entity instanceof AnimalBase and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity->isPersistent()) {
@@ -299,17 +399,18 @@ class MCPE implements Addon {
             }
 		}
 		if($this->runs % 20 * 60 * 60) {
-            foreach($this->core->getServer()->getLevels() as $level) {
-                foreach($level->getPlayers() as $player) {
-                    $chunk = $player->chunk;
-                    if($chunk !== null) {
-                        if(!isset($chunk->inhabitedTime)) {
-							$chunk->inhabitedTime = 1;
-						} else {
-							$chunk->inhabitedTime += 1;
-						}
-                    }
-                }
+            foreach($this->core->getServer()->getOnlinePlayers() as $player) {
+				$level = $player->level;
+				$chunk = $player->chunk;
+
+				if($level !== null and $chunk !== null) {
+					$hash = Level::chunkHash($chunk->getX(), $chunk->getZ());
+
+					if(!isset(\core\utils\Level::$chunkCounter[$hash])) {
+						\core\utils\Level::$chunkCounter[$hash . ":" . $level->getFolderName()] = 0;
+					}
+					\core\utils\Level::$chunkCounter[$hash . ":" . $level->getFolderName()] += 1;
+				}
             }
 		}
 	}

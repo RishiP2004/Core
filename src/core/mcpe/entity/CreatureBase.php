@@ -20,8 +20,8 @@ use pocketmine\entity\Entity;
 
 use pocketmine\block\Block;
 
-abstract class CreatureBase extends Creature implements Linkable, Collidable {
-	use SpawnableTrait, CollisionCheckingTrait;
+abstract class CreatureBase extends Creature implements Linkable, Collidable, Lookable {
+	use SpawnableTrait, CollisionCheckingTrait, LinkableTrait;
 
 	protected $speed = 1.0, $stepHeight = 1.0;
 
@@ -29,9 +29,11 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 
 	protected $persistent = false;
 
-	protected $linkedEntity;
-
 	protected $moveTime = 0;
+
+	public function initEntity() : void {
+		parent::initEntity();
+	}
 
     public static function getRightSide(int $side) : int {
 		if($side >= 0 and $side <= 5) {
@@ -42,10 +44,6 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 
 	public static function spawnMob(Position $position, ?CompoundTag $tag = null) : ?CreatureBase {
 		return null;
-	}
-
-	public function initEntity(CompoundTag $tag) : void {
-		parent::initEntity($tag);
 	}
 
 	public function move(float $dx, float $dy, float $dz) : void {
@@ -62,10 +60,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 		} else {
 			$this->ySize *= 0.4;
 			$axisalignedbb = clone $this->boundingBox;
-
-			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
-
-			$list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->offsetCopy($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
+			$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
 			foreach($list as $bb) {
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
@@ -84,7 +79,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 			}
 			$this->boundingBox->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)) {
+			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX !== $dx or $movZ !== $dz)) {
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
@@ -117,7 +112,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 					$dy = $cy;
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
-				 }else {
+				 } else {
 					$block = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
 					$blockBB = $block->getBoundingBox() ?? new AxisAlignedBB($block->x, $block->y, $block->z, $block->x + 1, $block->y + 1, $block->z + 1);
 					$this->ySize += $blockBB->maxY - $blockBB->minY;
@@ -142,6 +137,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 		if($movZ != $dz) {
 			$this->motion->z = 0;
 		}
+		//TODO: vehicle collision events (first we need to spawn them!)
 		Timings::$entityMoveTimer->stopTiming();
 	}
 
@@ -183,15 +179,6 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 
 	public function setPersistence(bool $persistent) : self {
 		$this->persistent = $persistent;
-		return $this;
-	}
-
-	public function getLink() : ?Linkable {
-		return $this->linkedEntity;
-	}
-
-	public function setLink(?Linkable $entity) : self {
-		$this->linkedEntity = $entity;
 		return $this;
 	}
 

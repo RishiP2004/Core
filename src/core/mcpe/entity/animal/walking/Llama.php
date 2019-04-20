@@ -11,8 +11,6 @@ use core\mcpe\entity\{
     Interactable
 };
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\entity\Entity;
 
 use pocketmine\item\Item;
@@ -22,8 +20,8 @@ class Llama extends AnimalBase implements Collidable, Interactable {
 
     public $width = 0.9, $height = 1.87;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

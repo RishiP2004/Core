@@ -6,4 +6,6 @@ interface Linkable {
 	public function getLink() : ?Linkable;
 
 	public function setLink(Linkable $entity);
+
+	public function unlink() : bool;
 }

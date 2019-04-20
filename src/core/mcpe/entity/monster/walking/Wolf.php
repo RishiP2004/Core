@@ -7,18 +7,15 @@ use core\mcpe\entity\{
     Collidable
 };
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\entity\Entity;
 
 class Wolf extends CreatureBase implements Collidable {
     const NETWORK_ID = self::WOLF;
 
-
     public $width = 1.2, $height = 0.969;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

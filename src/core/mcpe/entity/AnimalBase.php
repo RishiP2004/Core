@@ -6,15 +6,13 @@ use pocketmine\entity\Ageable;
 
 use pocketmine\event\entity\EntityDamageEvent;
 
-use pocketmine\nbt\tag\CompoundTag;
-
 abstract class AnimalBase extends CreatureBase implements Ageable {
     use AgeableTrait, PanicableTrait;
 
 	protected $growTime = 200;
 
-	public function initEntity(CompoundTag $tag) : void {
-		parent::initEntity($tag);
+	public function initEntity() : void {
+		parent::initEntity();
 	}
 
 	public function attack(EntityDamageEvent $source) : void {

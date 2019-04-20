@@ -52,12 +52,14 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
     const NETWORK_ID = self::ZOMBIE;
 
     public $width = 0.6, $height = 1.95;
-
+	/**
+	 * @var int
+	 */
     protected $attackDelay;
 
     protected $speed = 1.2;
 
-    public function initEntity(CompoundTag $tag) : void {
+    public function initEntity() : void {
         if(mt_rand(1, 100) < 6) {
             $this->setBaby();
 
@@ -72,7 +74,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
                 $this->equipRandomArmour();
             }
         }
-        parent::initEntity($tag);
+        parent::initEntity();
     }
 
     public function getName() : string {
@@ -254,7 +256,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
             $this->server->broadcastPacket($this->hasSpawned, $packet);
             $entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
         }
-        if($entity instanceof \core\mcpe\entity\projectile\Item) {
+        if($entity instanceof \core\mcpe\entity\object\Item) {
             if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
                 return;
             }

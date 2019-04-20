@@ -10,8 +10,6 @@ use core\mcpe\entity\{
 	Interactable
 };
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\entity\Entity;
 
 class Parrot extends AnimalBase implements Collidable, Interactable {
@@ -20,8 +18,8 @@ class Parrot extends AnimalBase implements Collidable, Interactable {
 	public $width = 0.5;
 	public $height = 0.9;
 	
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

@@ -7,8 +7,6 @@ use core\mcpe\entity\{
 	Collidable
 };
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\entity\Entity;
 
 class Dolphin extends AnimalBase implements Collidable {
@@ -16,8 +14,8 @@ class Dolphin extends AnimalBase implements Collidable {
 	
 	public $width = 1.0, $height = 1.0;
 
-	public function initEntity(CompoundTag $tag) : void {
-		parent::initEntity($tag); 
+	public function initEntity() : void {
+		parent::initEntity();
 	}
 	
 	public function getName() : string {

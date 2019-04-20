@@ -163,7 +163,7 @@ abstract class Vehicle extends \pocketmine\entity\Vehicle {
     public function onUpdate(int $currentTick) : bool {
         $hasUpdated = parent::onUpdate($currentTick);
 
-        if($this->closed or !$this->isAlive()){
+        if($this->isFlaggedForDespawn() or !$this->isAlive()){
             return false;
         }
         if($this->getRollingAmplitude() > 0) {

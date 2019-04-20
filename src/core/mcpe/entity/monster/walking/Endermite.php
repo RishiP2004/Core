@@ -17,12 +17,13 @@ use pocketmine\entity\Entity;
 
 class Endermite extends MonsterBase implements Collidable {
     use CollisionCheckingTrait;
+
     const NETWORK_ID = self::ENDERMITE;
 
     public $width = 0.4, $height = 0.3;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

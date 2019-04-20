@@ -6,7 +6,7 @@ use core\Core;
 
 use core\utils\Math;
 
-class Timer implements Restarting {
+class Timer implements Networking {
     private $core;
 
     const NORMAL = 0;

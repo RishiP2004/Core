@@ -30,10 +30,10 @@ class ZombiePigman extends MonsterBase implements Ageable, Collidable {
 
     public $width = 2.0, $height = 2.0;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+		$this->mainHand = Item::get(Item::GOLD_SWORD);
 
-        $this->mainHand = Item::get(Item::GOLD_SWORD);
+        parent::initEntity();
     }
 
     public function getName() : string {

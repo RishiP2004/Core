@@ -23,5 +23,8 @@ class CoreTask extends Task {
 		if($this->runs % 1 === 0) {
 			$this->core->getMCPE()->tick();
 		}
+		if($this->runs * 20 * 60) {
+			$this->core->getNetwork()->tick();
+		}
     }
 }

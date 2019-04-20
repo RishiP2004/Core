@@ -10,6 +10,9 @@ use pocketmine\level\format\Chunk;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
 class Level extends \pocketmine\level\Level {
+	/** @var int[] $chunkCounter */
+	public static $chunkCounter = [];
+
 	public static function getClumpedRegionalDifficulty(\pocketmine\level\Level $level, Chunk $chunk) : float {
 		$regionalDifficulty = self::getRegionalDifficulty($level, $chunk);
 		
@@ -42,7 +45,7 @@ class Level extends \pocketmine\level\Level {
 		} else {
 			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000) / 5760000;
 		}
-		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0;
+		$chunkInhabitedTime = self::$chunkCounter[Level::chunkHash($chunk->getX(), $chunk->getZ()) . ":" . $level->getFolderName()] ?? 0;
 		
 		if($chunkInhabitedTime > 50) {
 			$chunkFactor = 1;

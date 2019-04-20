@@ -3,71 +3,59 @@
 namespace core\mcpe\tile;
 
 use core\Core;
-use core\CorePlayer;
 
 use core\mcpe\Addon;
 
+use core\mcpe\entity\CreatureBase;
+
 use pocketmine\tile\Spawnable;
 
-use pocketmine\level\Level;
-
-use pocketmine\nbt\tag\{
-    CompoundTag,
-    StringTag,
-    ShortTag,
-    IntTag
-};
-
-use pocketmine\item\Item;
-
-use pocketmine\entity\Entity;
+use pocketmine\math\AxisAlignedBB;
 
 use pocketmine\utils\TextFormat;
 
+use pocketmine\entity\EntityIds;
+
+use pocketmine\level\{
+	Level,
+	Position
+};
+
+use pocketmine\entity\{
+	Living,
+	Entity
+};
+
+use pocketmine\nbt\tag\{
+	CompoundTag,
+	IntTag,
+	ShortTag,
+	FloatTag
+};
+
 abstract class MobSpawner extends Spawnable implements Addon {
-	public const TAG_ENTITY_ID = "EntityId", TAG_SPAWN_COUNT = "SpawnCount", TAG_SPAWN_RANGE = "SpawnRange", TAG_MIN_SPAWN_DELAY = "MinSpawnDelay", TAG_MAX_SPAWN_DELAY = "MaxSpawnDelay", TAG_DELAY = "Delay";
-	
-	protected $entityId = 0;
-	protected $spawnCount = 4;
-	protected $spawnRange = 4;
-	protected $minSpawnDelay = 200;
-	protected $maxSpawnDelay = 800;
-	/** @var int */
-	protected $delay;
-	
-    public function __construct(Level $level, CompoundTag $nbt) {
-		if($nbt->hasTag("SpawnCount", ShortTag::class) or $nbt->hasTag("EntityId", StringTag::class)) {
-            $nbt->removeTag("EntityId");
-            $nbt->removeTag("SpawnCount");
-            $nbt->removeTag("SpawnRange");
-            $nbt->removeTag("MinSpawnDelay");
-            $nbt->removeTag("MaxSpawnDelay");
-            $nbt->removeTag("Delay");
-        }
-        if(!$nbt->hasTag("EntityId", IntTag::class)) {
-            $nbt->setInt("EntityId", 0);
-        }
-        if(!$nbt->hasTag("SpawnCount", IntTag::class)) {
-            $nbt->setInt("SpawnCount", self::SPAWN_COUNT);
-        }
-        if(!$nbt->hasTag("SpawnRange", IntTag::class)) {
-            $nbt->setInt("SpawnRange", self::SPAWN_RANGE);
-        }
-        if(!$nbt->hasTag("MinSpawnDelay", IntTag::class)) {
-            $nbt->setInt("MinSpawnDelay", self::MIN_SPAWN_DELAY);
-        }
-        if(!$nbt->hasTag("MaxSpawnDelay", IntTag::class)) {
-            $nbt->setInt("MaxSpawnDelay", self::MAX_SPAWN_DELAY);
-        }
-        if(!$nbt->hasTag("Delay", IntTag::class)) {
-            $nbt->setInt("Delay", mt_rand($nbt->getInt("MinSpawnDelay"), $nbt->getInt("MaxSpawnDelay")));
-        }
-        parent::__construct($level, $nbt);
-		
-        if($this->getEntityId() > 0) {
-            $this->scheduleUpdate();
-        }
-    }
+	public const IS_MOVABLE = "isMovable";
+	public const DELAY = "Delay";
+	public const MAX_NEARBY_ENTITIES = "MaxNearbyEntities";
+	public const MAX_SPAWN_DELAY = "MaxSpawnDelay";
+	public const MIN_SPAWN_DELAY = "MinSawnDelay";
+	public const REQUIRED_PLAYER_RANGE = "RequiredPlayerRange";
+	public const SPAWN_COUNT = "SpawnCount";
+	public const SPAWN_RANGE = "SpawnRange";
+	public const ENTITY_ID = "EntityId";
+	public const DISPLAY_ENTITY_HEIGHT = "DisplayEntityHeight";
+	public const DISPLAY_ENTITY_SCALE = "DisplayEntityScale";
+	public const DISPLAY_ENTITY_WIDTH = "DisplayEntityWidth";
+
+	protected $spawnRange = 4, $delay = -1, $maxNearbyEntities = 6, $requiredPlayerRange = 16, $minSpawnDelay = 200, $maxSpawnDelay = 800, $spawnCount = 4, $tier;
+	/** @var AxisAlignedBB|null $spawnArea */
+	protected $spawnArea;
+
+	protected $isMovable = false;
+
+	protected $entityId = -1;
+
+	protected $displayHeight = 0.9, $displayScale = 0.5, $displayWidth = 0.3;
 
     public function getName() : string {
         if($this->getEntityId() === 0) {
@@ -82,178 +70,195 @@ abstract class MobSpawner extends Spawnable implements Addon {
         return $name;
     }
 
-    public function getNBT() : CompoundTag {
-        return $this->nbt;
-    }
+	public function getEntityId() : int {
+		return $this->entityId;
+	}
 
-    public function getEntityId() : int {
-        return $this->getNBT()->getInt("EntityId");
-    }
+	public function setEntityId(int $eid) : self {
+		$this->entityId = $eid;
+		$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
 
-    public function setEntityId(int $entityId) {
-        $this->getNBT()->setInt("EntityId", $entityId);
-        $this->onChanged();
-        $this->scheduleUpdate();
-    }
+		$this->onChanged();
+		$this->scheduleUpdate();
+		return $this;
+	}
 
-    public function getSpawnCount() : int {
-        return $this->getNBT()->getInt("SpawnCount");
-    }
+	public function setMinSpawnDelay(int $minDelay) : self {
+		if($minDelay < $this->maxSpawnDelay) {
+			$this->minSpawnDelay = $minDelay;
+		}
+		return $this;
+	}
 
-    public function setSpawnCount(int $spawnCount) {
-        $this->getNBT()->setInt("SpawnCount", $spawnCount);
-    }
+	public function setMaxSpawnDelay(int $maxDelay) : self {
+		if($this->minSpawnDelay < $maxDelay and $maxDelay !== 0) {
+			$this->maxSpawnDelay = $maxDelay;
+		}
+		return $this;
+	}
 
-    public function getSpawnRange() : int {
-        return $this->getNBT()->getInt("SpawnRange");
-    }
+	public function setSpawnDelay(int $delay) : self {
+		if($delay < $this->maxSpawnDelay and $delay > $this->minSpawnDelay) {
+			$this->delay = $delay;
+		}
+		return $this;
+	}
 
-    public function setSpawnRange(int $spawnRange) {
-        $this->getNBT()->setInt("SpawnRange", $spawnRange);
-    }
+	public function setRequiredPlayerRange(int $range) : self {
+		if($range < 0) {
+			$range = 0;
+		}
+		$this->requiredPlayerRange = $range;
+		return $this;
+	}
 
-    public function getMinSpawnDelay() : int {
-        return $this->getNBT()->getInt("MinSpawnDelay");
-    }
+	public function setMaxNearbyEntities(int $count) : self {
+		$this->maxNearbyEntities = $count;
+		return $this;
+	}
 
-    public function setMinSpawnDelay(int $minSpawnDelay) {
-        $this->getNBT()->setInt("MinSpawnDelay", $minSpawnDelay);
-    }
+	public function setMovable(bool $isMovable = true) : self {
+		$this->isMovable = $isMovable;
+		return $this;
+	}
 
-    public function getMaxSpawnDelay() : int {
-        return $this->getNBT()->getInt("MaxSpawnDelay");
-    }
-
-    public function setMaxSpawnDelay(int $maxSpawnDelay) {
-        $this->getNBT()->setInt("MaxSpawnDelay", $maxSpawnDelay);
-    }
-
-    public function getDelay() {
-        return $this->getNBT()->getInt("Delay");
-    }
-
-    public function setDelay(int $delay) {
-		$this->getNBT()->setInt("Delay", $delay);
+	public function isMovable() : bool {
+		return $this->isMovable;
 	}
 
 	public function getTier() {
-        return $this->getNBT()->getInt("Tier");
-    }
+		return $this->tier;
+	}
 
-    public function onUpdate() : bool {
-        if($this->closed === true) {
-            return false;
-        }
-        $this->timings->startTiming();
+	public function setTier(int $tier) : self {
+		$this->tier = $tier;
 
-        if($this->getDelay() <= 0) {
-            $success = 0;
+		$this->onChanged();
+		$this->scheduleUpdate();
+		return $this;
+	}
 
-            for($i = 0; $i < $this->getSpawnCount(); $i++) {
-                $pos = $this->add(mt_rand() / mt_getrandmax() * $this->getSpawnRange(), mt_rand(-1, 1), mt_rand() / mt_getrandmax() * $this->getSpawnRange());
-                $target = $this->getLevel()->getBlock($pos);
+	public function onUpdate() : bool {
+		if($this->isClosed() or $this->entityId < EntityIds::CHICKEN) { // TODO: are there entities with ids less than 10?
+			return false;
+		}
+		if(--$this->delay === 0) {
+			$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
+			$valid = false;
 
-                if($target->getId() == Item::AIR) {
-                    $success++;
-
-                    $entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), Entity::createBaseNBT($target->add(0.5, 0, 0.5), null, lcg_value() * 360, 0));
-
-                    if($entity instanceof Entity) {
-                        $entity->spawnToAll();
-                    }
-                }
-            }
-            if($success > 0) {
-                $this->setDelay(mt_rand($this->getMinSpawnDelay(), $this->getMaxSpawnDelay()));
-            }
-        } else {
-            $this->setDelay($this->getDelay() - 1);
-        }
-        $this->timings->stopTiming();
-        return true;
-    }
-
-	public function canUpdate() : bool {
-		if($this->getEntityId() !== 0 && $this->getLevel()->isChunkLoaded($this->getX() >> 4, $this->getZ() >> 4)) {
-			$hasPlayer = false;
-			$count = 0;
-			
-			foreach($this->getLevel()->getEntities() as $e) {
-				if($e instanceof CorePlayer && $e->distance($this) <= 15){
-					$hasPlayer = true;
-				}
-				if($e::NETWORK_ID == $this->getEntityId()){
-					$count++;
+			foreach($this->level->getPlayers() as $player) {
+				if($this->distance($player) <= $this->requiredPlayerRange) {
+					$valid = true;
+					break;
 				}
 			}
-			return ($hasPlayer && $count < 15);
-		}
-		return false;
-	}
+			foreach(Core::getInstance()->getMCPE()->getRegisteredEntities() as $class => $array) {
+				if($class instanceof CreatureBase and $class::NETWORK_ID === $this->entityId) {
+					if($valid and count(self::getAreaEntities($this->spawnArea, $this->level, $class)) < $this->maxNearbyEntities) {
+						$spawned = 0;
 
-	protected function generateRandomDelay() : int {
-		return ($this->delay = mt_rand($this->getMinSpawnDelay(), $this->getMaxSpawnDelay()));
-	}
+						while($spawned < $this->spawnCount) {
+							$entity = $class::spawnFromSpawner($this->getRandomSpawnPos());
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void {
-		$this->applyBaseNBT($nbt);
-	}
+							if($entity !== null) {
+								$spawned++;
+							}
+						}
+					}
+				}
+			}
+		} else if($this->delay === -1) {
+			$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
+			$this->entityId = mt_rand(EntityIds::CHICKEN, EntityIds::FISH);
 
-	private function applyBaseNBT(CompoundTag &$nbt) : void {
-		$nbt->setInt(self::TAG_ENTITY_ID, $this->getEntityId());
-		$nbt->setInt(self::TAG_SPAWN_COUNT, $this->getSpawnCount());
-		$nbt->setInt(self::TAG_SPAWN_RANGE, $this->getSpawnRange());
-		$nbt->setInt(self::TAG_MIN_SPAWN_DELAY, $this->getMinSpawnDelay());
-		$nbt->setInt(self::TAG_MAX_SPAWN_DELAY, $this->getMaxSpawnDelay());
-		$nbt->setInt(self::TAG_DELAY, $this->getDelay());
-	}
-	
-	protected function readSaveData(CompoundTag $nbt) : void {
-		if($this->delay === null) {
-			$this->generateRandomDelay();
+			$this->onChanged();
 		}
-		if($nbt->hasTag(self::TAG_SPAWN_COUNT, ShortTag::class) || $nbt->hasTag(self::TAG_ENTITY_ID, StringTag::class)) {
-			$nbt->removeTag(self::TAG_ENTITY_ID);
-			$nbt->removeTag(self::TAG_SPAWN_COUNT);
-			$nbt->removeTag(self::TAG_SPAWN_RANGE);
-			$nbt->removeTag(self::TAG_MIN_SPAWN_DELAY);
-			$nbt->removeTag(self::TAG_MAX_SPAWN_DELAY);
-			$nbt->removeTag(self::TAG_DELAY);
-		}
-		if(!$nbt->hasTag(self::TAG_ENTITY_ID, IntTag::class)) {
-			$nbt->setInt(self::TAG_ENTITY_ID, $this->entityId);
-		}
-		$this->entityId = $nbt->getInt(self::TAG_ENTITY_ID, $this->entityId);
-
-		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, IntTag::class)) {
-			$nbt->setInt(self::TAG_SPAWN_COUNT, $this->spawnCount);
-		}
-		$this->spawnCount = $nbt->getInt(self::TAG_SPAWN_COUNT, $this->spawnCount);
-
-		if(!$nbt->hasTag(self::TAG_SPAWN_RANGE, IntTag::class)) {
-			$nbt->setInt(self::TAG_SPAWN_RANGE, $this->spawnRange);
-		}
-		$this->spawnRange = $nbt->getInt(self::TAG_SPAWN_RANGE, $this->spawnRange);
-
-		if(!$nbt->hasTag(self::TAG_MIN_SPAWN_DELAY, IntTag::class)) {
-			$nbt->setInt(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
-		}
-		$this->minSpawnDelay = $nbt->getInt(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
-
-		if(!$nbt->hasTag(self::TAG_MAX_SPAWN_DELAY, IntTag::class)) {
-			$nbt->setInt(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
-		}
-		$this->maxSpawnDelay = $nbt->getInt(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
-
-		if(!$nbt->hasTag(self::TAG_DELAY, IntTag::class)) {
-			$nbt->setInt(self::TAG_DELAY, $this->delay);
-		}
-		$this->delay = $nbt->getInt(self::TAG_MAX_SPAWN_DELAY, $this->delay);
-		
 		$this->scheduleUpdate();
+		return true;
+	}
+
+	protected static function getAreaEntities(AxisAlignedBB $bb, Level $level, string $type = Living::class) {
+		$nearby = [];
+		$minX = ((int) floor($bb->minX)) >> 4; // TODO: check if this is right
+		$maxX = ((int) floor($bb->maxX)) >> 4;
+		$minZ = ((int) floor($bb->minZ)) >> 4;
+		$maxZ = ((int) floor($bb->maxZ)) >> 4;
+
+		for($x = $minX; $x <= $maxX; ++$x) {
+			for($z = $minZ; $z <= $maxZ; ++$z) {
+				foreach($level->getChunkEntities($x, $z) as $entity) {
+					/** @var Entity|null $entity */
+					if($entity instanceof $type and $entity->boundingBox->intersectsWith($bb)) {
+						$nearby[] = $entity;
+					}
+				}
+			}
+		}
+		return $nearby;
+	}
+
+	protected function getRandomSpawnPos() : Position {
+		$x = mt_rand($this->spawnArea->minX, $this->spawnArea->maxX);
+		$y = mt_rand($this->spawnArea->minY, $this->spawnArea->maxY);
+		$z = mt_rand($this->spawnArea->minZ, $this->spawnArea->maxZ);
+		return new Position($x + 0.5, $y, $z + 0.5, $this->level);
+	}
+
+	protected function readSaveData(CompoundTag $nbt) : void {
+		if($nbt->hasTag(self::ENTITY_ID, IntTag::class)) {
+			$this->entityId = $nbt->getInt(self::ENTITY_ID);
+		}
+		if($nbt->hasTag(self::SPAWN_COUNT, ShortTag::class)) {
+			$this->spawnCount = $nbt->getShort(self::SPAWN_COUNT);
+		}
+		if($nbt->hasTag(self::SPAWN_RANGE, ShortTag::class)) {
+			$this->spawnRange = $nbt->getShort(self::SPAWN_RANGE);
+		}
+		$this->spawnArea = new AxisAlignedBB($this->x - $this->spawnRange, $this->y - 1, $this->z - $this->spawnRange, $this->x + $this->spawnRange, $this->y + 1, $this->z + $this->spawnRange);
+
+		if($nbt->hasTag(self::DELAY, ShortTag::class)) {
+			$this->delay = $nbt->getShort(self::DELAY);
+		}
+		if($nbt->hasTag(self::MIN_SPAWN_DELAY, ShortTag::class)) {
+			$this->minSpawnDelay = $nbt->getShort(self::MIN_SPAWN_DELAY);
+		}
+		if($nbt->hasTag(self::MAX_SPAWN_DELAY, ShortTag::class)) {
+			$this->maxSpawnDelay = $nbt->getShort(self::MAX_SPAWN_DELAY);
+		}
+		if($nbt->hasTag(self::MAX_NEARBY_ENTITIES, ShortTag::class)) {
+			$this->maxNearbyEntities = $nbt->getShort(self::MAX_NEARBY_ENTITIES);
+		}
+		if($nbt->hasTag(self::REQUIRED_PLAYER_RANGE, ShortTag::class)) {
+			$this->requiredPlayerRange = $nbt->getShort(self::REQUIRED_PLAYER_RANGE);
+		}
+		if($nbt->hasTag(self::DISPLAY_ENTITY_HEIGHT, FloatTag::class)) {
+			$this->displayHeight = $nbt->getFloat(self::DISPLAY_ENTITY_HEIGHT);
+		}
+		if($nbt->hasTag(self::DISPLAY_ENTITY_WIDTH, FloatTag::class)) {
+			$this->displayHeight = $nbt->getFloat(self::DISPLAY_ENTITY_WIDTH);
+		}
+		if($nbt->hasTag(self::DISPLAY_ENTITY_SCALE, FloatTag::class)) {
+			$this->displayHeight = $nbt->getFloat(self::DISPLAY_ENTITY_SCALE);
+		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void {
-		$this->applyBaseNBT($nbt);
+		$this->addAdditionalSpawnData($nbt);
+	}
+
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void {
+		$nbt->setByte(self::IS_MOVABLE, (int)$this->isMovable);
+		$nbt->setShort(self::DELAY, $this->delay);
+		$nbt->setShort(self::MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
+		$nbt->setShort(self::MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+		$nbt->setShort(self::MIN_SPAWN_DELAY, $this->minSpawnDelay);
+		$nbt->setShort(self::REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange);
+		$nbt->setShort(self::SPAWN_COUNT, $this->spawnCount);
+		$nbt->setShort(self::SPAWN_RANGE, $this->spawnRange);
+		$nbt->setInt(self::ENTITY_ID, $this->entityId);
+		$nbt->setFloat(self::DISPLAY_ENTITY_HEIGHT, $this->displayHeight);
+		$nbt->setFloat(self::DISPLAY_ENTITY_WIDTH, $this->displayWidth);
+		$nbt->setFloat(self::DISPLAY_ENTITY_SCALE, $this->displayScale);
+		$this->scheduleUpdate();
 	}
 }

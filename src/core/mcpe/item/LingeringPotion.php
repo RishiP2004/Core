@@ -1,48 +1,34 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author ClearSky
- * @link https://github.com/ClearSkyTeam/PocketMine-MP
- *
-*/
+namespace core\mcpe\item;
 
-declare(strict_types = 1);
-
-namespace CortexPE\item;
-
-use pocketmine\entity\{
-	Entity, projectile\Projectile
-};
-use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\{
-	Item, Potion, ProjectileItem
+	ProjectileItem,
+	Item,
+	Potion
 };
-use pocketmine\level\sound\LaunchSound;
-use pocketmine\math\Vector3;
+
 use pocketmine\Player;
 
-class LingeringPotion extends ProjectileItem {
+use pocketmine\math\Vector3;
 
+use pocketmine\entity\Entity;
+
+use pocketmine\entity\projectile\Projectile;
+
+use pocketmine\event\entity\ProjectileLaunchEvent;
+
+use pocketmine\level\sound\LaunchSound;
+
+class LingeringPotion extends ProjectileItem {
 	public const TAG_POTION_ID = "PotionId";
 
-	public function __construct($meta = 0){
+	public function __construct($meta = 0) {
 		parent::__construct(Item::LINGERING_POTION, $meta, $this->getNameByMeta($meta));
 	}
 
-	public function getNameByMeta($meta){
-		switch($meta){
+	public function getNameByMeta($meta) {
+		switch($meta) {
 			case Potion::WATER:
 				return "Lingering Water Bottle";
 			case Potion::MUNDANE:
@@ -95,41 +81,43 @@ class LingeringPotion extends ProjectileItem {
 		}
 	}
 
-	public function getMaxStackSize(): int{
+	public function getProjectileEntityType() : string {
+		return "LingeringPotion";
+	}
+
+	public function getMaxStackSize() : int {
 		return 1;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector): bool{//TODO optimise
+	public function getThrowForce() : float {
+		return 0.5;
+	}
+
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool {
 		$nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
+
 		$nbt->setShort(self::TAG_POTION_ID, $this->meta);
+
 		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
 
-		if($projectile !== null){
+		if($projectile !== null) {
 			$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 		}
-
 		$this->count--;
 
-		if($projectile instanceof Projectile){
+		if($projectile instanceof Projectile) {
 			$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
-			if($projectileEv->isCancelled()){
+
+			if($projectileEv->isCancelled()) {
 				$projectile->kill();
-			}else{
+			} else {
 				$projectile->spawnToAll();
 				$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
 			}
-		}else{
+		} else {
 			$projectile->spawnToAll();
 		}
 
 		return true;
-	}
-
-	public function getProjectileEntityType(): string{
-		return "LingeringPotion";
-	}
-
-	public function getThrowForce(): float{
-		return 0.5;
 	}
 }

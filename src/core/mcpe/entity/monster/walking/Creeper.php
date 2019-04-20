@@ -5,37 +5,38 @@ namespace core\mcpe\entity\monster\walking;
 use core\CorePlayer;
 
 use core\mcpe\entity\{
-    MonsterBase,
-    Interactable,
-    ClimbingTrait,
-    CreatureBase
+	CreatureBase,
+	MonsterBase,
+	Interactable,
+	ClimbingTrait
 };
-
-use core\mcpe\item\FlintSteel;
 
 use core\mcpe\object\Lightning;
 
 use pocketmine\entity\{
-    Explosive,
-    Entity
+	Explosive,
+	Entity
+};
+
+use pocketmine\event\entity\{
+	ExplosionPrimeEvent,
+	EntityDamageEvent,
+	EntityDamageByEntityEvent
+};
+
+use pocketmine\level\{
+	Explosion,
+	Position
 };
 
 use pocketmine\nbt\tag\CompoundTag;
 
-use pocketmine\event\entity\{
-    ExplosionPrimeEvent,
-    EntityDamageEvent,
-    EntityDamageByEntityEvent
-};
-
-use pocketmine\level\{
-    Explosion,
-    Position
-};
-
-use pocketmine\item\Item;
-
 use pocketmine\math\AxisAlignedBB;
+
+use pocketmine\item\{
+	Item,
+	FlintSteel
+};
 
 class Creeper extends MonsterBase implements Explosive, Interactable {
     use ClimbingTrait;
@@ -50,8 +51,8 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 
     private $startExplosion = false,  $ignited = false;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {
@@ -199,12 +200,6 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
         }
     }
 
-    public function getDrops() : array {
-        return [
-            Item::get(Item::GUNPOWDER, 0, mt_rand(0, 2))
-        ];
-    }
-
     public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
         $width = 0.7;
         $height = 1.7;
@@ -262,4 +257,10 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
             $this->scheduleUpdate();
         }
     }
+
+	public function getDrops() : array {
+		return [
+			Item::get(Item::GUNPOWDER, 0, mt_rand(0, 2))
+		];
+	}
 }

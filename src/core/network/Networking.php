@@ -2,7 +2,7 @@
 
 namespace core\network;
 
-interface Restarting {
+interface Networking {
     const COUNTDOWN_START = 10;
     const INTERVAL = 90;
 
@@ -15,4 +15,6 @@ interface Restarting {
         "Broadcast" => "{PREFIX}Server will restart in {FORMATTED_TIME}",
         "Countdown" => "{PREFIX}Server restarting in {SECOND} seconds...",
     ];
+
+    const SERVER_BACKUP = 180;
 }

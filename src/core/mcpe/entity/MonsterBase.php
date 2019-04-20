@@ -19,8 +19,8 @@ use pocketmine\level\{
 use pocketmine\entity\Entity;
 
 abstract class MonsterBase extends CreatureBase {
-	public function initEntity(CompoundTag $tag) : void {
-		parent::initEntity($tag);
+	public function initEntity() : void {
+		parent::initEntity();
 	}
 
 	public function attack(EntityDamageEvent $source) : void {
@@ -34,6 +34,7 @@ abstract class MonsterBase extends CreatureBase {
 		if($this->level->getDifficulty() <= Level::DIFFICULTY_PEACEFUL) {
 			$this->flagForDespawn();
 		}
+		//TODO: find target if none set
 		return parent::entityBaseTick($tickDiff);
 	}
 

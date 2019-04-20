@@ -328,6 +328,9 @@ class Entity extends \pocketmine\entity\Entity {
     }
 
     public static function isInsideOfPortal(Entity $entity) : bool {
+		if($entity->level === null) {
+			return false;
+		}
         $block = $entity->getLevel()->getBlock($entity->floor());
 
         if($block instanceof NetherPortal) {
@@ -337,6 +340,9 @@ class Entity extends \pocketmine\entity\Entity {
     }
 
     public static function isInsideOfEndPortal(Entity $entity) : bool {
+		if($entity->level === null) {
+			return false;
+		}
         $block = $entity->getLevel()->getBlock($entity);
 
         if($block instanceof EndPortal){

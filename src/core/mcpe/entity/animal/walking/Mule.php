@@ -7,8 +7,6 @@ use core\CorePlayer;
 
 use core\mcpe\entity\Interactable;
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\item\Item;
 
 class Mule extends Donkey implements Interactable {
@@ -16,8 +14,8 @@ class Mule extends Donkey implements Interactable {
 
     public $width = 1.2, $height = 1.562;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

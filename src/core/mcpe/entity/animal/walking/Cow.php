@@ -13,8 +13,6 @@ use core\mcpe\entity\{
 
 use pocketmine\entity\Entity;
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\item\Item;
 
 class Cow extends AnimalBase implements Collidable, Interactable {
@@ -22,8 +20,8 @@ class Cow extends AnimalBase implements Collidable, Interactable {
 
 	public $width = 1.5, $height = 1.2, $eyeHeight = 1;
 	
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

@@ -17,12 +17,13 @@ use pocketmine\entity\Entity;
 
 class Guardian extends MonsterBase implements Collidable {
     use CollisionCheckingTrait;
+
     const NETWORK_ID = self::GUARDIAN;
 
     public $width = 1.0, $height = 1.0;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

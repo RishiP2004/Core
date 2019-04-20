@@ -18,6 +18,7 @@ use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\nbt\NBT;
 
 trait ItemHolderTrait {
+	/** @var Item|null */
 	protected $mainHand, $offHand;
 
 	protected $dropAll = false;
@@ -41,30 +42,15 @@ trait ItemHolderTrait {
 		return $this->dropAll;
 	}
 
-	public function setDropAll(bool $dropAll = true) : self {
+	public function setDropAll(bool $dropAll = true) {
 		$this->dropAll = $dropAll;
-		return $this;
-	}
-	/**
-	 * @return Item[]
-	 */
-	public function getDrops() : array {
-		$drops = parent::getDrops();
 
-		if($this->dropAll) {
-			$drops[] = $this->mainHand ?? ItemFactory::get(Item::AIR);
-			$drops[] = $this->offHand ?? ItemFactory::get(Item::AIR);
-		} else if(mt_rand(1, 1000) <= 85) {
-			$drops[] = $this->mainHand ?? ItemFactory::get(Item::AIR);
-			//TODO: Should the offhand drop here too?
-		}
-		return $drops;
+		return $this;
 	}
 
 	public function getMainHand() : ?Item {
 		return $this->mainHand;
 	}
-
 
 	public function setMainHandItem(Item $mainHand) : ItemHolderTrait {
 		$this->mainHand = $mainHand;
@@ -74,8 +60,8 @@ trait ItemHolderTrait {
 		$pk->inventorySlot = $pk->hotbarSlot = ContainerIds::INVENTORY;
 
 		foreach($this->getViewers() as $player) {
-            $player->dataPacket($pk);
-        }
+			$player->dataPacket($pk);
+		}
 		return $this;
 	}
 
@@ -91,20 +77,9 @@ trait ItemHolderTrait {
 		$pk->inventorySlot = $pk->hotbarSlot = ContainerIds::OFFHAND;
 
 		foreach($this->getViewers() as $player) {
-            $player->dataPacket($pk);
-        }
+			$player->dataPacket($pk);
+		}
 		return $this;
-	}
-
-	public function saveNBT() : void {
-		parent::saveNBT();
-
-		if(isset($this->mainHand)) {
-			$this->namedtag->setTag(new ListTag("Mainhand", [$this->mainHand->nbtSerialize()], NBT::TAG_Compound));
-		}
-		if(isset($this->offHand)) {
-			$this->namedtag->setTag(new ListTag("Offhand", [$this->offHand->nbtSerialize()], NBT::TAG_Compound));
-		}
 	}
 
 	protected function sendSpawnPacket(CorePlayer $player) : void {
@@ -115,13 +90,38 @@ trait ItemHolderTrait {
 		$pk->item = $this->mainHand ?? ItemFactory::get(Item::AIR);
 		$pk->inventorySlot = $pk->hotbarSlot = ContainerIds::INVENTORY;
 
-		$player->sendDataPacket($pk);
+		$player->dataPacket($pk);
 
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->item = $this->offHand ?? ItemFactory::get(Item::AIR);
 		$pk->inventorySlot = $pk->hotbarSlot = ContainerIds::OFFHAND;
 
-		$player->sendDataPacket($pk);
+		$player->dataPacket($pk);
+	}
+
+	public function getDrops() : array {
+		$drops = parent::getDrops();
+
+		if($this->dropAll) {
+			$drops[] = $this->mainHand ?? ItemFactory::get(Item::AIR);
+			$drops[] = $this->offHand ?? ItemFactory::get(Item::AIR);
+		} else if(mt_rand(1, 1000) <= 85) {
+			$drops[] = $this->mainHand ?? ItemFactory::get(Item::AIR);
+			// TODO: Should the offhand drop here too?
+		}
+		return $drops;
+	}
+
+
+	public function saveNBT() : void {
+		parent::saveNBT();
+
+		if(isset($this->mainHand)) {
+			$this->namedtag->setTag(new ListTag("Mainhand", [$this->mainHand->nbtSerialize()], NBT::TAG_Compound));
+		}
+		if(isset($this->offHand)) {
+			$this->namedtag->setTag(new ListTag("Offhand", [$this->offHand->nbtSerialize()], NBT::TAG_Compound));
+		}
 	}
 }

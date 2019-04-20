@@ -8,7 +8,10 @@ use core\mcpe\block\Hopper as HopperBlock;
 
 use pocketmine\tile\Spawnable;
 
-use pocketmine\inventory\InventoryHolder;
+use pocketmine\inventory\{
+	InventoryHolder,
+	DoubleChestInventory
+};
 
 use pocketmine\tile\{
     Container,
@@ -52,6 +55,18 @@ abstract class Hopper extends Spawnable implements InventoryHolder, Container, N
         $this->scheduleUpdate();
     }
 
+	public function getDefaultName() : string {
+		return "Hopper";
+	}
+
+	public function getRealInventory() {
+		return $this->inventory;
+	}
+
+	public function getInventory() : HopperInventory {
+		return $this->inventory;
+	}
+
     protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null): void {
         $nbt->setTag(new ListTag("Items", [], NBT::TAG_Compound));
 
@@ -60,35 +75,14 @@ abstract class Hopper extends Spawnable implements InventoryHolder, Container, N
         }
     }
 
-    public function getRealInventory() {
-        return $this->inventory;
-    }
-
     public function getSize() : int {
         return 5;
-    }
-
-    public function getDefaultName() : string {
-        return "Hopper";
     }
 
     public function addAdditionalSpawnData(CompoundTag $nbt) : void {
         if($this->hasName()) {
             $nbt->setTag($this->nbt->getTag("CustomName"));
         }
-    }
-
-    public function close() : void {
-        if(!$this->isClosed()) {
-            foreach($this->getInventory()->getViewers() as $viewer) {
-                $viewer->removeWindow($this->getInventory());
-            }
-            parent::close();
-        }
-    }
-
-    public function getInventory() : HopperInventory {
-        return $this->inventory;
     }
 
     public function onUpdate() : bool {
@@ -127,81 +121,150 @@ abstract class Hopper extends Spawnable implements InventoryHolder, Container, N
             $source = $this->getLevel()->getTile($this->getBlock()->getSide(Vector3::SIDE_UP));
 
             if($source instanceof Container) {
-                $inventory = $source->getInventory();
+				$inventory = $source->getInventory();
+				$firstOccupied = null;
 
-                if($inventory === null) {
-                    return false;
-                }
-                $firstOccupied = null;
+				if(!$source instanceof BrewingStand) {
+					for($index = 0; $index < $inventory->getSize(); $index++){
+						if(!$inventory->getItem($index)->isNull()){
+							$firstOccupied = $index;
+							break;
+						}
+					}
+				} else {
+					if(!$source->brewing) {
+						for($index = 1; $index <= 3; $index++) {
+							if(!$inventory->getItem($index)->isNull()) {
+								$firstOccupied = $index;
+								break;
+							}
+						}
+					}
+				}
+				if($firstOccupied !== null) {
+					$item = clone $inventory->getItem($firstOccupied);
 
-                for($index = 0; $index < $inventory->getSize(); $index++) {
-                    if(!$inventory->getItem($index)->isNull()) {
-                        $firstOccupied = $index;
-                        break;
-                    }
-                }
-                if($firstOccupied !== null) {
-                    $item = clone $inventory->getItem($firstOccupied);
+					$item->setCount(1);
 
-                    $item->setCount(1);
+					if(!$item->isNull()) {
+						if($this->inventory->canAddItem($item)) {
+							$this->inventory->addItem($item);
+							$inventory->removeItem($item);
+							$inventory->sendContents($inventory->getViewers());
 
-                    if(!$item->isNull()) {
-                        if($this->inventory->canAddItem($item)) {
-                            $this->inventory->addItem($item);
-                            $inventory->removeItem($item);
-                            $inventory->sendContents($inventory->getViewers());
+							if($source instanceof Chest) {
+								if($source->isPaired()) {
+									$pair = $source->getPair();
+									$pInv = $pair->getInventory();
 
-                            if($source instanceof Chest) {
+									$pInv->sendContents($pInv->getViewers());
+								}
+							}
+						}
+					}
+				}
+			}
 
-                                if($source->isPaired()) {
+			if(!$this->getLevel()->getTile($this->getBlock()->getSide(Vector3::SIDE_DOWN)) instanceof Hopper) {
+				$target = $this->getLevel()->getTile($this->getBlock()->getSide($this->getBlock()->getDamage()));
 
-                                    $pair = $source->getPair();
+				if($target instanceof Container) {
+					$inv = $target->getInventory();
 
-                                    $pInv = $pair->getInventory();
+					foreach($this->inventory->getContents() as $item) {
+						if($item->isNull()){
+							continue;
+						}
+						$targetItem = clone $item;
+						$targetItem->setCount(1);
 
-                                    $pInv->sendContents($pInv->getViewers());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if(!$this->getLevel()->getTile($this->getBlock()->getSide(Vector3::SIDE_DOWN)) instanceof Hopper) {
-                $target = $this->getLevel()->getTile($this->getBlock()->getSide($this->getBlock()->getDamage()));
+						if($inv instanceof DoubleChestInventory){
+							/** @var $left ChestInventory */
+							/** @var $right ChestInventory */
+							$left = $inv->getLeftSide();
+							$right = $inv->getRightSide();
 
-                if($target instanceof Container) {
-                    $inv = $target->getInventory();
+							if($right->canAddItem($targetItem)) {
+								$inv = $right;
+							} else {
+								$inv = $left;
+							}
+						}
+						if($inv->canAddItem($targetItem)) {
+							if(!$target instanceof BrewingStand) {
+								$inv->addItem($targetItem);
+								$this->inventory->removeItem($targetItem);
+								$inv->sendContents($inv->getViewers());
+							}
+							if($target instanceof Chest) {
+								if($target->isPaired()){
+									$pair = $target->getPair();
+									$pInv = $pair->getInventory();
+									$pInv->sendContents($pInv->getViewers());
+								}
+								break;
+							} else if($target instanceof BrewingStand) {
+								if(!$target->brewing) {
+									$remove = false;
 
-                    foreach($this->inventory->getContents() as $item) {
-                        if($item->isNull()) {
-                            continue;
-                        }
-                        $targetItem = clone $item;
+									if($target->isValidIngredient($targetItem)) {
+										if($target->getInventory()->getIngredient()->isNull()) {
+											$target->getInventory()->setIngredient($targetItem);
+											$this->inventory->removeItem($targetItem);
+											$inv->sendContents($inv->getViewers());
+											$target->scheduleUpdate();
 
-                        $targetItem->setCount(1);
+											$remove = true;
+										}
+									}
+									if($target->isValidFuel($targetItem)) {
+										if($target->getInventory()->getFuel()->isNull()) {
+											$target->getInventory()->setFuel($targetItem);
+											$this->inventory->removeItem($targetItem);
+											$inv->sendContents($inv->getViewers());
+											$target->scheduleUpdate();
 
-                        if($inv->canAddItem($targetItem)) {
-                            $inv->addItem($targetItem);
-                            $this->inventory->removeItem($targetItem);
-                            $inv->sendContents($inv->getViewers());
+											$remove = true;
+										}
+									}
+									if(!$target->getInventory()->getIngredient()->isNull() or $target->getInventory()->getIngredient()->equals($targetItem)) {
+										for($i = 1; $i <= 3; $i++) {
+											if($target->getInventory()->getItem($i)->isNull()) {
+												if($target->isValidMatch($target->getInventory()->getIngredient(), $targetItem)) {
+													$target->getInventory()->setItem($i, $targetItem);
+													$inv->sendContents($inv->getViewers());
+													$target->scheduleUpdate();
 
-                            if($target instanceof Chest) {
-                                if($target->isPaired()) {
-                                    $pair = $target->getPair();
-                                    $pInv = $pair->getInventory();
-                                    $pInv->sendContents($pInv->getViewers());
-                                }
-                                break;
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return true;
+													$remove = true;
+													break;
+												}
+											}
+										}
+									}
+									if($remove) {
+										$this->inventory->removeItem($targetItem);
+										$inv->sendContents($inv->getViewers());
+									}
+								}
+							} else {
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
     }
+
+	public function close() : void {
+		if(!$this->isClosed()) {
+			foreach($this->getInventory()->getViewers() as $viewer) {
+				$viewer->removeWindow($this->getInventory());
+			}
+			parent::close();
+		}
+	}
 
     public function saveNBT() : CompoundTag {
         $this->saveItems($this->nbt);

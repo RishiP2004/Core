@@ -17,8 +17,8 @@ class MagmaCube extends Slime {
 
     public $width = 1.2, $height = 1.2;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

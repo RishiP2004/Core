@@ -48,10 +48,10 @@ class EndCrystal extends Entity {
     }
 
     public function attack(EntityDamageEvent $source): void{
-        if(!$this->isClosed()) {
+        if(!$this->isFlaggedForDespawn()) {
             $pos = clone $this->asPosition();
 
-            $this->close();
+            $this->flagForDespawn();
 
             $explode = new Explosion($pos, 6, $this);
 

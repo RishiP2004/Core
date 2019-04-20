@@ -5,24 +5,21 @@ namespace core\mcpe\entity\animal\walking;
 use core\Core;
 
 use core\mcpe\entity\{
-    AnimalBase,
-    Collidable
+	CreatureBase,
+	Collidable
 };
-
-use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\entity\Entity;
 
 use pocketmine\item\Item;
 
-class SkeletonHorse extends AnimalBase implements Collidable {
+class SkeletonHorse extends CreatureBase implements Collidable {
     const NETWORK_ID = self::SKELETON_HORSE;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+	public $width = 1.3, $height = 1.5;
 
-        $this->width = 1.3;
-        $this->height = 1.5;
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

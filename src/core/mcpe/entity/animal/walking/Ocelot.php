@@ -10,8 +10,6 @@ use core\mcpe\entity\{
     Interactable
 };
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\entity\Entity;
 
 class Ocelot extends AnimalBase implements Collidable, Interactable {
@@ -19,8 +17,8 @@ class Ocelot extends AnimalBase implements Collidable, Interactable {
 
     public $width = 0.8, $height = 0.8;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

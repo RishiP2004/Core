@@ -42,7 +42,7 @@ class ShulkerBox extends Transparent {
 	}
 
 	public function getHardness() : float {
-		return 6;
+		return 2;
 	}
 
 	public function getToolType() : int {

@@ -18,6 +18,8 @@ use poggit\libasynql\DataConnector;
 
 use pocketmine\plugin\PluginBase;
 
+use pocketmine\timings\TimingsHandler;
+
 use pocketmine\utils\TextFormat;
 
 class Core extends PluginBase {
@@ -63,6 +65,8 @@ class Core extends PluginBase {
             $this->getServer()->getLogger()->error($this->getErrorPrefix() . "Core Database connection failed");
             $this->getServer()->shutdown();
         }
+        TimingsHandler::setEnabled();
+
         $this->anticheat = new AntiCheat($this);
         $this->broadcast = new Broadcast($this);
         $this->essence = new Essence($this);

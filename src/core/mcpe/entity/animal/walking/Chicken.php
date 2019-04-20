@@ -6,8 +6,6 @@ use core\Core;
 
 use core\mcpe\entity\AnimalBase;
 
-use pocketmine\nbt\tag\CompoundTag;
-
 use pocketmine\item\Item;
 
 class Chicken extends AnimalBase {
@@ -15,8 +13,8 @@ class Chicken extends AnimalBase {
 
 	public $width = 1, $height = 0.8;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

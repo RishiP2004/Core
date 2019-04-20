@@ -17,6 +17,7 @@ use pocketmine\entity\Entity;
 
 class Vex extends MonsterBase implements Collidable {
     use CollisionCheckingTrait;
+
     const NETWORK_ID = self::VEX;
 
     public $width = 0.4, $height = 0.8;

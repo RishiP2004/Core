@@ -17,12 +17,13 @@ use pocketmine\entity\Entity;
 
 class Ghast extends MonsterBase implements Collidable {
     use CollisionCheckingTrait;
+
     const NETWORK_ID = self::GHAST;
 
     public $width = 4.5, $height = 4.5;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

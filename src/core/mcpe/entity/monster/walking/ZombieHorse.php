@@ -16,8 +16,8 @@ class ZombieHorse extends MonsterBase {
 
     public $width = 1.3, $height = 1.5;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+        parent::initEntity();
     }
 
     public function getName() : string {

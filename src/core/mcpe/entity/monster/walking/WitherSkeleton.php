@@ -18,7 +18,10 @@ use pocketmine\level\Position;
 
 use pocketmine\entity\Entity;
 
-use pocketmine\item\Item;
+use pocketmine\item\{
+	ItemFactory,
+	Item
+};
 
 class WitherSkeleton extends MonsterBase implements Collidable {
     use CollisionCheckingTrait, ItemHolderTrait;
@@ -27,8 +30,10 @@ class WitherSkeleton extends MonsterBase implements Collidable {
 
     public $width = 0.875, $height = 2.0;
 
-    public function initEntity(CompoundTag $tag) : void {
-        parent::initEntity($tag);
+    public function initEntity() : void {
+		$this->mainHand = ItemFactory::get(Item::STONE_SWORD);
+
+        parent::initEntity();
     }
 
     public function getName() : string {
