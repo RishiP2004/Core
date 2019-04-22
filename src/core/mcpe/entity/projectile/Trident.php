@@ -23,7 +23,7 @@ use pocketmine\block\Block;
 
 use pocketmine\Server;
 
-class ThrownTrident extends Projectile {
+class Trident extends Projectile {
 	public const NETWORK_ID = self::TRIDENT;
 
 	public $height = 0.35, $width = 0.25, $gravity = 0.10;

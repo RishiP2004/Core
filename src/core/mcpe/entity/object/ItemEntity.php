@@ -7,15 +7,13 @@ use core\mcpe\entity\{
 	CollisionCheckingTrait
 };
 
-use pocketmine\entity\object\ItemEntity;
-
 use pocketmine\entity\Entity;
 
 use pocketmine\block\Block;
 
 use pocketmine\math\AxisAlignedBB;
 
-class Item extends ItemEntity implements Collidable {
+class ItemEntity extends \pocketmine\entity\object\ItemEntity implements Collidable {
 	use CollisionCheckingTrait;
 
 	public function entityBaseTick(int $tickDiff = 1) : bool {

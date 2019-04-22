@@ -2,7 +2,7 @@
 
 namespace core\mcpe\item;
 
-use core\mcpe\entity\projectile\FireworkRocket;
+use core\mcpe\entity\projectile\Firework;
 
 use pocketmine\item\Item;
 
@@ -45,7 +45,7 @@ class Fireworks extends Item {
 				$nbt->setTag($tags);
 			}
 			$level = $player->getLevel();
-			$rocket = new FireworkRocket($level, $nbt, $player, $this, $random);
+			$rocket = new Firework($level, $nbt, $player, $this, $random);
 
 			$level->addEntity($rocket);
 

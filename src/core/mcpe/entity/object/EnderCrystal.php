@@ -16,7 +16,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 
 use pocketmine\level\Explosion;
 
-class EndCrystal extends Entity {
+class EnderCrystal extends Entity {
     public const NETWORK_ID = self::ENDER_CRYSTAL;
 
 	public const TAG_SHOW_BOTTOM = "ShowBottom";

@@ -32,7 +32,7 @@ use pocketmine\network\mcpe\protocol\{
 
 use pocketmine\event\entity\EntityDamageEvent;
 
-class FireworkRocket extends Projectile {
+class Firework extends Projectile {
 	public const NETWORK_ID = self::FIREWORKS_ROCKET;
 
 	public $width = 0.25, $height = 0.25, $gravity = 0.0, $drag = 0.01;

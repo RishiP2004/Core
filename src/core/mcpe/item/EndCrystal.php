@@ -26,7 +26,7 @@ class EndCrystal extends Item {
 			$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
 			$crystal = Entity::createEntity("EnderCrystal", $player->getLevel(), $nbt);
 
-			if($crystal instanceof \core\mcpe\entity\object\EndCrystal) {
+			if($crystal instanceof \core\mcpe\entity\object\EnderCrystal) {
 				$crystal->spawnToAll();
 
 				if($player->isSurvival()) {
