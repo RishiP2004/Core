@@ -56,7 +56,6 @@ class SnowGolem extends CreatureBase implements Collidable, Interactable {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		// TODO: Implement onCollideWithEntity() method.
 	}
 
 	public function onPlayerLook(CorePlayer $player) : void {

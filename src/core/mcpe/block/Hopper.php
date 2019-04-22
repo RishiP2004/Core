@@ -34,10 +34,6 @@ class Hopper extends Transparent {
         return "Hopper";
     }
 
-    public function canBeActivated() : bool {
-		return true;
-	}
-
 	public function getToolType() : int {
 		return BlockToolType::TYPE_PICKAXE;
 	}
@@ -49,28 +45,6 @@ class Hopper extends Transparent {
 	public function getBlastResistance() : float {
 		return 24;
 	}
-
-	public function onActivate(Item $item, Player $player = null) : bool {
-        if($player instanceof Player) {
-            $tile = $this->getLevel()->getTile($this);
-
-            if($tile instanceof Tile) {
-                $player->addWindow($tile->getInventory());
-            } else {
-                $nbt = new CompoundTag("", [
-                    new ListTag("Items", []),
-                    new StringTag("id", Tile::HOPPER),
-                    new IntTag("x", $this->x),
-                    new IntTag("y", $this->y),
-                    new IntTag("z", $this->z),
-                ]);
-                $t = Tile::createTile(Tile::HOPPER, $this->getLevel(), $nbt);
-
-                $player->addWindow($t->getInventory());
-            }
-        }
-        return true;
-    }
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
 		$faces = [
@@ -105,6 +79,32 @@ class Hopper extends Transparent {
 		Tile::createTile(Tile::HOPPER, $this->getLevel(), $nbt);
 		return true;
 	}
+
+	public function canBeActivated() : bool {
+		return true;
+	}
+
+	public function onActivate(Item $item, Player $player = null) : bool {
+        if($player instanceof Player) {
+            $tile = $this->getLevel()->getTile($this);
+
+            if($tile instanceof Tile) {
+                $player->addWindow($tile->getInventory());
+            } else {
+                $nbt = new CompoundTag("", [
+                    new ListTag("Items", []),
+                    new StringTag("id", Tile::HOPPER),
+                    new IntTag("x", $this->x),
+                    new IntTag("y", $this->y),
+                    new IntTag("z", $this->z),
+                ]);
+                $t = Tile::createTile(Tile::HOPPER, $this->getLevel(), $nbt);
+
+                $player->addWindow($t->getInventory());
+            }
+        }
+        return true;
+    }
 
 	public function getDrops(Item $item) : array {
 		return [

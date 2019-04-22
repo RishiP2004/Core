@@ -3,18 +3,16 @@
 namespace core\utils;
 
 use core\mcpe\block\{
-    NetherPortal,
+    Portal,
     EndPortal
 };
 
-use pocketmine\entity\{
-    Effect,
-    Human
-};
+use pocketmine\entity\Effect;
 
 use pocketmine\item\{
     Item,
-    ItemFactory
+    ItemFactory,
+	Potion
 };
 
 use pocketmine\entity\EffectInstance;
@@ -59,6 +57,8 @@ use pocketmine\level\particle\{
     WaterDripParticle,
     WaterParticle
 };
+
+use pocketmine\utils\Color;
 
 class Entity extends \pocketmine\entity\Entity {
     const USABLES = [
@@ -260,80 +260,13 @@ class Entity extends \pocketmine\entity\Entity {
         $level->addChunkPacket($chunkX, $chunkZ, $pk2);
     }
 
-    public static function getXpDropsForEntity(\pocketmine\entity\Entity $e) : int {
-        switch($e::NETWORK_ID){
-            case Entity::CHICKEN:
-            case Entity::COW:
-            case Entity::HORSE:
-            case Entity::DONKEY:
-            case Entity::MULE:
-            case Entity::SKELETON_HORSE:
-            case Entity::ZOMBIE_HORSE:
-            case Entity::MOOSHROOM:
-            case Entity::LLAMA:
-            case Entity::OCELOT:
-            case Entity::PARROT:
-            case Entity::PIG:
-            case Entity::POLAR_BEAR:
-            case Entity::SHEEP:
-            case Entity::SQUID:
-            case Entity::RABBIT:
-            case Entity::WOLF:
-                return mt_rand(1, 3);
-            case Entity::BAT:
-                return 0;
-            // golems //
-            case Entity::IRON_GOLEM:
-            case Entity::SNOW_GOLEM:
-                return 0;
-            // monsters //
-            case Entity::CAVE_SPIDER:
-            case Entity::CREEPER:
-            case Entity::ENDERMAN:
-            case Entity::GHAST:
-            case Entity::HUSK:
-            case Entity::SHULKER:
-            case Entity::SILVERFISH:
-            case Entity::SKELETON:
-            case Entity::SPIDER:
-            case Entity::STRAY:
-            case Entity::VINDICATOR:
-            case Entity::WITCH:
-            case Entity::WITHER_SKELETON:
-            case Entity::ZOMBIE:
-            case Entity::ZOMBIE_PIGMAN:
-                return 5;
-            case Entity::ENDERMITE:
-            case Entity::VEX:
-                return 3;
-            case Entity::SLIME:
-            case Entity::MAGMA_CUBE:
-                return mt_rand(1, 4);
-            case Entity::BLAZE:
-            case Entity::GUARDIAN:
-            case Entity::ELDER_GUARDIAN:
-            case Entity::EVOCATION_ILLAGER:
-                return 10;
-            case Human::NETWORK_ID:
-            case Entity::VILLAGER:
-                return 0;
-            case Entity::ENDER_DRAGON:
-                return (boolval(rand(0, 1)) ? 12000 : 500);
-            case Entity::WITHER:
-                return 50;
-            case Entity::LIGHTNING_BOLT:
-                return 0;
-        }
-        return 0;
-    }
-
     public static function isInsideOfPortal(Entity $entity) : bool {
 		if($entity->level === null) {
 			return false;
 		}
         $block = $entity->getLevel()->getBlock($entity->floor());
 
-        if($block instanceof NetherPortal) {
+        if($block instanceof Portal) {
             return true;
         }
         return false;
@@ -345,7 +278,7 @@ class Entity extends \pocketmine\entity\Entity {
 		}
         $block = $entity->getLevel()->getBlock($entity);
 
-        if($block instanceof EndPortal){
+        if($block instanceof EndPortal) {
             return true;
         }
         return false;
@@ -479,4 +412,8 @@ class Entity extends \pocketmine\entity\Entity {
         }
         return null;
     }
+
+	public static function getPotionColor(int $effectID) : Color {
+		return Potion::getPotionEffectsById($effectID)[0]->getColor();
+	}
 }

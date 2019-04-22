@@ -71,7 +71,6 @@ class Item extends \pocketmine\item\Item {
 
     public const TYPE_HELMET = "HELMET", TYPE_CHESTPLATE = "CHESTPLATE", TYPE_LEGGINGS = "LEGGINGS", TYPE_BOOTS = "BOOTS", TYPE_NULL = "NIL";
 
-
     public static function parseItems($array) : array {
         $items = [];
         

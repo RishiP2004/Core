@@ -36,7 +36,6 @@ class Blaze extends MonsterBase implements Collidable{
         return "Blaze";
     }
 
-
     public function entityBaseTick(int $tickDiff = 1) : bool {
         return parent::entityBaseTick($tickDiff);
     }
@@ -48,7 +47,6 @@ class Blaze extends MonsterBase implements Collidable{
         $halfWidth = $width / 2;
 
         $boundingBox->setBounds($spawnPos->x - $halfWidth, $spawnPos->y, $spawnPos->z - $halfWidth, $spawnPos->x + $halfWidth, $spawnPos->y + $height, $spawnPos->z + $halfWidth);
-
         // TODO: work on logic here more
         if($spawnPos->level === null or !empty($spawnPos->level->getCollisionBlocks($boundingBox, true)) or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), false, false)->isSolid()) {
             return null;
@@ -66,20 +64,12 @@ class Blaze extends MonsterBase implements Collidable{
     }
 
     public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnFromSpawner() method.
     }
 
     public function onCollideWithEntity(Entity $entity) : void {
-        // TODO: Implement onCollideWithEntity() method.
     }
 
     public function getDrops() : array {
-        if(Core::getInstance()->getMCPE()->drops()) {
-            return [
-                Item::get(Item::BLAZE_ROD, 0, mt_rand(0, 1))
-            ];
-        } else {
-            return [];
-        }
+        return parent::getDrops();
     }
 }

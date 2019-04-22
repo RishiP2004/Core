@@ -1,6 +1,8 @@
 <?php
 
-namespace core\network;
+namespace core\mcpe\network\types;
+
+use core\mcpe\network\InventoryTransactionPacket;
 
 use core\mcpe\inventory\EnchantInventory;
 
@@ -226,7 +228,7 @@ class NetworkInventoryAction {
 
 									$inv->setItem(1, $material);
 								}
-								$inv->setItem(2, $this->oldItem);
+								$inv->setItem(2, $this->oldItem, false);
 
 								if($player->isSurvival()) {
 									$player->subtractXpLevels($cost);

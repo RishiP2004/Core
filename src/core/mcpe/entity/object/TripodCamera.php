@@ -1,7 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Paresh
- * Date: 2019-04-19
- * Time: 12:01 PM
- */
+
+namespace core\mcpe\entity\object;
+
+use pocketmine\entity\Entity;
+
+class TripodCamera extends Entity {
+	public function initEntity() : void {
+		parent::initEntity();
+	}
+
+	public function getName() : string {
+		return "Tripod Camera";
+	}
+
+	public function entityBaseTick(int $tickDiff = 1) : bool {
+		return parent::entityBaseTick($tickDiff);
+	}
+}

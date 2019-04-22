@@ -11,7 +11,7 @@ use core\mcpe\entity\{
 	ClimbingTrait
 };
 
-use core\mcpe\object\Lightning;
+use core\mcpe\entity\object\Lightning;
 
 use pocketmine\entity\{
 	Explosive,
@@ -92,6 +92,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
                 }
                 if(!$this->startExplosion and !$this->ignited) {
                     $this->bombTime = 30;
+
                     $this->setGenericFlag(self::DATA_FLAG_IGNITED, false);
                 }
                 $x = $this->target->x - $this->x;

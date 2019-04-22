@@ -18,11 +18,12 @@ use core\mcpe\form\element\{
 	Button,
 	Image
 };
-
 use core\mcpe\entity\{
-    CreatureBase,
-    Interactable
+	CreatureBase,
+	Interactable
 };
+
+use core\mcpe\entity\projectile\FishingHook;
 
 use core\network\server\Server;
 
@@ -40,6 +41,7 @@ use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\{
     AddEntityPacket,
     BossEventPacket,
+	EntityEventPacket,
     SetPlayerGameTypePacket,
     EntityPickRequestPacket,
     InteractPacket,
@@ -67,19 +69,25 @@ abstract class CorePlayer extends Player {
     private $core;
 
     private $interacts = [], $attachments = [];
-    /**
-     * @var int|null
-     */
-    protected $lastMovement = null, $kickAFK = null;
 
     private $chatTime = 0;
 
     private $AFK = false, $fishing = false;
+    /** @var null | FishingHook */
+    public $fishingHook = null;
+	/**
+	 * @var int|null
+	 */
+	protected $lastMovement = null, $kickAFK = null;
 
     public function __construct(SourceInterface $interface, string $ip, int $port) {
 		parent::__construct($interface, $ip, $port);
 
 		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
+	}
+
+	public function __destruct() {
+		$this->setFishing(false);
 	}
 
 	public function setCore(Core $core) {
@@ -346,6 +354,17 @@ abstract class CorePlayer extends Player {
 
     public function setFishing(bool $fishing) {
         $this->fishing = $fishing;
+
+        if(!$fishing) {
+			if($this->fishingHook instanceof FishingHook) {
+				$this->fishingHook->broadcastEntityEvent(EntityEventPacket::FISH_HOOK_TEASE, null, $this->fishingHook->getViewers());
+
+				if(!$this->fishingHook->isFlaggedForDespawn()) {
+					$this->fishingHook->flagForDespawn();
+				}
+				$this->fishingHook = null;
+			}
+		}
     }
 
     public function getAttachment() : PermissionAttachment {

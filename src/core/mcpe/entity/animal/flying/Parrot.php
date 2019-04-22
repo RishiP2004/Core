@@ -31,11 +31,9 @@ class Parrot extends AnimalBase implements Collidable, Interactable {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		// TODO: Implement onCollideWithEntity() method.
 	}
 
 	public function onPlayerInteract(CorePlayer $player) : void {
-		// TODO: Implement onPlayerInteract() method.
 	}
 
     public function getDrops() : array {

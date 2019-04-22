@@ -1,6 +1,6 @@
 <?php
 
-namespace core\network;
+namespace core\mcpe\network;
 
 use pocketmine\item\Item;
 

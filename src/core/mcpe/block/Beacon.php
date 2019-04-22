@@ -34,10 +34,6 @@ class Beacon extends Transparent {
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
-		return true;
-	}
-
 	public function getName() : string {
 		return "Beacon";
 	}
@@ -70,6 +66,10 @@ class Beacon extends Transparent {
 		return true;
 	}
 
+	public function canBeActivated() : bool {
+		return true;
+	}
+
 	public function onActivate(Item $item, Player $player = null) : bool {
 		if(!$player instanceof CorePlayer) {
 			return false;
@@ -92,9 +92,6 @@ class Beacon extends Transparent {
 				new IntTag("z", $this->z),
 			]);
 			$beacon = Tile::createTile(Tile::BEACON, $this->getLevel(), $nbt);
-		}
-		if($player->isCreative()) {
-			return true;
 		}
 		$inventory = $beacon->getInventory();
 		

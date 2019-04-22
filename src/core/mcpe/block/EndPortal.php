@@ -72,7 +72,7 @@ class EndPortal extends Solid {
                     }
                 }
             }
-            // TODO: Add mob teleportation
+            //TODO: Add mob teleportation
         }
         return;
     }

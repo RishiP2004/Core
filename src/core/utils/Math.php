@@ -2,6 +2,8 @@
 
 namespace core\utils;
 
+use pocketmine\math\Vector3;
+
 class Math extends \pocketmine\math\Math {
     /**
      * @var \DateTime
@@ -33,6 +35,10 @@ class Math extends \pocketmine\math\Math {
         }
         return $yaw;
     }
+
+	public static function vector3XZDistance(Vector3 $pos1, Vector3 $pos2) {
+		return (($pos1->x - $pos2->x) + ($pos1->z - $pos2->z));
+	}
 
     public static function calculateBytes($toCheck) : int {
         $byteLimit = substr(trim($toCheck), 0, 1);

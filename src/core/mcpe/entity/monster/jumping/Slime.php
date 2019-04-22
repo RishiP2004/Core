@@ -17,6 +17,7 @@ use pocketmine\entity\Entity;
 
 class Slime extends MonsterBase implements Collidable {
     use CollisionCheckingTrait;
+
     const NETWORK_ID = self::SLIME;
 
     public $width = 1.2, $height = 1.2;
@@ -34,15 +35,12 @@ class Slime extends MonsterBase implements Collidable {
     }
 
     public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnMob() method.
     }
 
     public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnFromSpawner() method.
     }
 
     public function onCollideWithEntity(Entity $entity) : void {
-        // TODO: Implement onCollideWithEntity() method.
     }
 
     public function getDrops() : array {

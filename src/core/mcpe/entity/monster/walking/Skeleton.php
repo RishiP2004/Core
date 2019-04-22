@@ -182,11 +182,9 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	}
 
 	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-		// TODO: Implement spawnMob() method.
 	}
 
 	public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-		// TODO: Implement spawnFromSpawner() method.
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
@@ -232,7 +230,6 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	}
 
 	public function equipRandomArmour() : void {
-		// TODO: random armour chance by difficulty
 	}
 
 	public function getXpDropAmount() : int {

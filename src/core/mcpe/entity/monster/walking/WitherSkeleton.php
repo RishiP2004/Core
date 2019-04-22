@@ -45,30 +45,15 @@ class WitherSkeleton extends MonsterBase implements Collidable {
     }
 
     public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnMob() method.
     }
 
     public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnFromSpawner() method.
     }
 
     public function onCollideWithEntity(Entity $entity) : void {
-        // TODO: Implement onCollideWithEntity() method.
     }
 
     public function getDrops() : array {
-        $drops = [];
-
-        if(Core::getInstance()->getMCPE()->drops()) {
-            array_push($drops, Item::get(Item::COAL, 0, mt_rand(0, 1)));
-            array_push($drops, Item::get(Item::BONE, 0, mt_rand(0, 2)));
-
-            switch(mt_rand(0, 8)) {
-                case 1:
-                    array_push($drops, Item::get(Item::MOB_HEAD, 1, mt_rand(0, 2)));
-                break;
-            }
-        }
-        return $drops;
+        return parent::getDrops();
     }
 }

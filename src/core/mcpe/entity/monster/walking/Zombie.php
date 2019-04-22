@@ -2,7 +2,6 @@
 
 namespace core\mcpe\entity\monster\walking;
 
-use core\Core;
 use core\CorePlayer;
 
 use core\mcpe\entity\{
@@ -44,7 +43,10 @@ use pocketmine\network\mcpe\protocol\{
     TakeItemEntityPacket
 };
 
-use pocketmine\item\Item;
+use pocketmine\item\{
+	Item,
+	ItemFactory
+};
 
 class Zombie extends MonsterBase implements Ageable, InventoryHolder {
     use ItemHolderTrait, AgeableTrait, ClimbingTrait;
@@ -127,12 +129,10 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
     }
 
     public function equipRandomItems() : void {
-        //TODO random enchantments and random item (iron sword or iron shovel or iron axe)
     }
 
 
     public function equipRandomArmour() : void {
-        //TODO random enchantments and random armour
     }
 
     public function onUpdate(int $currentTick) : bool {
@@ -287,12 +287,10 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
     }
 
     public function checkItemValueToMainHand(Item $item) : bool {
-        // TODO: Implement checkItemValueToMainHand() method.
         return true;
     }
 
     public function checkItemValueToOffHand(Item $item) : bool {
-        // TODO: Implement checkItemValueToOffHand() method.
         return true;
     }
 
@@ -309,33 +307,30 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
     }
 
     public function getDrops() : array {
-        $drops = [];
+		$drops = [
+			ItemFactory::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2))
+		];
 
-        if(Core::getInstance()->getMCPE()->drops()) {
-            $drops = [
-                Item::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2))
-            ];
-            if(mt_rand(0, 199) < 5) {
-                switch(mt_rand(0, 2)) {
-                    case 0:
-                        $drops[] = Item::get(Item::IRON_INGOT, 0, 1);
-                    break;
-                    case 1:
-                        $drops[] = Item::get(Item::CARROT, 0, 1);
-                    break;
-                    case 2:
-                        $drops[] = Item::get(Item::POTATO, 0, 1);
-                    break;
-                }
-            }
-            if($this->dropAll) {
-                $drops = array_merge($drops, $this->armorInventory->getContents());
-            } else if(mt_rand(1, 100) <= 8.5) {
-                if(!empty($this->armorInventory->getContents())) {
-                    $drops[] = $this->armorInventory->getContents()[array_rand($this->armorInventory->getContents())];
-                }
-            }
-        }
-        return $drops;
+		if(mt_rand(0, 199) < 5) {
+			switch(mt_rand(0, 2)) {
+				case 0:
+					$drops[] = ItemFactory::get(Item::IRON_INGOT, 0, 1);
+				break;
+				case 1:
+					$drops[] = ItemFactory::get(Item::CARROT, 0, 1);
+				break;
+				case 2:
+					$drops[] = ItemFactory::get(Item::POTATO, 0, 1);
+				break;
+			}
+		}
+		if($this->dropAll) {
+			$drops = array_merge($drops, $this->armorInventory->getContents());
+		} else if(mt_rand(1, 100) <= 8.5) {
+			if(!empty($this->armorInventory->getContents())) {
+				$drops[] = $this->armorInventory->getContents()[array_rand($this->armorInventory->getContents())];
+			}
+		}
+		return $drops;
     }
 }

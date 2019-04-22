@@ -11,7 +11,10 @@ use core\mcpe\entity\monster\walking\{
 
 use pocketmine\item\Item;
 
-use pocketmine\block\Block;
+use pocketmine\block\{
+	Block,
+	Air
+};
 
 use pocketmine\math\Vector3;
 
@@ -25,9 +28,9 @@ class Pumpkin extends \pocketmine\block\Pumpkin {
 			$level = $this->getLevel();
 
 			if(Entity::checkSnowGolemStructure($this)[0]) {
-			    $level->setBlock($this, new Block(0));
-			    $level->setBlock($this->subtract(0, 1), new Block(0));
-			    $level->setBlock($this->subtract(0, 2), new Block(0));
+			    $level->setBlock($this, new Air());
+			    $level->setBlock($this->subtract(0, 1), new Air());
+			    $level->setBlock($this->subtract(0, 2), new Air());
 			    $golem = Entity::createEntity(Entity::SNOW_GOLEM, $level, Entity::createBaseNBT($this));
 
 			    if($golem instanceof SnowGolem) {
@@ -39,17 +42,17 @@ class Pumpkin extends \pocketmine\block\Pumpkin {
 			if($check[0]){
 			    switch($check[1]){
 			        case "X":
-			            $level->setBlock($this->subtract(1, 1, 0), new Block(0));
-			            $level->setBlock($this->add(1, -1, 0), new Block(0));
+			            $level->setBlock($this->subtract(1, 1, 0), new Air());
+			            $level->setBlock($this->add(1, -1, 0), new Air());
 			        break;
 					case "Z":
-					    $level->setBlock($this->subtract(0, 1, 1), new Block(0));
-					    $level->setBlock($this->add(0, -1, 1), new Block(0));
+					    $level->setBlock($this->subtract(0, 1, 1), new Air());
+					    $level->setBlock($this->add(0, -1, 1), new Air());
 					break;
 			    }
-			    $level->setBlock($this, new Block(0));
-			    $level->setBlock($this->subtract(0, 1), new Block(0));
-			    $level->setBlock($this->subtract(0, 2), new Block(0));
+			    $level->setBlock($this, new Air());
+			    $level->setBlock($this->subtract(0, 1), new Air());
+			    $level->setBlock($this->subtract(0, 2), new Air());
 
 			    $golem = Entity::createEntity(Entity::IRON_GOLEM, $level, Entity::createBaseNBT($this));
 

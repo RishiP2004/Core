@@ -1,8 +1,8 @@
 <?php
 
-namespace core\network;
+namespace core\mcpe\network;
 
-use mcpe\network\types\NetworkInventoryAction;
+use mcpe\mcpe\network\types\NetworkInventoryAction;
 
 class InventoryTransactionPacket extends \pocketmine\network\mcpe\protocol\InventoryTransactionPacket {
 	protected function decodePayload() : void {

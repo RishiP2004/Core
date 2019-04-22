@@ -17,6 +17,7 @@ class Obsidian extends \pocketmine\block\Obsidian {
 	public function onActivate(Item $item, Player $player = null) : bool {
 		if($item instanceof FlintSteel) {
 			$x_max = $x_min = $this->x;
+
 			for($x = $this->x + 1; $this->level->getBlockIdAt($x, $this->y, $this->z) === Block::OBSIDIAN; $x++) {
 				$x_max++;
 			}
@@ -40,6 +41,7 @@ class Obsidian extends \pocketmine\block\Obsidian {
 
 				if($count_y >= 5 and $count_y <= 23) {
 					$count_up = 0;
+
 					for($ux = $x_min; ($this->level->getBlockIdAt($ux, $y_max, $this->z) == Block::OBSIDIAN and $ux <= $x_max); $ux++) {
 						$count_up++;
 					}
@@ -54,44 +56,36 @@ class Obsidian extends \pocketmine\block\Obsidian {
 							$item->applyDamage(1);
 							$player->getInventory()->setItemInHand($item);
 						}
-
 						return true;
 					}
 				}
 			}
-
 			$z_max = $z_min = $this->z;
-			for(
-				$z = $this->z + 1; $this->level->getBlockIdAt($this->x, $this->y, $z) == Block::OBSIDIAN; $z++
-			) {
+
+			for($z = $this->z + 1; $this->level->getBlockIdAt($this->x, $this->y, $z) == Block::OBSIDIAN; $z++) {
 				$z_max++;
 			}
-			for(
-				$z = $this->z - 1; $this->level->getBlockIdAt($this->x, $this->y, $z) == Block::OBSIDIAN; $z--
-			) {
+			for($z = $this->z - 1; $this->level->getBlockIdAt($this->x, $this->y, $z) == Block::OBSIDIAN; $z--) {
 				$z_min--;
 			}
 			$count_z = $z_max - $z_min + 1;
+
 			if($count_z >= 4 and $count_z <= 23) {
 				$z_max_y = $this->y;
 				$z_min_y = $this->y;
-				for(
-					$y = $this->y; $this->level->getBlockIdAt($this->x, $y, $z_max) == Block::OBSIDIAN; $y++
-				) {
+
+				for($y = $this->y; $this->level->getBlockIdAt($this->x, $y, $z_max) == Block::OBSIDIAN; $y++) {
 					$z_max_y++;
 				}
-				for(
-					$y = $this->y; $this->level->getBlockIdAt($this->x, $y, $z_min) == Block::OBSIDIAN; $y++
-				) {
+				for($y = $this->y; $this->level->getBlockIdAt($this->x, $y, $z_min) == Block::OBSIDIAN; $y++) {
 					$z_min_y++;
 				}
-				$y_max   = min($z_max_y, $z_min_y) - 1;
+				$y_max = min($z_max_y, $z_min_y) - 1;
 				$count_y = $y_max - $this->y + 2;
+
 				if($count_y >= 5 and $count_y <= 23) {
 					$count_up = 0;
-					for(
-						$uz = $z_min; ($this->level->getBlockIdAt($this->x, $y_max, $uz) == Block::OBSIDIAN and $uz <= $z_max); $uz++
-					) {
+					for($uz = $z_min; ($this->level->getBlockIdAt($this->x, $y_max, $uz) == Block::OBSIDIAN and $uz <= $z_max); $uz++) {
 						$count_up++;
 					}
 					if($count_up == $count_z) {
@@ -105,13 +99,11 @@ class Obsidian extends \pocketmine\block\Obsidian {
 							$item->applyDamage(1);
 							$player->getInventory()->setItemInHand($item);
 						}
-
 						return true;
 					}
 				}
 			}
 		}
-
 		return false;
 	}
 

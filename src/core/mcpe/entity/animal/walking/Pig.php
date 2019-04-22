@@ -2,7 +2,6 @@
 
 namespace core\mcpe\entity\animal\walking;
 
-use core\Core;
 use core\CorePlayer;
 
 use core\mcpe\entity\{
@@ -34,11 +33,9 @@ class Pig extends AnimalBase implements Collidable, Interactable {
     }
 
     public function onCollideWithEntity(Entity $entity) : void {
-        // TODO: Implement onCollideWithEntity() method.
     }
 
     public function onPlayerInteract(CorePlayer $player) : void {
-        // TODO: Implement onPlayerInteract() method.
     }
 
     public function getXpDropAmount() : int {
@@ -47,18 +44,16 @@ class Pig extends AnimalBase implements Collidable, Interactable {
     }
 
     public function getDrops() : array {
-        if(Core::getInstance()->getMCPE()->drops()) {
-            if($this->isOnFire()) {
-                return [
-                    Item::get(Item::COOKED_PORKCHOP, 0, mt_rand(1, 3))
-                ];
-            } else {
-                return [
-                    Item::get(Item::RAW_PORKCHOP, 0, mt_rand(1, 3))
-                ];
-            }
-        } else {
-            return [];
-        }
+		$drops = [];
+
+		if($this->isOnFire()) {
+			array_pad($drops, mt_rand(1, 3), Item::get(Item::COOKED_PORKCHOP));
+		} else {
+			array_pad($drops, mt_rand(1, 3), Item::get(Item::RAW_PORKCHOP));
+		}
+		if(!empty($this->getArmorInventory()->getContents())) {
+			array_merge($drops, $this->getArmorInventory()->getContents());
+		}
+		return $drops;
     }
 }

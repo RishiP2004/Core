@@ -31,7 +31,7 @@ class EnchantingTable extends \pocketmine\block\EnchantingTable {
 		for($y = 0; $y <= 1; $y++) {
 			for($x = -1; $x <= 1; $x++) {
 				for($z = -1; $z <= 1; $z++) {
-					if($z == 0 && $x == 0) {
+					if($z === 0 && $x === 0) {
 					    continue;
                     }
 					if($level->getBlock($this->add($x, 0, $z))->isTransparent()) {

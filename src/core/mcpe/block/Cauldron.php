@@ -36,13 +36,9 @@ class Cauldron extends Transparent {
         $this->meta = $meta;
     }
 
-    public function canBeActivated() : bool {
-        return true;
-    }
-
-    public function getName() : string {
-        return "Cauldron";
-    }
+	public function getName() : string {
+		return "Cauldron";
+	}
 
     public function getHardness() : float {
         return 2;
@@ -52,7 +48,7 @@ class Cauldron extends Transparent {
         return BlockToolType::TYPE_PICKAXE;
     }
 
-    public function getToolHarvestLevel(): int{
+    public function getToolHarvestLevel() : int {
         return TieredTool::TIER_WOODEN;
     }
 
@@ -62,7 +58,11 @@ class Cauldron extends Transparent {
         return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
     }
 
-    public function onActivate(Item $item, Player $player = \null): bool{
+	public function canBeActivated() : bool {
+		return true;
+	}
+
+    public function onActivate(Item $item, Player $player = null) : bool {
         $tile = $this->getLevel()->getTile($this);
 
         if(!$tile instanceof Tile) {

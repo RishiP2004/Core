@@ -2,7 +2,7 @@
 
 namespace core\mcpe\entity\object;
 
-use core\utils\Item;
+use pocketmine\item\Item;
 
 use pocketmine\entity\Entity;
 
@@ -30,21 +30,11 @@ class ArmorStand extends Entity {
     public const TAG_HAND_ITEMS = "HandItems";
     public const TAG_ARMOR_ITEMS = "ArmorItems";
 
-    public $height = 1.975;
-    public $width = 0.5;
+    public $height = 1.975, $width = 0.5;
+
     protected $gravity = 0.04;
     /** @var Item */
-    protected $itemInHand;
-    /** @var Item */
-    protected $itemOffHand;
-    /** @var Item */
-    protected $helmet;
-    /** @var Item */
-    protected $chestplate;
-    /** @var Item */
-    protected $leggings;
-    /** @var Item */
-    protected $boots;
+    protected $itemInHand, $itemOffHand, $helmet, $chestplate, $leggings, $boots;
 
     public function initEntity() : void {
         $air = Item::get(Item::AIR)->nbtSerialize();
@@ -55,7 +45,6 @@ class ArmorStand extends Entity {
                 $air
             ], NBT::TAG_Compound));
         }
-
         if(!$this->namedtag->hasTag(self::TAG_ARMOR_ITEMS, ListTag::class)) {
             $this->namedtag->setTag(new ListTag(self::TAG_ARMOR_ITEMS, [
                 $air,
@@ -126,10 +115,10 @@ class ArmorStand extends Entity {
                 }
             } else {
                 if($type === Item::TYPE_NULL) {
-                    if($this->getItemInHand()->equals($item)){
+                    if($this->getItemInHand()->equals($item)) {
                         $playerInv->addItem(clone $this->getItemInHand());
                         $this->setItemInHand(Item::get(Item::AIR));
-                    }else{
+                    } else {
                         $playerInv->addItem(clone $this->getItemInHand());
 
                         $ic = clone $item;
@@ -139,6 +128,7 @@ class ArmorStand extends Entity {
                     }
                 } else {
                     $old = clone $this->get($type);
+
                     $this->set($type, $item);
                     $playerInv->setItemInHand(Item::get(Item::AIR));
                     $playerInv->addItem($old);
@@ -211,7 +201,7 @@ class ArmorStand extends Entity {
             case "OFFHAND":
                 return $this->getItemOffHand();
         }
-        return Item::get(Item::AIR);
+        return \pocketmine\item\Item::get(Item::AIR);
     }
 
     public function getItemOffHand() : Item {
@@ -254,11 +244,12 @@ class ArmorStand extends Entity {
         }
     }
 
-    public function sendHandItems(Player $player){
+    public function sendHandItems(Player $player) {
         $pk = new MobEquipmentPacket();
         $pk->entityRuntimeId = $this->getId();
         $pk->inventorySlot = $pk->hotbarSlot = 0;
         $pk->item = $this->getItemInHand();
+
         $player->dataPacket($pk);
 
         $pk = new MobEquipmentPacket();

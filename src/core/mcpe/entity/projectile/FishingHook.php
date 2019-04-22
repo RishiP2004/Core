@@ -109,7 +109,7 @@ class FishingHook extends Projectile {
     public function fishBites() {
         $owningEntity = $this->getOwningEntity();
 
-        if($owningEntity instanceof CorePlayer){
+        if($owningEntity instanceof CorePlayer) {
             $pk = new EntityEventPacket();
             $pk->entityRuntimeId = $this->getId();
             $pk->event = EntityEventPacket::FISH_HOOK_HOOK;
@@ -118,7 +118,7 @@ class FishingHook extends Projectile {
         }
     }
 
-    public function onHitEntity(Entity $entityHit, RayTraceResult $hitResult): void{
+    public function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void {
         $this->server->getPluginManager()->callEvent(new ProjectileHitEntityEvent($this, $hitResult, $entityHit));
 
         $damage = $this->getResultDamage();

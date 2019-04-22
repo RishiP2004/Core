@@ -2,66 +2,72 @@
 
 namespace core\mcpe\entity\vehicle;
 
+use core\CorePlayer;
+
+use core\mcpe\entity\{
+	Interactable,
+	Linkable,
+	Lookable,
+	Collidable,
+	LinkableTrait,
+	CollisionCheckingTrait
+};
+
 use pocketmine\entity\Entity;
 
-use pocketmine\nbt\tag\ByteTag;
+use pocketmine\block\Block;
 
-use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 
-use pocketmine\event\entity\EntityDamageEvent;
+class Boat extends Entity implements Interactable, Linkable, Lookable, Collidable {
+	use LinkableTrait, CollisionCheckingTrait;
 
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+	public function initEntity() : void {
+		parent::initEntity();
+	}
 
-use pocketmine\Server;
+	public function getName() : string {
+		return "Boat";
+	}
 
-class Boat extends Vehicle {
-    public const TAG_WOOD_ID = "WoodID";
+	public function entityBaseTick(int $tickDiff = 1) : bool {
+		return parent::entityBaseTick($tickDiff);
+	}
 
-    public const NETWORK_ID = self::BOAT;
+	public function onPlayerInteract(CorePlayer $player) : void {
+	}
 
-    public $height = 0.7;
-    public $width = 1.6;
-    public $gravity = 0;
-    public $drag = 0.1;
+	public function onPlayerLook(CorePlayer $player) : void {
+		$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "Ride");
+	}
 
-    /** @var Entity */
-    public $linkedEntity = null;
+	public function onCollideWithEntity(Entity $entity) : void {
+		if(!$entity instanceof CorePlayer and $entity instanceof Linkable) {
+			$this->setLink($entity);
+		}
+	}
 
-    protected $age = 0;
+	public function onCollideWithBlock(Block $block) : void {
+		// TODO: Break boat if with speed
+		// TODO: Implement onCollideWithBlock() method.
+	}
 
-    public function initEntity() : void {
-        if(!$this->namedtag->hasTag(self::TAG_WOOD_ID, ByteTag::class)) {
-            $this->namedtag->setByte(self::TAG_WOOD_ID, 0);
-        }
-        $this->setMaxHealth(4);
+	public function push(AxisAlignedBB $source) : void {
+		$base = 0.15;
+		$x = ($source->minX + $source->maxX) / 2;
+		$z = ($source->minZ + $source->maxZ) / 2;
+		$f = sqrt($x * $x + $z * $z);
 
-        parent::initEntity();
-    }
+		if($f <= 0) {
+			return;
+		}
+		$f = 1 / $f;
+		$motion = clone $this->motion;
+		$motion->x /= 2;
+		$motion->z /= 2;
+		$motion->x += $x * $f * $base;
+		$motion->z += $z * $f * $base;
 
-    public function getDrops() : array {
-        return [
-            Item::get(Item::BOAT, $this->getWoodID(), 1),
-        ];
-    }
-
-    public function getWoodID() {
-        return $this->namedtag->getByte(self::TAG_WOOD_ID);
-    }
-
-    public function attack(EntityDamageEvent $source) : void {
-        parent::attack($source);
-
-        if(!$source->isCancelled()) {
-            $pk = new EntityEventPacket();
-            $pk->entityRuntimeId = $this->id;
-            $pk->event = EntityEventPacket::HURT_ANIMATION;
-
-            Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
-        }
-    }
-
-    public function entityBaseTick(int $tickDiff = 1) : bool {
-		return false;
-		//TODO
-    }
+		$this->setMotion($motion);
+	}
 }

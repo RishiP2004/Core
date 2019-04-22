@@ -27,7 +27,6 @@ class Dolphin extends AnimalBase implements Collidable {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		// TODO: Implement onCollideWithEntity() method.
 	}
 	
 	public function getDrops() : array {

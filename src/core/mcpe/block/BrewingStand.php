@@ -19,26 +19,6 @@ use pocketmine\nbt\tag\{
 };
 
 class BrewingStand extends \pocketmine\block\BrewingStand {
-    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = \null): bool{
-        $parent = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-
-        if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent()) {
-            $nbt = new CompoundTag("", [
-                new StringTag(Tile::TAG_ID, Tile::BREWING_STAND),
-                new IntTag(Tile::TAG_X, (int)$this->x),
-                new IntTag(Tile::TAG_Y, (int)$this->y),
-                new IntTag(Tile::TAG_Z, (int)$this->z),
-            ]);
-            $nbt->setInt(Tile::TAG_BREW_TIME, Tile::MAX_BREW_TIME);
-
-            if($item->hasCustomName()){
-                $nbt->setString("CustomName", $item->getCustomName());
-            }
-            new Tile($player->getLevel(), $nbt);
-        }
-        return $parent;
-    }
-
     public function getBlastResistance() : float {
         return 2.5;
     }
@@ -46,6 +26,26 @@ class BrewingStand extends \pocketmine\block\BrewingStand {
     public function getLightLevel() : int {
         return 1;
     }
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
+		$parent = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+
+		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent()) {
+			$nbt = new CompoundTag("", [
+				new StringTag(Tile::TAG_ID, Tile::BREWING_STAND),
+				new IntTag(Tile::TAG_X, $this->x),
+				new IntTag(Tile::TAG_Y, $this->y),
+				new IntTag(Tile::TAG_Z, $this->z),
+			]);
+			$nbt->setInt(Tile::TAG_BREW_TIME, Tile::MAX_BREW_TIME);
+
+			if($item->hasCustomName()){
+				$nbt->setString("CustomName", $item->getCustomName());
+			}
+			new Tile($player->getLevel(), $nbt);
+		}
+		return $parent;
+	}
 
     public function onActivate(Item $item, Player $player = null) : bool {
         $parent = parent::onActivate($item, $player);
@@ -56,9 +56,9 @@ class BrewingStand extends \pocketmine\block\BrewingStand {
         } else {
             $nbt = new CompoundTag("", [
                 new StringTag(Tile::TAG_ID, Tile::BREWING_STAND),
-                new IntTag(Tile::TAG_X, (int)$this->x),
-                new IntTag(Tile::TAG_Y, (int)$this->y),
-                new IntTag(Tile::TAG_Z, (int)$this->z),
+                new IntTag(Tile::TAG_X, $this->x),
+                new IntTag(Tile::TAG_Y, $this->y),
+                new IntTag(Tile::TAG_Z, $this->z),
             ]);
             $nbt->setInt(Tile::TAG_BREW_TIME, Tile::MAX_BREW_TIME);
 

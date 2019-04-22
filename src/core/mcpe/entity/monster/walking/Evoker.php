@@ -32,15 +32,12 @@ class Evoker extends MonsterBase implements Collidable {
     }
 
     public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnMob() method.
     }
 
     public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnFromSpawner() method.
     }
 
     public function onCollideWithEntity(Entity $entity) : void {
-        // TODO: Implement onCollideWithEntity() method.
     }
 
     public function getDrops() : array {

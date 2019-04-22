@@ -17,12 +17,11 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\level\Explosion;
 
 class EndCrystal extends Entity {
-    public const TAG_SHOW_BOTTOM = "ShowBottom";
-
     public const NETWORK_ID = self::ENDER_CRYSTAL;
 
-    public $height = 0.98;
-    public $width = 0.98;
+	public const TAG_SHOW_BOTTOM = "ShowBottom";
+
+    public $height = 0.98, $width = 0.98;
 
     public function initEntity() : void {
         if(!$this->namedtag->hasTag(self::TAG_SHOW_BOTTOM, ByteTag::class)) {

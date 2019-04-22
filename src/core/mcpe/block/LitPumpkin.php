@@ -50,19 +50,18 @@ class LitPumpkin extends \pocketmine\block\LitPumpkin {
 			            $level->setBlock($this->subtract(0, 1, 1), new Air());
 			            $level->setBlock($this->add(0, -1, 1), new Air());
 					break;
-					}
-					$level->setBlock($this, new Air());
-					$level->setBlock($this->subtract(0, 1), new Air());
-					$level->setBlock($this->subtract(0, 2),new Air());
+			    }
+			    $level->setBlock($this, new Air());
+			    $level->setBlock($this->subtract(0, 1), new Air());
+			    $level->setBlock($this->subtract(0, 2),new Air());
 
-					$golem = Entity::createEntity(Entity::IRON_GOLEM, $level, Entity::createBaseNBT($this));
+			    $golem = Entity::createEntity(Entity::IRON_GOLEM, $level, Entity::createBaseNBT($this));
 
-					if($golem instanceof IronGolem) {
-						$golem->spawnToAll();
-					}
-				}
+			    if($golem instanceof IronGolem) {
+			    	$golem->spawnToAll();
+			    }
+			}
 		}
-
 		return $parent;
 	}
 }

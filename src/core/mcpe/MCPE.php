@@ -13,12 +13,13 @@ use core\mcpe\block\{
     Cauldron as CauldronBlock,
     EnchantingTable,
     EndPortal,
+	EndPortalFrame,
     Hopper as HopperBlock,
     Jukebox as JukeboxBlock,
     LitPumpkin,
     MonsterSpawner,
     Obsidian,
-    NetherPortal,
+    Portal,
     Pumpkin,
     ShulkerBox as ShulkerBoxBlock,
     SlimeBlock
@@ -40,19 +41,23 @@ use core\mcpe\entity\monster\walking\{
 
 use core\mcpe\entity\monster\swimming\ElderGuardian;
 
-use core\mcpe\entity\object\Item;
+use core\mcpe\entity\object\ItemEntity;
 
 use core\mcpe\item\{
 	ArmorStand,
 	Bucket,
+	EnchantedBook,
 	EndCrystal,
+	EyeOfEnder,
 	FireCharge,
+	Fireworks,
 	FishingRod,
-	FlintSteel,
 	GlassBottle,
+	Lead,
 	LingeringPotion,
 	Minecart,
 	Record,
+	Trident
 };
 
 use core\mcpe\tile\{
@@ -69,8 +74,7 @@ use core\mcpe\level\generator\ender\Ender;
 
 use core\mcpe\network\{
 	CraftingDataPacket,
-	InventoryTransactionPacket,
-	PlayerNetworkSessionAdapter
+	InventoryTransactionPacket
 };
 
 use pocketmine\entity\Entity;
@@ -101,6 +105,10 @@ use pocketmine\utils\Config;
 
 class MCPE implements Addon {
     private $core;
+	/**
+	 * @var Config
+	 */
+    private $cacheFile;
 
     private $brewingManager;
 
@@ -122,6 +130,8 @@ class MCPE implements Addon {
         $this->core = $core;
 		$this->brewingManager = new BrewingManager();
 
+		$this->cacheFile = new Config($core->getDataFolder() . "/mcpe/" . "cache.json", Config::JSON);
+
 		\core\utils\Level::$chunkCounter = $core->getConfig()->getAll();
 
         BlockFactory::registerBlock(new BeaconBlock(), true);
@@ -130,12 +140,13 @@ class MCPE implements Addon {
         BlockFactory::registerBlock(new CauldronBlock(), true);
         BlockFactory::registerBlock(new EnchantingTable(), true);
         BlockFactory::registerBlock(new EndPortal(), true);
+		BlockFactory::registerBlock(new EndPortalFrame(), true);
         BlockFactory::registerBlock(new HopperBlock(), true);
         BlockFactory::registerBlock(new JukeboxBlock(), true);
         BlockFactory::registerBlock(new LitPumpkin(), true);
         BlockFactory::registerBlock(new MonsterSpawner(), true);
-        BlockFactory::registerBlock(new NetherPortal(), true);
 		BlockFactory::registerBlock(new Obsidian(), true);
+        BlockFactory::registerBlock(new Portal(), true);
         BlockFactory::registerBlock(new Pumpkin(), true);
         BlockFactory::registerBlock(new ShulkerBoxBlock(), true);
         BlockFactory::registerBlock(new SlimeBlock(), true);
@@ -148,7 +159,7 @@ class MCPE implements Addon {
 				Wither::class,
 				ElderGuardian::class,
 				Endermite::class,
-				Item::class,
+				ItemEntity::class,
 				SnowGolem::class,
 				IronGolem::class
 			])) {
@@ -162,15 +173,30 @@ class MCPE implements Addon {
 		}
 		ItemFactory::registerItem(new ArmorStand(), true);
 		ItemFactory::registerItem(new Bucket(), true);
+		ItemFactory::registerItem(new EnchantedBook(), true);
 		ItemFactory::registerItem(new EndCrystal(), true);
+		ItemFactory::registerItem(new EyeOfEnder(), true);
 		ItemFactory::registerItem(new FireCharge(), true);
+		ItemFactory::registerItem(new Fireworks(), true);
 		ItemFactory::registerItem(new FishingRod(), true);
-		ItemFactory::registerItem(new FlintSteel(), true);
 		ItemFactory::registerItem(new GlassBottle(), true);
+		ItemFactory::registerItem(new Lead(), true);
 		ItemFactory::registerItem(new LingeringPotion(), true);
 		ItemFactory::registerItem(new Minecart(), true);
-		ItemFactory::registerItem(new Record(), true);
-		Item::initCreativeItems();
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_13, 0, "Music Disc 13"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_CAT, 0, "Music Disc cat"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_BLOCKS, 0, "Music Disc blocks"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_CHIRP, 0, "Music Disc chirp"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_FAR, 0, "Music Disc far"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_MALL, 0, "Music Disc mall"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_MELLOHI, 0, "Music Disc mellohi"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_STAL, 0, "Music Disc stal"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_STRAD, 0, "Music Disc strad"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WARD, 0, "Music Disc ward"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_11, 0, "Music Disc 11"), true);
+		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WAIT, 0, "Music Disc wait"), true);
+		ItemFactory::registerItem(new Trident(), true);
+		\pocketmine\item\Item::initCreativeItems();
 
 		PacketPool::registerPacket(new CraftingDataPacket());
 		PacketPool::registerPacket(new InventoryTransactionPacket());
@@ -182,6 +208,8 @@ class MCPE implements Addon {
         Tile::registerTile(JukeboxTile::class);
         Tile::registerTile(MobSpawner::class);
         Tile::registerTile(ShulkerboxTile::class);
+
+		GeneratorManager::addGenerator(Ender::class, "ender");
 
         if(!$this->core->getServer()->loadLevel(self::$netherName)) {
             $this->core->getServer()->generateLevel(self::$netherName, time(), GeneratorManager::getGenerator("nether"));
@@ -233,15 +261,15 @@ class MCPE implements Addon {
     public function getBrewingManager() : BrewingManager {
     	return $this->brewingManager;
 	}
+
+	public function getCacheFile() : Config {
+		return $this->cacheFile;
+	}
     /**
      * @return Entity[]
      */
     public function getRegisteredEntities() : array {
         return $this->registeredEntities;
-    }
-
-    public function drops() : bool {
-        return self::DROPS;
     }
 
     public function getTierCost(int $tier) : array {

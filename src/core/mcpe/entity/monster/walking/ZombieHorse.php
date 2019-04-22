@@ -29,7 +29,6 @@ class ZombieHorse extends MonsterBase {
     }
 
     public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
-        // TODO: Implement spawnMob() method.
     }
 
     public function getDrops() : array {
