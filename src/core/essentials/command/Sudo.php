@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essentials\command;
 
 use core\Core;
@@ -27,7 +29,7 @@ class Sudo extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->etErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 2) {

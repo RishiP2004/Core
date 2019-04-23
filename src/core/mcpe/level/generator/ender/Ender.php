@@ -1,26 +1,23 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\level\generator\ender;
 
 use core\mcpe\Addon;
-
 use core\mcpe\level\generator\ender\populator\EnderPilar;
-
-use pocketmine\level\ChunkManager;
-
-use pocketmine\level\generator\Generator;
-
-use pocketmine\level\generator\populator\Populator;
-
-use pocketmine\level\generator\noise\Simplex;
-
-use pocketmine\level\biome\Biome;
 
 use pocketmine\utils\Random;
 
 use pocketmine\math\Vector3;
 
 use pocketmine\block\Block;
+
+use pocketmine\level\ChunkManager;
+use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\populator\Populator;
+use pocketmine\level\generator\noise\Simplex;
+use pocketmine\level\biome\Biome;
 
 class Ender extends Generator implements Addon {
 	private static $GAUSSIAN_KERNEL = null;

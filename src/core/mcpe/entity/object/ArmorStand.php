@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\object;
+
+use pocketmine\Player;
 
 use pocketmine\item\Item;
 
 use pocketmine\entity\Entity;
 
-use pocketmine\nbt\tag\ListTag;
-
 use pocketmine\nbt\NBT;
-
-use pocketmine\Player;
+use pocketmine\nbt\tag\ListTag;
 
 use pocketmine\math\Vector3;
 

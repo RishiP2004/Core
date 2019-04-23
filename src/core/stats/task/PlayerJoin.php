@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\stats\task;
 
 use core\Core;
@@ -7,9 +9,9 @@ use core\CorePlayer;
 
 use pocketmine\scheduler\Task;
 
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
-
 use pocketmine\utils\TextFormat;
+
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class PlayerJoin extends Task {
     private $core;

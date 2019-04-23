@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\level\particle;
+
+use pocketmine\math\Vector3;
 
 use pocketmine\level\particle\{
 	GenericParticle,
 	Particle
 };
-
-use pocketmine\math\Vector3;
 
 class MobSpellParticle extends GenericParticle {
 	public function __construct(Vector3 $pos, $r = 0, $g = 0, $b = 0, $a = 255) {

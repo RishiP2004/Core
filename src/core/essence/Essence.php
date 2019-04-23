@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essence;
 
 use core\Core;
@@ -9,7 +11,6 @@ use core\essence\floatingText\{
     LobbyGreetings,
     Parkour
 };
-
 use core\essence\npc\{
     NPC,
     Athie,

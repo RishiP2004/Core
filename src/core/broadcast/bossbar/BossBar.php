@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\broadcast\bossbar;
 
 use core\Core;
-
 use core\CorePlayer;
 
 use pocketmine\entity\Entity;

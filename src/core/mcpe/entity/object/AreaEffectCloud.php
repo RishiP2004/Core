@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\object;
 
 use pocketmine\entity\{
 	Entity,
-	Living
+	Living,
+	EffectInstance
 };
 
 use pocketmine\level\particle\Particle;
@@ -14,8 +17,6 @@ use pocketmine\nbt\tag\{
 	FloatTag,
 	IntTag
 };
-
-use pocketmine\entity\EffectInstance;
 
 use pocketmine\item\Potion;
 

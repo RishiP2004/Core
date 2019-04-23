@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core;
 
-use core\broadcast\bossbar\Messages;
-
 use core\broadcast\Broadcasts;
+use core\broadcast\bossbar\Messages;
 
 use core\utils\{
 	Entity,
@@ -13,19 +14,16 @@ use core\utils\{
 };
 
 use core\mcpe\entity\{
-    AnimalBase,
-    MonsterBase,
-    CreatureBase
+	AnimalBase,
+	MonsterBase,
+	CreatureBase
 };
-
+use core\mcpe\entity\object\ItemEntity;
+use core\mcpe\entity\vehicle\Minecart;
+use core\mcpe\block\SlimeBlock;
 use core\mcpe\event\ServerSettingsRequestEvent;
 
-use core\mcpe\entity\vehicle\Minecart;
-
-use core\mcpe\block\SlimeBlock;
-
 use pocketmine\event\Listener;
-
 use pocketmine\event\player\{
     PlayerBedEnterEvent,
     PlayerCreationEvent,
@@ -42,63 +40,63 @@ use pocketmine\event\player\{
     PlayerPreLoginEvent,
     PlayerQuitEvent
 };
-
 use pocketmine\event\entity\{
     EntityDamageEvent,
     EntityDamageByEntityEvent,
     EntityDamageByBlockEvent,
-    EntityDeathEvent,
+	EntityDespawnEvent,
     EntityLevelChangeEvent,
     EntityExplodeEvent,
+	EntitySpawnEvent,
     ProjectileLaunchEvent
 };
-
 use pocketmine\event\block\{
     BlockBreakEvent,
     BlockPlaceEvent
 };
-
 use pocketmine\event\server\{
     DataPacketReceiveEvent,
 	DataPacketSendEvent,
     QueryRegenerateEvent
 };
-
 use pocketmine\event\inventory\{
     InventoryPickupItemEvent,
     InventoryPickupArrowEvent,
     InventoryTransactionEvent
 };
-
 use pocketmine\event\level\{
     ChunkLoadEvent,
     ChunkUnloadEvent
 };
 
-use pocketmine\entity\Living;
-
-use pocketmine\network\mcpe\protocol\{
-    LoginPacket,
-    ProtocolInfo,
-    InventoryTransactionPacket,
-    ServerSettingsRequestPacket,
-	StartGamePacket,
-	PlayerActionPacket,
-	PlayerInputPacket
+use pocketmine\entity\{
+	Living,
+	Animal,
+	Monster,
+	Human
 };
-
-use pocketmine\inventory\transaction\action\SlotChangeAction;
-
-use pocketmine\inventory\{
-    PlayerInventory,
-    PlayerCursorInventory
-};
-
-use pocketmine\item\enchantment\Enchantment;
 
 use pocketmine\math\Vector3;
 
 use pocketmine\level\Position;
+
+use pocketmine\inventory\{
+	PlayerInventory,
+	PlayerCursorInventory
+};
+use pocketmine\inventory\transaction\action\SlotChangeAction;
+
+use pocketmine\item\enchantment\Enchantment;
+
+use pocketmine\network\mcpe\protocol\{
+	LoginPacket,
+	ProtocolInfo,
+	InventoryTransactionPacket,
+	ServerSettingsRequestPacket,
+	StartGamePacket,
+	PlayerActionPacket,
+	PlayerInputPacket
+};
 
 class CoreListener implements Listener {
     private $core;
@@ -437,6 +435,7 @@ class CoreListener implements Listener {
             if($interacts["amount"] >= $this->core->getAntiCheat()->getAutoClickAmount()) {
                 $this->core->getServer()->getLogger()->warning($this->core->getErrorPrefix() . $player->getName() . " seems to have an Auto Clicker");
                 $player->kick($this->core->getErrorPrefix() . "An Auto Clicker was detected");
+                //TODO: Full AntiCheat system
             }
             $area = $player->getArea();
 
@@ -742,14 +741,30 @@ class CoreListener implements Listener {
         }
     }
 
+    public function onEntityDespawn(EntityDespawnEvent $event) {
+    	$entity = $event->getEntity();
+    	$data = $this->core->getAntiCheat();
 
-    public function onEntityDeath(EntityDeathEvent $event) {
-        $xp = Entity::getXpDropsForEntity($event->getEntity());
+    	if(!isset($data->ids[$entity->getId()])) {
+    		return;
+		}
+    	$uuid = $data->ids[$entity->getId()];
 
-        if($xp > 0) {
-            $event->getEntity()->getLevel()->dropExperience($event->getEntity()->asVector3(), $xp);
-        }
-    }
+    	unset($data->ids[$entity->getId()]);
+
+    	if(isset($data->animals[$uuid])) {
+    		unset($data->animals[$uuid]);
+    		return;
+		}
+    	if(isset($data->monsters[$uuid])) {
+			unset($data->monsters[$uuid]);
+			return;
+		}
+    	if(isset($data->itemEntities[$uuid])) {
+			unset($data->itemEntities[$uuid]);
+			return;
+		}
+	}
 
     public function onEntityLevelChange(EntityLevelChangeEvent $event) {
         $entity = $event->getEntity();
@@ -799,6 +814,56 @@ class CoreListener implements Listener {
             }
         }
     }
+
+    public function onEntitySpawn(EntitySpawnEvent $event) {
+    	$entity = $event->getEntity();
+    	$data = $this->core->getAntiCheat();
+
+    	if($entity instanceof Human) {
+    		return;
+		}
+    	$despawn = null;
+    	$uuid = uniqid();
+
+    	if($entity instanceof AnimalBase or $entity instanceof Animal) {
+    		$data->ids[$entity->getId()] = $uuid;
+    		$data->animals[$uuid] = $entity;
+
+    		if(count($data->animals) > $data->getMaxEntities("animals")) {
+    			$despawn = array_shift($data->animals);
+			}
+		}
+    	if($entity instanceof MonsterBase or $entity instanceof Monster) {
+			$data->ids[$entity->getId()] = $uuid;
+			$data->monsters[$uuid] = $entity;
+
+			if(count($data->monsters) > $data->getMaxEntities("monsters")) {
+				$despawn = array_shift($data->monsters);
+			}
+		}
+    	if($entity instanceof ItemEntity or $entity instanceof \pocketmine\entity\object\ItemEntity) {
+			$data->ids[$entity->getId()] = $uuid;
+			$data->itemEntities[$uuid] = $entity;
+
+			if(count($data->itemEntities) > $data->getMaxEntities("items")) {
+				$despawn = array_shift($data->itemEntities);
+			}
+		}
+    	if($despawn === null) {
+    		return;
+		}
+    	if($despawn->isClosed()) {
+    		return;
+		}
+		$area = $this->core->getWorld()->getAreaFromPosition($entity);
+
+		if($area->getName() !== "") {
+			if(!$area->entitySpawn()) {
+				$event->setCancelled();
+			}
+		}
+    	$despawn->flagForDespawn();
+	}
 
     public function onProjectileLaunch(ProjectileLaunchEvent $event) {
         $entity = $event->getEntity();
@@ -1022,6 +1087,16 @@ class CoreListener implements Listener {
         $packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
         $lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 
+		$area = $this->core->getWorld()->getAreaFromPosition(new Position($chunk->getX(), $chunk->getMaxY(), $chunk->getZ()));
+
+		if($area->getName() !== "") {
+			if(!$area->entitySpawn()) {
+				return;
+			}
+		}
+		if(!$this->core->getMCPE()->entitySpawn()) {
+			return;
+		}
         if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
             $biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
 
@@ -1030,7 +1105,6 @@ class CoreListener implements Listener {
 			} else {
 				$entityList = $this->core->getMCPE()::BIOME_ANIMALS[$biomeId = 1];
 			}
-			
 			if(empty($entityList)) {
 				return;
 			}
@@ -1042,7 +1116,7 @@ class CoreListener implements Listener {
                     $z = mt_rand(-20, 20) + $packCenter->z;
 
                     foreach($this->core->getMCPE()->registeredEntities as $class => $param) {
-                        if($class instanceof AnimalBase and $class::NETWORK_ID === $entityId) {
+                        if($class instanceof AnimalBase or $class instanceof Animal and $class::NETWORK_ID === $entityId) {
                             $entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
 
                             if($entity !== null) {
@@ -1058,7 +1132,7 @@ class CoreListener implements Listener {
 			if(array_key_exists($biomeId, $this->core->getMCPE()::BIOME_ANIMALS)) {
 				$entityList = $this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId];
 			} else {
-				$entityList =$this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId = 1];
+				$entityList = $this->core->getMCPE()::BIOME_HOSTILE_MOBS[$biomeId = 1];
 			}
 			
 			if(empty($entityList)) {
@@ -1072,7 +1146,7 @@ class CoreListener implements Listener {
                     $z = mt_rand(-20, 20) + $packCenter->z;
 
                     foreach($this->core->getMCPE()->registeredEntities as $class => $param) {
-                        if($class instanceof MonsterBase and $class::NETWORK_ID === $entityId) {
+                        if($class instanceof MonsterBase or $class instanceof Monster and $class::NETWORK_ID === $entityId) {
                             $entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
                             
 							if($entity !== null) {
@@ -1088,8 +1162,11 @@ class CoreListener implements Listener {
     public function onChunkUnload(ChunkUnloadEvent $event) {
         $chunk = $event->getChunk();
 
+        if(!$this->core->getMCPE()->entityDespawn()) {
+        	return;
+		}
         foreach($chunk->getEntities() as $entity) {
-            if($entity instanceof CreatureBase and !$entity->isPersistent()) {
+            if($entity instanceof CreatureBase or $entity instanceof Monster or $entity instanceof Animal and !$entity->isPersistent()) {
                 $entity->flagForDespawn();
             }
         }

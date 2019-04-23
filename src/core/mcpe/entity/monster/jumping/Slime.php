@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\monster\jumping;
 
 use core\mcpe\entity\{

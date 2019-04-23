@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace vote\command;
 
 use core\Core;

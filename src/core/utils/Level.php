@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\utils;
 
 use core\Core;
-
 use core\CorePlayer;
+
 use pocketmine\level\format\Chunk;
 
 use pocketmine\network\mcpe\protocol\types\DimensionIds;

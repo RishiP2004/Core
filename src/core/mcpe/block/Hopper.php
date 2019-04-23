@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\mcpe\tile\Hopper as Tile;
+
+use pocketmine\Player;
 
 use pocketmine\block\{
     Transparent,
@@ -11,8 +15,6 @@ use pocketmine\block\{
 };
 
 use pocketmine\item\Item;
-
-use pocketmine\Player;
 
 use pocketmine\nbt\tag\{
     CompoundTag,

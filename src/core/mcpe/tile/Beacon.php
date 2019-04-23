@@ -1,23 +1,19 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\tile;
 
 use core\mcpe\inventory\BeaconInventory;
+
+use pocketmine\Player;
+use pocketmine\Server;
 
 use pocketmine\tile\Spawnable;
 
 use pocketmine\inventory\InventoryHolder;
 
-use pocketmine\nbt\tag\{
-	CompoundTag,
-	IntTag
-};
-
-use pocketmine\Player;
-
 use pocketmine\item\Item;
-
-use pocketmine\Server;
 
 use pocketmine\block\Block;
 
@@ -30,6 +26,11 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\entity\{
 	EffectInstance,
 	Effect
+};
+
+use pocketmine\nbt\tag\{
+	CompoundTag,
+	IntTag
 };
 
 class Beacon extends Spawnable implements InventoryHolder {

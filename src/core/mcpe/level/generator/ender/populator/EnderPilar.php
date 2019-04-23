@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\level\generator\ender\populator;
-
-use pocketmine\level\generator\populator\Populator;
-
-use pocketmine\level\ChunkManager;
 
 use pocketmine\utils\Random;
 
 use pocketmine\block\Block;
+
+use pocketmine\level\ChunkManager;
+use pocketmine\level\generator\populator\Populator;
 
 class EnderPilar extends Populator {
 	private const radii = [3, 4, 3, 5, 3, 4, 3, 3, 5, 4, 5, 3, 5, 4, 4, 5, 5, 4, 4, 4, 5];

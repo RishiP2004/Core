@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity;
 
 use core\CorePlayer;
-
-use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\event\entity\{
     EntityDamageEvent,

@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\inventory;
 
 use core\mcpe\tile\ShulkerBox;
 
-use pocketmine\inventory\ContainerInventory;
-
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
-
 use pocketmine\Player;
 
+use pocketmine\inventory\ContainerInventory;
+
 use pocketmine\level\Level;
+
+use pocketmine\math\Vector3;
 
 use pocketmine\network\mcpe\protocol\{
 	LevelSoundEventPacket,
 	BlockEventPacket
 };
-
-use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class ShulkerBoxInventory extends ContainerInventory {
 	/** @var ShulkerBox */

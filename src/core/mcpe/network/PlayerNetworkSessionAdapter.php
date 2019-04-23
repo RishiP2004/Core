@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\network;
 
 use core\CorePlayer;

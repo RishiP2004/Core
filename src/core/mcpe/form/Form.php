@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\form;
 
 abstract class Form implements \pocketmine\form\Form {

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\network;
 
 use pocketmine\item\Item;
+use pocketmine\item\enchantment\EnchantmentList;
 
 use pocketmine\network\mcpe\NetworkBinaryStream;
 
@@ -11,8 +14,6 @@ use pocketmine\inventory\{
 	ShapedRecipe,
 	FurnaceRecipe
 };
-
-use pocketmine\item\enchantment\EnchantmentList;
 
 class CraftingDataPacket extends \pocketmine\network\mcpe\protocol\CraftingDataPacket {
 	public const ENTRY_ENCHANT_LIST = 4;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe;
 
 use core\Core;
@@ -9,7 +11,6 @@ use pocketmine\item\{
 	Potion,
 	Durable
 };
-
 use pocketmine\item\enchantment\{
 	Enchantment,
 	EnchantmentInstance

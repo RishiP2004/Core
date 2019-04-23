@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
-use core\CorePlayer;
-
 use core\mcpe\inventory\BeaconInventory;
-
 use core\mcpe\tile\Beacon as Tile;
+
+use pocketmine\Player;
 
 use pocketmine\item\Item;
 
@@ -17,8 +18,6 @@ use pocketmine\block\{
 };
 
 use pocketmine\math\Vector3;
-
-use pocketmine\Player;
 
 use pocketmine\nbt\tag\{
 	ByteTag, 
@@ -71,7 +70,7 @@ class Beacon extends Transparent {
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool {
-		if(!$player instanceof CorePlayer) {
+		if(!$player instanceof Player) {
 			return false;
 		}
 		$tile = $this->getLevel()->getTile($this);

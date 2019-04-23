@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\form\element;
 
 use pocketmine\form\FormValidationException;

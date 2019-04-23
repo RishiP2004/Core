@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\social\discord\task;
 
 use core\Core;
+
+use pocketmine\Server;
 
 use pocketmine\scheduler\AsyncTask;
 
@@ -44,7 +48,7 @@ class DiscordSend extends AsyncTask {
         $this->setResult($result);
     }
     
-    public function onCompletion() : void {
+    public function onCompletion(Server $server) : void {
         Core::getInstance()->getSocial()->getDiscord()->notifyDiscord($this->sender, $this->getResult());
     }
 }

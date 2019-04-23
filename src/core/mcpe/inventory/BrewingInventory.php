@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\inventory;
 
 use core\mcpe\tile\BrewingStand;
 
-use pocketmine\inventory\ContainerInventory;
+use pocketmine\Player;
 
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
+use pocketmine\inventory\ContainerInventory;
 
 use pocketmine\item\Item;
 
-use pocketmine\Player;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class BrewingInventory extends ContainerInventory {
 	public const SLOT_INGREDIENT = 0;

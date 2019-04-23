@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\network\command\subCommand;
 
 use core\Core;
 
-use core\utils\SubCommand;
-
-use core\utils\MathUtils;
+use core\utils\{
+	SubCommand,
+	Math
+};
 
 use pocketmine\command\CommandSender;
 
@@ -41,9 +44,9 @@ class Memory extends SubCommand {
 
     public function execute(CommandSender $sender, array $args) : bool {
         $sender->sendMessage($this->core->getPrefix() . "Restarter Memory Info:");
-        $sender->sendMessage(TextFormat::GRAY . "Bytes: " . memory_get_usage(true) . "/" . MathUtils::calculateBytes($this->core->getNetwork()->getMemoryLimit()));
+        $sender->sendMessage(TextFormat::GRAY . "Bytes: " . memory_get_usage(true) . "/" . Math::calculateBytes($this->core->getNetwork()->getMemoryLimit()));
         $sender->sendMessage(TextFormat::GRAY . "Memory-limit: " . $this->core->getNetwork()->getMemoryLimit());
-        $sender->sendMessage(TextFormat::GRAY . "Overloaded: " . MathUtils::isOverloaded($this->core->getNetwork()->getMemoryLimit()) ? "Yes" : "No");
+        $sender->sendMessage(TextFormat::GRAY . "Overloaded: " . Math::isOverloaded($this->core->getNetwork()->getMemoryLimit()) ? "Yes" : "No");
         return true;
     }
 }

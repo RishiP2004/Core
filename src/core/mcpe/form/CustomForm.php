@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\form;
 
 use core\mcpe\form\element\Element;
 
+use pocketmine\Player;
+
 use pocketmine\utils\Utils;
 
 use pocketmine\form\FormValidationException;
-
-use pocketmine\Player;
 
 abstract class CustomForm extends Form {
     /** @var Element[] */
@@ -48,27 +50,27 @@ abstract class CustomForm extends Form {
 	public function onSubmit(Player $player, CustomFormResponse $data) : void {
 	}
 
-	public function onClose(Player $player) : void {
+	final public function handleResponse(Player $player, $data) : void {
+		if($data === null) {
+			if($this->onClose !== null) {
+				$this->onClose($player);
+			}
+		} else if(is_array($data)) {
+			foreach($data as $index => $value) {
+				if(!isset($this->elements[$index])) {
+					throw new FormValidationException("Element at index $index does not exist");
+				}
+				$element = $this->elements[$index];
+
+				$element->validate($value);
+				$element->setValue($value);
+			}
+			$this->onSubmit($player, new CustomFormResponse($this->elements));
+		} else {
+			throw new FormValidationException("Expected array or null, got " . gettype($data));
+		}
 	}
 
-    final public function handleResponse(Player $player, $data) : void {
-        if($data === null) {
-            if($this->onClose !== null) {
-                $this->onClose($player);
-            }
-        } else if(is_array($data)) {
-            foreach($data as $index => $value) {
-                if(!isset($this->elements[$index])) {
-                    throw new FormValidationException("Element at index $index does not exist");
-                }
-                $element = $this->elements[$index];
-
-                $element->validate($value);
-                $element->setValue($value);
-            }
-            $this->onSubmit($player, new CustomFormResponse($this->elements));
-        } else {
-            throw new FormValidationException("Expected array or null, got " . gettype($data));
-        }
-    }
+	public function onClose(Player $player) : void {
+	}
 }

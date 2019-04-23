@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\broadcast\command\subCommand;
 
 use core\Core;

@@ -1,8 +1,8 @@
 <?php
 
-namespace core\mcpe\entity\monster\flying;
+declare(strict_types = 1);
 
-use core\Core;
+namespace core\mcpe\entity\monster\flying;
 
 use core\mcpe\entity\{
     MonsterBase,
@@ -18,8 +18,6 @@ use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 
 use pocketmine\entity\Entity;
-
-use pocketmine\item\Item;
 
 class Blaze extends MonsterBase implements Collidable{
     use CollisionCheckingTrait;

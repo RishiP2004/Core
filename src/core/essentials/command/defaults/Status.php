@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essentials\command\defaults;
 
 use core\Core;
@@ -9,9 +11,10 @@ use pocketmine\command\{
     CommandSender
 };
 
-use pocketmine\utils\TextFormat;
-
-use pocketmine\utils\Utils;
+use pocketmine\utils\{
+	TextFormat,
+	Utils
+};
 
 class Status extends PluginCommand {
     private $core;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\monster\walking;
 
 use core\CorePlayer;
@@ -10,7 +12,6 @@ use core\mcpe\entity\{
 	Interactable,
 	ClimbingTrait
 };
-
 use core\mcpe\entity\object\Lightning;
 
 use pocketmine\entity\{

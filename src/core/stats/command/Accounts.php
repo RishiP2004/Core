@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\stats\command;
 
 use core\Core;
-
 use core\CoreUser;
 
 use pocketmine\command\{

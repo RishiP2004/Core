@@ -1,25 +1,28 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\tile;
 
 use core\mcpe\inventory\HopperInventory;
-
 use core\mcpe\block\Hopper as HopperBlock;
 
-use pocketmine\tile\Spawnable;
+use pocketmine\Player;
+use pocketmine\Server;
+
+use pocketmine\tile\{
+	Spawnable,
+	Container,
+	Nameable,
+	Chest
+};
 
 use pocketmine\inventory\{
 	InventoryHolder,
 	DoubleChestInventory
 };
 
-use pocketmine\tile\{
-    Container,
-    Nameable
-};
-
 use pocketmine\nbt\NBT;
-
 use pocketmine\nbt\tag\{
     CompoundTag,
     ListTag
@@ -31,13 +34,7 @@ use pocketmine\math\Vector3;
 
 use pocketmine\item\Item;
 
-use pocketmine\Player;
-
-use pocketmine\Server;
-
 use pocketmine\entity\object\ItemEntity;
-
-use pocketmine\tile\Chest;
 
 abstract class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
     public const HOPPER = "Hopper";

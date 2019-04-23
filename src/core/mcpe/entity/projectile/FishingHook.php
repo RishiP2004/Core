@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\projectile;
 
 use core\CorePlayer;
+
+use pocketmine\Server;
 
 use pocketmine\entity\projectile\Projectile;
 
@@ -10,8 +14,6 @@ use pocketmine\block\{
     Water,
     StillWater
 };
-
-use pocketmine\Server;
 
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 

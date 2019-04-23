@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\item;
+
+use pocketmine\Player;
 
 use pocketmine\item\{
 	ProjectileItem,
@@ -8,12 +12,9 @@ use pocketmine\item\{
 	Potion
 };
 
-use pocketmine\Player;
-
 use pocketmine\math\Vector3;
 
 use pocketmine\entity\Entity;
-
 use pocketmine\entity\projectile\Projectile;
 
 use pocketmine\event\entity\ProjectileLaunchEvent;

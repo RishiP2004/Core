@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\network\command\subCommand;
 
 use core\Core;
 
 use core\utils\{
     SubCommand,
-    MathUtils
+    Math
 };
 
 use pocketmine\command\CommandSender;
@@ -39,7 +41,7 @@ class Time extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Time remaining until Restart: " . MathUtils::getFormattedTime($this->core->getNetwork()->getTimer()->getTime()));
+        $sender->sendMessage($this->core->getPrefix() . "Time remaining until Restart: " . Math::getFormattedTime($this->core->getNetwork()->getTimer()->getTime()));
         return true;
     }
 }

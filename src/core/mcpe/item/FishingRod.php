@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\item;
 
 use core\CorePlayer;
 
 use core\mcpe\FishingLootTable;
-
 use core\mcpe\entity\projectile\FishingHook;
+
+use pocketmine\Player;
 
 use pocketmine\item\{
 	Durable,
@@ -15,19 +18,16 @@ use pocketmine\item\{
 
 use pocketmine\item\enchantment\Enchantment;
 
-use pocketmine\Player;
-
 use pocketmine\math\Vector3;
 
-use pocketmine\entity\Entity;
+use pocketmine\block\Block;
 
+use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 
 use pocketmine\event\entity\ProjectileLaunchEvent;
 
 use pocketmine\level\sound\LaunchSound;
-
-use pocketmine\block\Block;
 
 class FishingRod extends Durable {
 	public function __construct($meta = 0) {

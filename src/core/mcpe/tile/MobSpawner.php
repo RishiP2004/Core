@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\tile;
 
 use core\Core;
 
 use core\mcpe\Addon;
-
 use core\mcpe\entity\CreatureBase;
 
 use pocketmine\tile\Spawnable;
@@ -14,8 +15,6 @@ use pocketmine\math\AxisAlignedBB;
 
 use pocketmine\utils\TextFormat;
 
-use pocketmine\entity\EntityIds;
-
 use pocketmine\level\{
 	Level,
 	Position
@@ -23,7 +22,8 @@ use pocketmine\level\{
 
 use pocketmine\entity\{
 	Living,
-	Entity
+	Entity,
+	EntityIds
 };
 
 use pocketmine\nbt\tag\{

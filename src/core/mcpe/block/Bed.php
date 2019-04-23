@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\utils\Level;
 
-use pocketmine\item\Item;
-
 use pocketmine\Player;
+
+use pocketmine\item\Item;
 
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 

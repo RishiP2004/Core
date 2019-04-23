@@ -1,10 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\network\types;
 
 use core\mcpe\network\InventoryTransactionPacket;
-
 use core\mcpe\inventory\EnchantInventory;
+
+use pocketmine\Player;
+
+use pocketmine\item\Item;
+
+use pocketmine\inventory\AnvilInventory;
 
 use pocketmine\inventory\transaction\action\{
 	InventoryAction,
@@ -13,13 +20,7 @@ use pocketmine\inventory\transaction\action\{
 	CreativeInventoryAction
 };
 
-use pocketmine\item\Item;
-
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
-
-use pocketmine\Player;
-
-use pocketmine\inventory\AnvilInventory;
 
 class NetworkInventoryAction {
 	public const SOURCE_CONTAINER = 0;

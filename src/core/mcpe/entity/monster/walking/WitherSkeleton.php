@@ -1,8 +1,8 @@
 <?php
 
-namespace core\mcpe\entity\monster\walking;
+declare(strict_types = 1);
 
-use core\Core;
+namespace core\mcpe\entity\monster\walking;
 
 use core\mcpe\entity\{
     MonsterBase,

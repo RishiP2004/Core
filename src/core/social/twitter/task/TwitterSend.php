@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\social\twitter\task;
 
 use core\Core;
 
 use core\social\twitter\Access;
-
 use core\social\twitter\oAuth\TwitterOAuth;
 
 use pocketmine\scheduler\AsyncTask;

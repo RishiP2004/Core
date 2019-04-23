@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\projectile;
 
 use core\mcpe\entity\object\AreaEffectCloud;
 
+use pocketmine\Server;
+
+use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Throwable;
 
 use pocketmine\nbt\tag\{
@@ -14,19 +19,16 @@ use pocketmine\nbt\tag\{
 	FloatTag
 };
 
-use pocketmine\item\Potion;
+use pocketmine\item\{
+	Item,
+	Potion
+};
 
 use pocketmine\event\entity\ProjectileHitEvent;
 
 use pocketmine\level\particle\ItemBreakParticle;
 
-use pocketmine\item\Item;
-
-use pocketmine\entity\Entity;
-
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
-
-use pocketmine\Server;
 
 class LingeringPotion extends Throwable {
 	public const NETWORK_ID = self::LINGERING_POTION;

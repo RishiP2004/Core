@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\item;
 
 use core\mcpe\entity\projectile\Firework;
 
-use pocketmine\item\Item;
-
 use pocketmine\Player;
+
+use pocketmine\item\Item;
 
 use pocketmine\block\Block;
 
@@ -18,9 +20,9 @@ use pocketmine\utils\Random;
 
 use pocketmine\entity\Entity;
 
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-
 use pocketmine\event\entity\EntityDamageEvent;
+
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Fireworks extends Item {
 	public const TAG_FIREWORKS = "Fireworks";

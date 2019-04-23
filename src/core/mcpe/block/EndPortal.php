@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\Core;
-
 use core\CorePlayer;
 
 use core\mcpe\task\DelayedCrossDimensionTeleport;

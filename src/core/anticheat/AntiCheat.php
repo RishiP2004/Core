@@ -1,10 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\anticheat;
 
 use core\Core;
 
 use core\anticheat\entity\PrimedTNT;
+
+use core\mcpe\entity\{
+	AnimalBase,
+	MonsterBase,
+};
+use core\mcpe\entity\object\ItemEntity;
 
 use pocketmine\entity\{
     Entity,
@@ -20,6 +28,22 @@ class AntiCheat implements Cheats {
     private $queue;
 
     private $runs = 0;
+	/**
+	 * @var AnimalBase[]
+	 */
+    public $animals = [];
+	/**
+	 * @var MonsterBase[]
+	 */
+    public $monsters = [];
+	/**
+	 * @var ItemEntity[]
+	 */
+    public $itemEntities = [];
+	/**
+	 * @var string[]
+	 */
+    public $ids = [];
 
     public function __construct(Core $core) {
 		$this->core = $core;
@@ -50,6 +74,10 @@ class AntiCheat implements Cheats {
 		return self::LAG_CLEAR_TIME[$key];
 	}
 
+	public function getMaxEntities(string $key) : int {
+    	return self::MAX_ENTITIES[$key];
+	}
+
 	public function tick() {
         $this->runs++;
 
@@ -69,7 +97,7 @@ class AntiCheat implements Cheats {
                     if($entity instanceof Human) {
                         continue;
                     }
-                    $entity->close();
+                    $entity->flagForDespawn();
                 }
             }
             $this->core->getServer()->broadcastMessage($this->core->getPrefix() . "Lag has been Cleared");

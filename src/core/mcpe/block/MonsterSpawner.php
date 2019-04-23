@@ -1,20 +1,23 @@
 <?php
 
-namespace core\mcpe\block;
+declare(strict_types = 1);
 
-use core\mcpe\tile\MobSpawner;
+namespace core\mcpe\block;
 
 //use factions\FactionsPlayer;
 
-use pocketmine\item\Item;
+use core\mcpe\tile\MobSpawner;
 
 use pocketmine\Player;
+
+use pocketmine\item\{
+	Item,
+	SpawnEgg
+};
 
 use pocketmine\block\Block;
 
 use pocketmine\math\Vector3;
-
-use pocketmine\item\SpawnEgg;
 
 class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
     public function __construct($meta = 0) {

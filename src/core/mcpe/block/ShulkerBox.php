@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\mcpe\tile\ShulkerBox as Tile;
+
+use pocketmine\Player;
 
 use pocketmine\block\{
     Transparent,
@@ -16,8 +20,6 @@ use pocketmine\item\{
 };
 
 use pocketmine\math\Vector3;
-
-use pocketmine\Player;
 
 use pocketmine\tile\Container;
 

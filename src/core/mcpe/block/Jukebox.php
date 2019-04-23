@@ -1,25 +1,26 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\mcpe\tile\Jukebox as Tile;
-
 use core\mcpe\item\Record;
 
-use pocketmine\block\Solid;
+use pocketmine\Player;
 
-use pocketmine\block\BlockToolType;
+use pocketmine\block\{
+	Solid,
+	BlockToolType,
+	Block
+};
 
 use pocketmine\item\{
     TieredTool,
     Item
 };
 
-use pocketmine\block\Block;
-
 use pocketmine\math\Vector3;
-
-use pocketmine\Player;
 
 use pocketmine\nbt\tag\{
     CompoundTag,

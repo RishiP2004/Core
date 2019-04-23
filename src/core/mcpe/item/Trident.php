@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\item;
 
-use pocketmine\item\Tool;
-
 use pocketmine\Player;
+
+use pocketmine\item\Tool;
 
 use pocketmine\entity\Entity;
 

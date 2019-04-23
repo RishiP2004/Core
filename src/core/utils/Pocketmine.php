@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\utils;
 
 use pocketmine\permission\{
     DefaultPermissions,
     PermissionManager
 };
-use pocketmine\utils\TextFormat;
+
+use pocketmine\utils\{
+	TextFormat,
+	Utils
+};
 
 use pocketmine\command\CommandSender;
-
-use pocketmine\utils\Utils;
 
 class PocketMine extends Utils {
     public const MAX_COORD = 30000000;

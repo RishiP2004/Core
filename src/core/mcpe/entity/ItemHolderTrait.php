@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity;
 
 use core\CorePlayer;
 
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ListTag;
 
 use pocketmine\item\{
@@ -12,10 +15,7 @@ use pocketmine\item\{
 };
 
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
-
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-
-use pocketmine\nbt\NBT;
 
 trait ItemHolderTrait {
 	/** @var Item|null */

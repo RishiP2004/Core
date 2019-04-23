@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essentials\command\defaults;
 
 use core\Core;
-
 use core\CorePlayer;
 
 use core\utils\Math;

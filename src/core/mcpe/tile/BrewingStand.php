@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\tile;
 
 use core\Core;
@@ -14,18 +16,18 @@ use pocketmine\tile\{
 	ContainerTrait
 };
 
+use pocketmine\inventory\InventoryHolder;
+
+use pocketmine\level\Level;
+
+use pocketmine\item\Item;
+
 use pocketmine\nbt\tag\{
 	CompoundTag,
 	ShortTag,
 	IntTag,
 	ByteTag
 };
-
-use pocketmine\inventory\InventoryHolder;
-
-use pocketmine\level\Level;
-
-use pocketmine\item\Item;
 
 use pocketmine\network\mcpe\protocol\{
 	LevelSoundEventPacket,

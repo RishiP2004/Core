@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\stats;
 
 use core\Core;
 use core\CorePlayer;
 use core\CoreUser;
+
+use core\utils\Entity;
 
 use core\stats\rank\{
     Rank,
@@ -21,13 +25,11 @@ use core\stats\rank\{
     Universal,
     YouTuber
 };
-
-use core\utils\Entity;
-
 use core\stats\task\{
-    AFKSetter,
-    TopCoins
+	AFKSetter,
+	TopCoins
 };
+
 
 use pocketmine\command\CommandSender;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\world\area;
 
 use pocketmine\level\Position;
@@ -65,4 +67,6 @@ abstract class Area {
     public abstract function getAreaEffects() : array;
 
     public abstract function getBlockedCommands() : array;
+
+    public abstract function entitySpawn() : bool;
 }

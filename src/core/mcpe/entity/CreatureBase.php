@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity;
 
 use core\CorePlayer;
 
-use pocketmine\entity\Creature;
+use pocketmine\entity\{
+	Creature,
+	Entity
+};
 
 use pocketmine\level\Position;
 
@@ -12,11 +17,10 @@ use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\timings\Timings;
 
-use pocketmine\math\Vector3;
-
-use pocketmine\math\AxisAlignedBB;
-
-use pocketmine\entity\Entity;
+use pocketmine\math\{
+	Vector3,
+	AxisAlignedBB
+};
 
 use pocketmine\block\Block;
 

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\projectile;
 
-use core\mcpe\item\Trident;
-
-use pocketmine\entity\projectile\Projectile;
-
 use pocketmine\Player;
+use pocketmine\Server;
+
+use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Projectile;
 
 use pocketmine\item\Item;
 
@@ -15,13 +17,9 @@ use pocketmine\network\mcpe\protocol\{
 	PlaySoundPacket
 };
 
-use pocketmine\entity\Entity;
-
 use pocketmine\math\RayTraceResult;
 
 use pocketmine\block\Block;
-
-use pocketmine\Server;
 
 class Trident extends Projectile {
 	public const NETWORK_ID = self::TRIDENT;

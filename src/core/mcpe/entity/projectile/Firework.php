@@ -1,9 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\projectile;
 
 use core\mcpe\item\Fireworks;
 
+use pocketmine\Player;
+
+use pocketmine\entity\{
+	Entity,
+	Living
+};
 use pocketmine\entity\projectile\Projectile;
 
 use pocketmine\level\Level;
@@ -13,16 +21,9 @@ use pocketmine\nbt\tag\{
 	ByteTag
 };
 
-use pocketmine\entity\{
-	Entity,
-	Living
-};
-
 use pocketmine\utils\Random;
 
 use pocketmine\item\Item;
-
-use pocketmine\Player;
 
 use pocketmine\network\mcpe\protocol\{
 	SetEntityDataPacket,

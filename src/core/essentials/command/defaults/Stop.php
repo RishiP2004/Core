@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essentials\command\defaults;
 
 use core\Core;

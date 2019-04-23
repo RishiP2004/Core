@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\utils;
 
+use pocketmine\item\{
+	TieredTool,
+	ItemIds,
+	Tool,
+	FishingRod,
+	Armor,
+	Book,
+	Sword,
+	Bow,
+	Durable
+};
 use pocketmine\item\enchantment\{
     EnchantmentInstance,
     Enchantment
-};
-
-use pocketmine\item\{
-    TieredTool,
-    ItemIds,
-    Tool,
-    FishingRod,
-    Armor,
-    Book,
-    Sword,
-    Bow,
-    Durable
 };
 
 use pocketmine\utils\Color;

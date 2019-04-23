@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity;
 
 use core\CorePlayer;
 
 use pocketmine\entity\Entity;
 
-use pocketmine\network\mcpe\protocol\types\EntityLink;
-
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 
 trait LinkableTrait {
 	/** @var Entity|Linkable $link */

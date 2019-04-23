@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe;
 
 use core\Core;
 
 use core\mcpe\inventory\BrewingManager;
-
 use core\mcpe\block\{
 	Beacon as BeaconBlock,
     Bed,
@@ -24,25 +25,19 @@ use core\mcpe\block\{
     ShulkerBox as ShulkerBoxBlock,
     SlimeBlock
 };
-
 use core\mcpe\entity\{
 	MonsterBase,
 	AnimalBase
 };
-
 use core\mcpe\entity\monster\flying\EnderDragon;
-
 use core\mcpe\entity\monster\walking\{
 	Wither,
 	Endermite,
 	SnowGolem,
 	IronGolem
 };
-
 use core\mcpe\entity\monster\swimming\ElderGuardian;
-
 use core\mcpe\entity\object\ItemEntity;
-
 use core\mcpe\item\{
 	ArmorStand,
 	Bucket,
@@ -59,7 +54,6 @@ use core\mcpe\item\{
 	Record,
 	Trident
 };
-
 use core\mcpe\tile\{
     Beacon as BeaconTile,
     BrewingStand as BrewingStandTile,
@@ -69,9 +63,7 @@ use core\mcpe\tile\{
     MobSpawner,
     Shulkerbox as ShulkerboxTile
 };
-
 use core\mcpe\level\generator\ender\Ender;
-
 use core\mcpe\network\{
 	CraftingDataPacket,
 	InventoryTransactionPacket
@@ -86,22 +78,20 @@ use pocketmine\item\{
 	SpawnEgg
 };
 
-use pocketmine\network\mcpe\protocol\PacketPool;
-
 use pocketmine\tile\Tile;
 
-use pocketmine\level\generator\GeneratorManager;
+use pocketmine\math\Vector3;
+
+use pocketmine\utils\Config;
 
 use pocketmine\level\{
     Level,
     Position
 };
-
 use pocketmine\level\format\Chunk;
+use pocketmine\level\generator\GeneratorManager;
 
-use pocketmine\math\Vector3;
-
-use pocketmine\utils\Config;
+use pocketmine\network\mcpe\protocol\PacketPool;
 
 class MCPE implements Addon {
     private $core;
@@ -275,6 +265,14 @@ class MCPE implements Addon {
     public function getTierCost(int $tier) : array {
         return self::TIER_COSTS[$tier];
     }
+
+    public function entitySpawn() : bool {
+    	return self::ENTITY_SPAWN;
+	}
+
+	public function entityDespawn() : bool {
+		return self::ENTITY_DESPAWN;
+	}
 	
 	public function tick() {
 		$this->runs++;

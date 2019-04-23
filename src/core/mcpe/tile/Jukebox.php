@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\tile;
 
 use core\Core;
@@ -11,14 +13,14 @@ use pocketmine\tile\Spawnable;
 
 use pocketmine\item\Item;
 
+use pocketmine\level\Level;
+
+use pocketmine\math\Vector3;
+
 use pocketmine\nbt\tag\{
 	CompoundTag,
 	IntTag
 };
-
-use pocketmine\level\Level;
-
-use pocketmine\math\Vector3;
 
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace core\mcpe\entity\monster\walking;
+declare(strict_types = 1);
 
-use core\Core;
+namespace core\mcpe\entity\monster\walking;
 
 use core\mcpe\entity\{
     MonsterBase,
@@ -13,13 +13,14 @@ use core\mcpe\entity\{
     CreatureBase
 };
 
-use pocketmine\entity\Ageable;
+use pocketmine\entity\{
+	Ageable,
+	Entity
+};
 
 use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\level\Position;
-
-use pocketmine\entity\Entity;
 
 use pocketmine\item\Item;
 

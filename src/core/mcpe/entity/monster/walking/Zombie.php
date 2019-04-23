@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\monster\walking;
 
 use core\CorePlayer;
@@ -13,30 +15,28 @@ use core\mcpe\entity\{
     CreatureBase
 };
 
-use pocketmine\entity\Ageable;
+use pocketmine\Player;
 
 use pocketmine\nbt\tag\CompoundTag;
+
+use pocketmine\entity\{
+	Effect,
+	Entity,
+	Ageable
+};
 
 use pocketmine\level\{
     Level,
     Position
 };
-
 use pocketmine\level\biome\Biome;
 
 use pocketmine\block\Water;
-
-use pocketmine\entity\{
-    Effect,
-    Entity
-};
 
 use pocketmine\event\entity\{
     EntityDamageEvent,
     EntityDamageByEntityEvent
 };
-
-use pocketmine\Player;
 
 use pocketmine\network\mcpe\protocol\{
     EntityEventPacket,

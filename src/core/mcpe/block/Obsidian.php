@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
+
+use pocketmine\Player;
 
 use pocketmine\item\{
 	Item,
 	FlintSteel
 };
-
-use pocketmine\Player;
 
 use pocketmine\block\Block;
 

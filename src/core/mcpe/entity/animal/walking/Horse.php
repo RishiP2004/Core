@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\animal\walking;
 
 use core\mcpe\entity\{
@@ -8,7 +10,6 @@ use core\mcpe\entity\{
 	CollisionCheckingTrait,
 	CreatureBase
 };
-
 
 use pocketmine\nbt\tag\CompoundTag;
 

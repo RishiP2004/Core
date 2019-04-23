@@ -1,21 +1,20 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe;
 
 use core\mcpe\entity\animal\flying\{
     Bat,
     Parrot
 };
-
 use core\mcpe\entity\animal\jumping\{
     Rabbit
 };
-
 use core\mcpe\entity\animal\swimming\{
     Dolphin,
     Squid
 };
-
 use core\mcpe\entity\animal\walking\{
     Chicken,
     Cow,
@@ -30,24 +29,20 @@ use core\mcpe\entity\animal\walking\{
     SkeletonHorse,
     Villager
 };
-
 use core\mcpe\entity\monster\flying\{
     Blaze,
     EnderDragon,
     Ghast,
     Vex
 };
-
 use core\mcpe\entity\monster\jumping\{
     MagmaCube,
     Slime
 };
-
 use core\mcpe\entity\monster\swimming\{
     ElderGuardian,
     Guardian
 };
-
 use core\mcpe\entity\monster\walking\{
     CaveSpider,
     Creeper,
@@ -83,7 +78,6 @@ use core\mcpe\entity\object\{
 	Lightning,
 	TripodCamera
 };
-
 use core\mcpe\entity\projectile\{
 	Arrow,
 	Firework,
@@ -92,7 +86,6 @@ use core\mcpe\entity\projectile\{
 	Trident,
 	WitherSkull
 };
-
 use core\mcpe\entity\vehicle\{
 	Boat,
 	ChestMinecart,
@@ -110,6 +103,9 @@ interface Addon {
         3 => 100000,
         4 => 300000
     ];
+    const ENTITY_SPAWN = false;
+    const ENTITY_DESPAWN = true;
+
 	const ENTITIES = [
 		Bat::class => ['Bat', 'minecraft:bat'],
 		Parrot::class => ['Parrot', 'minecraft:parrot'],

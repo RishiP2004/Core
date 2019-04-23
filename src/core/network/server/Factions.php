@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\network\server;
 
 class Factions extends Server {
@@ -8,7 +10,7 @@ class Factions extends Server {
     }
 
     public function getIp() : string {
-        return "facs.athena.me";
+        return "facs.gratonepix.me";
     }
 
     public function getPort() : int {

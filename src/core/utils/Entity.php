@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\utils;
 
 use core\mcpe\block\{
@@ -7,19 +9,15 @@ use core\mcpe\block\{
     EndPortal
 };
 
-use pocketmine\entity\Effect;
+use pocketmine\entity\{
+	Effect,
+	EffectInstance
+};
 
 use pocketmine\item\{
     Item,
     ItemFactory,
 	Potion
-};
-
-use pocketmine\entity\EffectInstance;
-
-use pocketmine\network\mcpe\protocol\{
-    AddEntityPacket,
-    EntityEventPacket
 };
 
 use pocketmine\block\{
@@ -56,6 +54,11 @@ use pocketmine\level\particle\{
     TerrainParticle,
     WaterDripParticle,
     WaterParticle
+};
+
+use pocketmine\network\mcpe\protocol\{
+	AddEntityPacket,
+	EntityEventPacket
 };
 
 use pocketmine\utils\Color;

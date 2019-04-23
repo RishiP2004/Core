@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\world\area;
 
 use pocketmine\level\Position;
 
 class FactionsWarzone extends Area {
     public function __construct() {
-        parent::__construct("LobbyGreetings");
+        parent::__construct("Factions Warzone");
     }
 
     public function getPosition1() : Position {
@@ -100,4 +102,8 @@ class FactionsWarzone extends Area {
     public function getBlockedCommands() : array {
         return [];
     }
+
+    public function entitySpawn() : bool {
+		return true;
+	}
 }

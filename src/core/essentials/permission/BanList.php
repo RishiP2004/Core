@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essentials\permission;
 
 use core\Core;
-
 use core\CoreUser;
 
 use pocketmine\permission\BanEntry;

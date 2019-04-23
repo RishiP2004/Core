@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
+
+use pocketmine\Player;
 
 use pocketmine\item\Item;
 
 use pocketmine\block\Block;
 
 use pocketmine\math\Vector3;
-
-use pocketmine\Player;
 
 class EndPortalFrame extends \pocketmine\block\EndPortalFrame {
 	public function __construct($meta = 0) {

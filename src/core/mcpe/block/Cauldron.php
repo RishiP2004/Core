@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\mcpe\tile\Cauldron as Tile;
+
+use pocketmine\Player;
 
 use pocketmine\block\Transparent;
 
@@ -19,8 +23,6 @@ use pocketmine\block\{
 };
 
 use pocketmine\math\Vector3;
-
-use pocketmine\Player;
 
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 

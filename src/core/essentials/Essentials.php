@@ -1,11 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essentials;
 
 use core\Core;
-
-use core\CoreUser;
-use core\CorePlayer;
 
 use core\essentials\command\{
     AFK,
@@ -15,7 +14,6 @@ use core\essentials\command\{
     Hud,
     Jump,
     Ping,
-    Servers,
     Sudo,
     World
 };
@@ -91,7 +89,6 @@ class Essentials {
         $this->core->getServer()->getCommandMap()->register(Fly::class, new Fly($this->core));
         $this->core->getServer()->getCommandMap()->register(Hud::class, new Hud($this->core));
         $this->core->getServer()->getCommandMap()->register(Jump::class, new Jump($this->core));
-        $this->core->getServer()->getCommandMap()->register(Servers::class, new Servers($this->core));
         $this->core->getServer()->getCommandMap()->register(Ping::class, new Ping($this->core));
         $this->core->getServer()->getCommandMap()->register(Sudo::class, new Sudo($this->core));
         $this->core->getServer()->getCommandMap()->register(World::class, new World($this->core));

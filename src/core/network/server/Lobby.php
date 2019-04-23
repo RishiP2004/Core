@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\network\server;
 
 class Lobby extends Server {
@@ -10,7 +12,7 @@ class Lobby extends Server {
     }
 
     public function getIp() : string {
-        return "lobby.athena.me";
+        return "lobby.gratonepix.me";
     }
 
     public function getPort() : int {

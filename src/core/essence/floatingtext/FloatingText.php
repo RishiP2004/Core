@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\essence\floatingtext;
 
 use core\Core;
 use core\CorePlayer;
 
 use pocketmine\level\Position;
-
 use pocketmine\level\particle\FloatingTextParticle;
 
 abstract class FloatingText {

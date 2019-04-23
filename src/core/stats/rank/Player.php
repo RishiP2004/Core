@@ -1,8 +1,8 @@
 <?php
 
-namespace core\stats\rank;
+declare(strict_types = 1);
 
-use pocketmine\utils\TextFormat;
+namespace core\stats\rank;
 
 class Player extends Rank {
     public function __construct() {

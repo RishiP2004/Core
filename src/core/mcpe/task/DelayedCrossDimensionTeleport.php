@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\task;
 
 use core\Core;
-
 use core\CorePlayer;
 
 use core\utils\Level;
 
-use pocketmine\scheduler\Task;
-
 use pocketmine\Player;
+
+use pocketmine\scheduler\Task;
 
 use pocketmine\math\Vector3;
 

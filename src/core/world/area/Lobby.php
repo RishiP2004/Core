@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\world\area;
 
 use pocketmine\level\Position;
 
 class Lobby extends Area {
     public function __construct() {
-        parent::__construct("LobbyGreetings");
+        parent::__construct("Lobby");
     }
 
     public function getPosition1() : Position {
-        return new Position(0, 0, 0, "LobbyGreetings");
+        return new Position(0, 0, 0, "Lobby");
     }
 
     public function getPosition2() : Position {
-        return new Position(0, 0, 0, "LobbyGreetings");
+        return new Position(0, 0, 0, "Lobby");
     }
 
     public function allowedEnter() : bool {
@@ -100,4 +102,8 @@ class Lobby extends Area {
     public function getBlockedCommands() : array {
         return [];
     }
+
+    public function entitySpawn() : bool {
+		return false;
+	}
 }

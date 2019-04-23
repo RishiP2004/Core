@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\network;
 
 use core\Core;
@@ -9,7 +11,6 @@ use core\network\server\{
     Factions,
     Lobby
 };
-
 use core\network\command\{
 	Backup,
 	Restarter

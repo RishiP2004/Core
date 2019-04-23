@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\form;
 
 use core\mcpe\form\element\Button;
 
+use pocketmine\Player;
+
 use pocketmine\utils\Utils;
 
 use pocketmine\form\FormValidationException;
-
-use pocketmine\Player;
 
 class MenuForm extends Form {
     /** @var Button[] */
@@ -49,7 +51,7 @@ class MenuForm extends Form {
         ];
     }
 
-	public function onSubmit(Player $player, int $selectedOption) : void {
+	public function onSubmit(Player $player, Button $selectedOption) : void {
 	}
 
 	public function onClose(Player $player) : void {

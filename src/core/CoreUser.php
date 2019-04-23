@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core;
 
 use core\network\server\Server;
@@ -7,7 +9,6 @@ use core\network\server\Server;
 use core\stats\rank\Rank;
 
 use core\vote\ServerListQuery;
-
 use core\vote\task\RequestThread;
 
 class CoreUser {

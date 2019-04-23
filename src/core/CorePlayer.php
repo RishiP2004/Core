@@ -1,28 +1,27 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core;
 
 use core\utils\Item;
 
 use core\essence\npc\NPC;
 
-use core\mcpe\network\PlayerNetworkSessionAdapter;
-
 use core\mcpe\form\{
-    Form,
-    MenuForm,
-    CustomForm
+	Form,
+	MenuForm,
+	CustomForm
 };
-
 use core\mcpe\form\element\{
 	Button,
 	Image
 };
+use core\mcpe\network\PlayerNetworkSessionAdapter;
 use core\mcpe\entity\{
 	CreatureBase,
 	Interactable
 };
-
 use core\mcpe\entity\projectile\FishingHook;
 
 use core\network\server\Server;
@@ -34,10 +33,9 @@ use core\stats\task\{
 
 use core\world\area\Area;
 
-use pocketmine\network\SourceInterface;
-
 use pocketmine\Player;
 
+use pocketmine\network\SourceInterface;
 use pocketmine\network\mcpe\protocol\{
     AddEntityPacket,
     BossEventPacket,
@@ -565,7 +563,10 @@ abstract class CorePlayer extends Player {
         }
         foreach($this->core->getVote()->getCommands() as $key => $command) {
             $command = str_replace("{PLAYER}", $this->getName(), $command);
-            $this->getServer()->dispatchCommand(new ConsoleCommandSender(), $command * $multiplier);
+
+            for($i = 0; $i < $multiplier; $i++) {
+				$this->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
+			}
         }
     }
 
@@ -576,7 +577,7 @@ abstract class CorePlayer extends Player {
     public function updateArea() : bool {
         $oldArea = $this->core->getWorld()->players[$this->getName()];
 
-        if(($newArea = $this->core->getWorld()->getAreaFromPosition($this->getPosition())) !== $oldArea) {
+        if(($newArea = $this->core->getWorld()->getAreaFromPosition($this->getPosition())->getName()) !== $oldArea) {
             $this->core->getWorld()->players[$this->getName()] = $newArea;
 
             return $this->areaChange($oldArea, $newArea);
@@ -769,7 +770,7 @@ abstract class CorePlayer extends Player {
 
         switch($pk->action) {
             case InteractPacket::ACTION_LEAVE_VEHICLE:
-                // TODO: entity linking
+                //TODO: Entity linking
             break;
             case InteractPacket::ACTION_MOUSEOVER:
                 $target = $this->level->getEntity($pk->target);
@@ -777,7 +778,7 @@ abstract class CorePlayer extends Player {
                 $this->setTargetEntity($target);
 
                 if($target instanceof CreatureBase) {
-                    // TODO: check player looking at head and if wearing jack 'o lantern
+                    //TODO: Check player looking at head and if wearing jack 'o lantern
                     $target->onPlayerLook($this);
                 } else if($target === null) {
 					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");

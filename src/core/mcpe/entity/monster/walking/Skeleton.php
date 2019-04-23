@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\monster\walking;
 
 use core\CorePlayer;
@@ -11,14 +13,14 @@ use core\mcpe\entity\{
 	ClimbingTrait,
 	CreatureBase
 };
-
-use core\mcpe\entity\object\Arrow;
+use core\mcpe\entity\projectile\Arrow;
 
 use core\utils\Level;
 
 use pocketmine\item\Item;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Projectile;
 
 use pocketmine\math\Vector3;
 
@@ -27,13 +29,10 @@ use pocketmine\event\entity\{
 	ProjectileLaunchEvent
 };
 
-use pocketmine\entity\projectile\Projectile;
-
+use pocketmine\level\Position;
 use pocketmine\level\sound\LaunchSound;
 
 use pocketmine\block\Water;
-
-use pocketmine\level\Position;
 
 use pocketmine\nbt\tag\CompoundTag;
 

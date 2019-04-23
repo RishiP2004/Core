@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\entity\animal\walking;
 
 use core\CorePlayer;
 
 use core\mcpe\entity\{
-    Collidable,
-    Interactable,
-    AgeableTrait,
-    CollisionCheckingTrait
+	Collidable,
+	Interactable,
+	AgeableTrait,
+	CollisionCheckingTrait
 };
 
 use pocketmine\entity\Entity;
@@ -20,7 +22,7 @@ use pocketmine\math\AxisAlignedBB;
 class Villager extends \pocketmine\entity\Villager implements Collidable, Interactable {
     use AgeableTrait, CollisionCheckingTrait;
 
-    public function onCollideWithEntity(Entity $entity) : void {
+	public function onCollideWithEntity(Entity $entity) : void {
     }
 
     public function onCollideWithBlock(Block $block) : void {

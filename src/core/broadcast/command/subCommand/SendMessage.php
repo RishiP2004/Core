@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\broadcast\command\subCommand;
 
 use core\Core;
+use core\CorePlayer;
 
 use core\utils\SubCommand;
-
-use core\CorePlayer;
 
 use pocketmine\command\CommandSender;
 

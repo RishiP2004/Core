@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace core\mcpe\block;
 
 use core\utils\Entity;
@@ -9,6 +11,8 @@ use core\mcpe\entity\monster\walking\{
     IronGolem
 };
 
+use pocketmine\Player;
+
 use pocketmine\item\Item;
 
 use pocketmine\block\{
@@ -17,8 +21,6 @@ use pocketmine\block\{
 };
 
 use pocketmine\math\Vector3;
-
-use pocketmine\Player;
 
 class Pumpkin extends \pocketmine\block\Pumpkin {
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
