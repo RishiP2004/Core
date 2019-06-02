@@ -16,8 +16,10 @@ class CoreUser {
 
     public $registerDate;
 
-    public $coins;
-
+    public $coins = 0, $balance = 0;
+	/**
+	 * @var Rank
+	 */
     public $rank;
     /**
      * @var Server | null
@@ -38,6 +40,7 @@ class CoreUser {
         $this->ip = $data["ip"];
         $this->locale = $data["locale"];
         $this->coins = $data["coins"];
+        $this->balance = $data["balance"];
         $this->rank = Core::getInstance()->getStats()->getRank($data["rank"]);
         $this->permissions = $data["permissions"];
         $this->server = Core::getInstance()->getNetwork()->getServer($data["server"]);
@@ -90,6 +93,14 @@ class CoreUser {
     public function setCoins(int $coins) {
         $this->coins = $coins;
     }
+
+    public function getBalance() : int {
+    	return $this->balance;
+	}
+
+	public function setBalance(int $balance) {
+    	$this->balance = $balance;
+	}
 	
 	public function getRank() : Rank {
 		return $this->rank;
@@ -149,6 +160,7 @@ class CoreUser {
             "ip" => $this->getIp(),
             "locale" => $this->getLocale(),
             "coins" => $this->getCoins(),
+            "balance" => $this->getBalance(),
             "rank" => $this->getRank(),
             "permissions" => $this->getPermissions(),
             "server" => $this->getServer()

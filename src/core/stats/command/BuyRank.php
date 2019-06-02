@@ -43,7 +43,7 @@ class BuyRank extends PluginCommand {
         } else {
             $sender->getCoreUser()->setRank($this->core->getStats()->getRank("OG"));
             $sender->getCoreUser()->setCoins($sender->getCoreUser()->getCoins() - $this->core->getStats()->getRank("OG")->getFreePrice());
-            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . $this->core->getStats()->getEconomyUnit("Coins") . $this->core->getStats()->getRank("OG")->getFreePrice());
+            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . $this->core->getStats()->getEconomyUnit("coins") . $this->core->getStats()->getRank("OG")->getFreePrice());
             return true;
         }
     }

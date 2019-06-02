@@ -41,7 +41,7 @@ class Profile extends PluginCommand {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
                 return false;
             } else {
-                $sender->sendProfileForm($user);
+                $sender->sendProfileForm($user->getName());
                 return true;
             }
         } else if(!isset($args[0])) {

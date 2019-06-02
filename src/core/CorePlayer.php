@@ -9,14 +9,17 @@ use core\utils\Item;
 use core\essence\npc\NPC;
 
 use core\mcpe\form\{
+	CustomFormResponse,
 	Form,
 	MenuForm,
 	CustomForm
 };
 use core\mcpe\form\element\{
 	Button,
-	Image
-};
+	Dropdown,
+	Image,
+	Input,
+	Label};
 use core\mcpe\network\PlayerNetworkSessionAdapter;
 use core\mcpe\entity\{
 	CreatureBase,
@@ -439,11 +442,11 @@ abstract class CorePlayer extends Player {
             }
         }
         $this->sendForm(new class(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options) extends MenuForm {
-            public function __construct(string $title, string $text, array $options) {
-                parent::__construct($title, $text, $options);
-            }
+          	public function __construct(string $title, string $text, array $buttons = [], ?\Closure $onSubmit = null, ?\Closure $onClose = null) {
+				parent::__construct($title, $text, $buttons, $onSubmit, $onClose);
+			}
 
-            public function onSubmit(Player $player, Button $selectedOption) : void {;
+			public function onSubmit(Player $player, Button $selectedOption) : void {;
                 if($player instanceof CorePlayer) {
                     $server = Core::getInstance()->getNetwork()->getServer($selectedOption->getId());
 
@@ -476,11 +479,11 @@ abstract class CorePlayer extends Player {
 
                 $b1->setId(1);
 
-                $b2 = new Button("Lobby", new Image($this->core->getNetwork()->getServer("Lobby")->getIcon(), Image::TYPE_URL));
+                $b2 = new Button(TextFormat::GRAY . "Lobby", new Image($this->core->getNetwork()->getServer("Lobby")->getIcon(), Image::TYPE_URL));
 
                 $b2->setId(2);
 
-                $b3 = new Button("Factions", new Image($this->core->getNetwork()->getServer("Factions")->getIcon()));
+                $b3 = new Button(TextFormat::GRAY . "Factions", new Image($this->core->getNetwork()->getServer("Factions")->getIcon()));
 
                 $b3->setId(3);
 
@@ -492,26 +495,26 @@ abstract class CorePlayer extends Player {
                 $this->sendForm(new class(TextFormat::GOLD . $user = null ? $user->getName() . "'s Profile" : "Your Profile", TextFormat::GRAY . "Select an Option", $options, $user) extends MenuForm {
                     private $user;
 
-                    public function __construct($title, $text, $options, $user) {
-                        parent::__construct($title, $text, $options);
+                    public function __construct(string $title, string $text, array $buttons = [], ?\Closure $onSubmit = null, ?\Closure $onClose = null, $user) {
+						parent::__construct($title, $text, $buttons, $onSubmit, $onClose);
 
-                        $this->user = $user;
-                    }
+						$this->user = $user;
+					}
 
-                    public function onSubmit(Player $player, Button $selectedOption) : void {
+					public function onSubmit(Player $player, Button $selectedOption) : void {
                         if($player instanceof CorePlayer) {
                             switch($selectedOption->getId()) {
-                                case "Global":
-                                    $player->sendProfileForm("Global", $this->user);
+                                case 1:
+                                    $player->sendProfileForm("global", $this->user);
                                 break;
-                                case "Lobby":
-                                    $player->sendProfileForm("Lobby", $this->user);
+                                case 2:
+                                    //$player->sendProfileForm("lobby", $this->user);
                                 break;
-                                case "Factions":
-                                    $player->sendProfileForm("Factions", $this->user);
+                                case 3:
+                                    //$player->sendProfileForm("factions", $this->user);
                                 break;
                                 default:
-                                    $player->sendMessage(Core::getInstance()->getErrorPrefix() . "Must choose a Server");
+                                    $player->sendMessage(Core::getInstance()->getErrorPrefix() . "Must choose a Profile Option");
                                 break;
                             }
                         }
@@ -537,12 +540,6 @@ abstract class CorePlayer extends Player {
                 $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
 
                 $this->sendForm(new class(TextFormat::GOLD . $profile . TextFormat::BLUE . "Global", $data, $user) extends CustomForm {
-                    private $user;
-
-                    public function __construct(string $title, array $elements, \Closure $onSubmit, ?\Closure $onClose = null) {
-						parent::__construct($title, $elements, $onSubmit, $onClose);
-					}
-
 					public function onClose(Player $player) : void {
                         $player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
                     }
@@ -550,6 +547,80 @@ abstract class CorePlayer extends Player {
             break;
         }
     }
+
+    public function sendCurrencyChangeForm() {
+		$e1 = new Label(TextFormat::GRAY . "Your Coins: " . Core::getInstance()->getStats()->getEconomyUnit("coins") . $this->getCoreUser()->getCoins());
+
+		$e1->setValue(1);
+
+		$e2 = new Label(TextFormat::GRAY . "Your Balance: " . Core::getInstance()->getStats()->getEconomyUnit("balance") . $this->getCoreUser()->getBalance());
+
+		$e2->setValue(2);
+
+		$e3 = new Label(TextFormat::GRAY . Core::getInstance()->getStats()->getCoinValue() . "");
+
+		$e3->setValue(3);
+
+		$e4 = new Dropdown(TextFormat::GRAY . "Currency Type To Change Too", ["Coins", "Balance"]);
+
+		$e4->setValue(4);
+
+		$e5 = new Input(TextFormat::GRAY . "Amount to Exchange", "0");
+
+		$e5->setValue(5);
+
+		$elements = [
+			$e1,
+			//$e2,
+			$e3,
+			$e4,
+			$e5
+		];
+
+		$this->sendForm(new class(TextFormat::GOLD . "Currency Exchange", $elements) extends CustomForm {
+			public function __construct(string $title, array $elements, \Closure $onSubmit, ?\Closure $onClose = null) {
+				parent::__construct($title, $elements, $onSubmit, $onClose);
+			}
+
+			public function onSubmit(Player $player, CustomFormResponse $data) : void {
+				$type = $data->getDropdown()->getSelectedOption();
+				$amount = $data->getInput()->getValue();
+
+				if(!$type or !is_int($amount)) {
+					$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
+					return;
+				}
+				$user = Core::getInstance()->getStats()->getCoreUser($player->getName());
+
+				if($type === "Coins") {
+					if($amount > 1000) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
+						return;
+					}
+					if($user->getCoins() < $amount) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
+						return;
+					}
+					$user->setCoins($amount / 1000);
+					$user->setBalance($user->getBalance() - $amount);
+					$player->sendMessage("Transferred " . $amount . " Balance to Coins");
+				}
+				if($type === "Balance") {
+					if($user->getBalance() < $amount) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
+						return;
+					}
+					$user->setBalance($user->getBalance() * 1000);
+					$user->setCoins($user->getCoins() - $amount);
+					$player->sendMessage("Transferred " . $amount . " Coins to Balance");
+				}
+			}
+
+			public function onClose(Player $player) : void {
+				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Currency Change menu");
+			}
+		});
+	}
 
     public function giveVoteRewards(int $multiplier) {
         if($multiplier > 1) {

@@ -44,7 +44,6 @@ class Lightning extends Entity {
 			$oldBlock = $this->getLevel()->getBlock($this);
 
 			if($oldBlock instanceof Liquid){
-
 			} else if($oldBlock->isSolid()) {
 				$v3 = new Vector3($this->x, $this->y + 1, $this->z);
 			} else {
@@ -85,6 +84,8 @@ class Lightning extends Entity {
 		if($this->age > 6 * 20) {
 			$this->flagForDespawn();
 		}
+		$this->age++;
+
 		return parent::onUpdate($currentTick);
 	}
 

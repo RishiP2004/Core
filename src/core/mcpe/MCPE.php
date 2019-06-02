@@ -7,6 +7,7 @@ namespace core\mcpe;
 use core\Core;
 
 use core\mcpe\inventory\BrewingManager;
+use core\mcpe\scoreboard\ScoreboardManager;
 use core\mcpe\block\{
 	Beacon as BeaconBlock,
     Bed,
@@ -100,7 +101,7 @@ class MCPE implements Addon {
 	 */
     private $cacheFile;
 
-    private $brewingManager;
+    private $brewingManager, $scoreboardManager;
 
     public $registeredEntities = [];
 
@@ -119,6 +120,7 @@ class MCPE implements Addon {
     public function __construct(Core $core) {
         $this->core = $core;
 		$this->brewingManager = new BrewingManager();
+		$this->scoreboardManager = new ScoreboardManager();
 
 		$this->cacheFile = new Config($core->getDataFolder() . "/mcpe/" . "cache.json", Config::JSON);
 
@@ -250,6 +252,10 @@ class MCPE implements Addon {
 
     public function getBrewingManager() : BrewingManager {
     	return $this->brewingManager;
+	}
+
+	public function getScoreboardManager() : ScoreboardManager {
+    	return $this->scoreboardManager;
 	}
 
 	public function getCacheFile() : Config {

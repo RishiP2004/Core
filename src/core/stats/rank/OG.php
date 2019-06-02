@@ -8,7 +8,7 @@ class OG extends Rank {
     public function __construct() {
         parent::__construct("OG");
 
-        $this->setFreePrice(10000);
+        $this->setFreePrice(5000);
     }
 
     public function getFormat() : string {

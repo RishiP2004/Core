@@ -27,9 +27,8 @@ use core\stats\rank\{
 };
 use core\stats\task\{
 	AFKSetter,
-	TopCoins
+	TopEconomy
 };
-
 
 use pocketmine\command\CommandSender;
 
@@ -73,6 +72,10 @@ class Stats implements Statistics {
         $this->initUsers();
         $this->scheduleAFKSetter();
     }
+
+    public function getCoinValue() : int {
+    	return self::COIN_VALUE;
+	}
 
     public function getEconomyUnit(string $type) : string {
         return self::UNITS[$type];
@@ -138,7 +141,7 @@ class Stats implements Statistics {
         return new Skin($skin->getSkinId(), $skinData, $capeData, $geometryName, $geometryData);
     }
 
-    public function getSkinTransparencyPercentage(string $skinData) : int {
+    public function getSkinTransparencyPercentage(string $skinData) {
         switch(strlen($skinData)) {
             case 8192:
                 $maxX = 64;
@@ -180,14 +183,18 @@ class Stats implements Statistics {
         return round($transparentPixels * 100 / max(1, $pixels));
     }
 
-    public function sendTopCoins(CommandSender $sender, int $page, array $ops, array $banned) {
-        $allCoins = [];
+	public function sendTopEconomy(string $unit, CommandSender $sender, int $page, array $ops, array $banned) {
+		$allEconomy = [];
 
-        foreach($this->getCoreUsers() as $user) {
-            $allCoins[] = $user->getCoins();
-        }
-        $this->core->getServer()->getAsyncPool()->submitTask(new TopCoins($sender->getName(), $allCoins, $page, $ops, $banned));
-    }
+		foreach($this->getCoreUsers() as $user) {
+			if($unit === "coins") {
+				$allEconomy[$user->getName()] = $user->getCoins();
+			} else if($unit === "balance") {
+				$allEconomy[$user->getName()] = $user->getBalance();
+			}
+		}
+		$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, $ops, $banned));
+	}
 
     public function initRank(Rank $rank) {
         $this->ranks[$rank->getName()] = $rank;

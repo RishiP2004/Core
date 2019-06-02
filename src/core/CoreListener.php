@@ -668,6 +668,7 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
+        	$this->core->getMCPE()->getScoreboardManager()->removePotentialViewer($player->getName());
             $message = "";
 
             if($player->hasPermission("core.stats.quit")) {

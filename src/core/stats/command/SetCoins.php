@@ -22,7 +22,7 @@ class SetCoins extends PluginCommand {
 
         $this->setPermission("core.stats.command.setcoins");
         $this->setUsage("<player> <amount>");
-        $this->setDescription("Set Coins of a Player");
+        $this->setDescription("Set a Player's Coins");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
@@ -48,7 +48,7 @@ class SetCoins extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " must be an Integer");
             return false;
         }
-        if($args[1] > $this->core->getStats()->getMaximumEconomy("Coins")) {
+        if($args[1] > $this->core->getStats()->getMaximumEconomy("coins")) {
             $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " will have over the Maximum amount of Coins");
             return false;
         } else {
@@ -57,9 +57,9 @@ class SetCoins extends PluginCommand {
 			$player = $this->core->getServer()->getPlayer($user->getName());
 		
 			if($player instanceof CorePlayer) {
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Coins to " . $this->core->getStats()->getEconomyUnit("Coins") . $args[1]);
+				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Coins to " . $this->core->getStats()->getEconomyUnit("coins") . $args[1]);
 			}
-            $sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Coins to " . $this->core->getStats()->getEconomyUnit("Coins") . $args[1]);
+            $sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Coins to " . $this->core->getStats()->getEconomyUnit("coins") . $args[1]);
             return true;
         }
     }

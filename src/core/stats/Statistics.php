@@ -20,24 +20,22 @@ interface Statistics {
     const AFK_AUTO_SET = 300;
     const AFK_AUTO_KICK = 300;
 
-    const TYPES = [
-        "Coins",
-        "Balance"
-    ];
+    const COIN_VALUE = 1000;
+
     const UNITS = [
-        "Coins" => "©",
-        "Balance" => "$"
+       	"coins" => "©",
+        "balance" => "$"
     ];
     const DEFAULTS = [
-        "Coins" => 0,
-        "Balance" => 0
+        "coins" => 0,
+        "balance" => 0
     ];
     const MAXIMUMS = [
-        "Coins" => 10000,
-        "Balance" => 100000000
+        "coins" => 10000,
+        "balance" => 100000000
     ];
     const TOP_SHOWN_PER_PAGE = [
-        "Coins" => 5,
-        "Balance" => 5
+        "coins" => 5,
+        "balance" => 5
     ];
 }

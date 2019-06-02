@@ -9,14 +9,15 @@ CREATE TABLE IF NOT EXISTS stats (
     ip VARCHAR(15),
     locale VARCHAR(6) DEFAULT 'eng',
 	  coins BIGINT DEFAULT 0,
+	  balance BIGINT DEFAULT 0,
     rank VARCHAR(16),
-	  permissions TEXT,
+    permissions TEXT,
 		server VARCHAR(32)
 )
 -- # }
 
 -- # { get
-SELECT xuid, registerDate, username, ip, locale, coins, rank, permissions, server FROM stats;
+SELECT xuid, registerDate, username, ip, locale, coins, balance, rank, permissions, server FROM stats;
 -- # }
 
 -- # { register
@@ -45,11 +46,12 @@ INSERT INTO stats (
 -- #    :ip string
 -- #    :locale string
 -- #    :coins int
+-- #    :balance int
 -- #    :rank string
 -- #    :permissions string
 -- #    :server string
 -- #    :xuid string
-UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, rank = :rank, permissions = :permissions, server = :server WHERE xuid = :xuid;
+UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, balance = :balance, rank = :rank, permissions = :permissions, server = :server WHERE xuid = :xuid;
 -- # }
 
 -- # { delete
@@ -71,11 +73,10 @@ CREATE TABLE IF NOT EXISTS sentences (
     reason TEXT,
     expires TIME
 )
+-- # }
 
 -- # { get
 SELECT xuid, registerDate, type, username, sentencer, reason, expires FROM stats;
--- # }
-
 -- # }
 
 -- # { register

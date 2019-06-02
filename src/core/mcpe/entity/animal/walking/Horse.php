@@ -21,7 +21,7 @@ class Horse extends AnimalBase implements Collidable {
     use CollisionCheckingTrait;
     const NETWORK_ID = self::HORSE;
 
-    public $width = 1.3, $height = 1.5;
+    public $width = 2, $height = 3;
 
     public function initEntity() : void {
         parent::initEntity();

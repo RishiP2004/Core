@@ -141,7 +141,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 		if($movZ != $dz) {
 			$this->motion->z = 0;
 		}
-		//TODO: vehicle collision events (first we need to spawn them!)
+		//TODO: Vehicle collision events (first we need to spawn them)
 		Timings::$entityMoveTimer->stopTiming();
 	}
 
