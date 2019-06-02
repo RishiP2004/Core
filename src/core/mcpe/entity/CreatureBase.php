@@ -22,7 +22,10 @@ use pocketmine\math\{
 	AxisAlignedBB
 };
 
-use pocketmine\block\Block;
+use pocketmine\block\{
+	Block,
+	BlockIds
+};
 
 abstract class CreatureBase extends Creature implements Linkable, Collidable, Lookable {
 	use SpawnableTrait, CollisionCheckingTrait, LinkableTrait;
@@ -37,6 +40,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 
 	public function initEntity() : void {
 		parent::initEntity();
+		$this->setGenericFlag(self::DATA_FLAG_NO_AI, true);
 	}
 
     public static function getRightSide(int $side) : int {
@@ -149,7 +153,14 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 		$distance = (int) $this->add(0, $this->eyeHeight)->distance($entity);
 
 		if($distance > 1) {
-			return $this->distance($entity) < 1 or empty($this->getLineOfSight($distance));
+			$blocksBetween = $this->getLineOfSight($distance, 0, [
+				BlockIds::AIR => BlockIds::AIR,
+				BlockIds::WATER => BlockIds::WATER,
+				BlockIds::LAVA => BlockIds::LAVA
+			]);
+			return empty(array_filter($blocksBetween, function(Block $block) {
+				return !in_array($block->getId(), [BlockIds::AIR, BlockIds::WATER, BlockIds::LAVA]);
+			}));
 		}
 		return true;
 	}

@@ -67,7 +67,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
         if($this->attackTime > 0) {
             return parent::onUpdate($currentTick);
         } else {
-            if($this->moveTime <= 0 and !$this->target instanceof Entity and $this->isTargetValid($this->target)) {
+			if($this->moveTime <= 0 and $this->isTargetValid($this->target) and !$this->target instanceof Entity) {
                 $x = $this->target->x - $this->x;
                 $y = $this->target->y - $this->y;
                 $z = $this->target->z - $this->z;
@@ -90,7 +90,9 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 
                 if($this->target->distance($this) <= 3) {
                     $this->startExplosion = true;
-                }
+                } else if($this->target->distance($this) >= 7) {
+					$this->startExplosion = false;
+				}
                 if(!$this->startExplosion and !$this->ignited) {
                     $this->bombTime = 30;
 
@@ -140,7 +142,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
     }
 
     public function explode() {
-        $this->server->getPluginManager()->callEvent($event = new ExplosionPrimeEvent($this, $this->charged ? 6 : 3));
+		$this->server->getPluginManager()->callEvent($event = new ExplosionPrimeEvent($this, $this->charged ? 6 : 3));
 
         if(!$event->isCancelled()) {
             $explosion = new Explosion($this, $event->getForce(), $this);
@@ -156,17 +158,6 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
     }
 
     public function entityBaseTick(int $tickDiff = 1) : bool {
-        if($this->target === null) {
-            foreach($this->hasSpawned as $player) {
-                if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
-                    $this->target = $player;
-                }
-            }
-        } else if($this->target instanceof CorePlayer) {
-            if($this->target->isCreative() or !$this->target->isAlive()) {
-                $this->target = null;
-            }
-        }
         if(isset($this->target)) {
             $this->speed = 1.2;
         } else {

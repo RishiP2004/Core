@@ -8,6 +8,7 @@ use core\mcpe\entity\{
     MonsterBase,
     Collidable,
     CollisionCheckingTrait,
+	InventoryHolder,
     ItemHolderTrait,
     CreatureBase
 };
@@ -18,7 +19,9 @@ use pocketmine\level\Position;
 
 use pocketmine\entity\Entity;
 
-class Witch extends MonsterBase implements Collidable {
+use pocketmine\item\Item;
+
+class Witch extends MonsterBase implements Collidable, InventoryHolder {
     use CollisionCheckingTrait, ItemHolderTrait;
 
     const NETWORK_ID = self::WITCH;
@@ -46,13 +49,25 @@ class Witch extends MonsterBase implements Collidable {
     public function onCollideWithEntity(Entity $entity) : void {
     }
 
+	public function equipRandomItems() : void {
+	}
+
+	public function equipRandomArmour() : void {
+	}
+
+	public function checkItemValueToMainHand(Item $item) : bool {
+	}
+
+	public function checkItemValueToOffHand(Item $item) : bool {
+	}
+
     public function getXpDropAmount() : int {
         return 5;
     }
 
     public function getDrops() : array {
 		$drops = parent::getDrops();
-		// TODO: chance drop potion
+		//TODO: Chance drop potion
 		return $drops;
     }
 }

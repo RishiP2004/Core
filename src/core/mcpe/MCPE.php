@@ -220,8 +220,8 @@ class MCPE implements Addon {
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
 			"max-players" => 20,
-			"spawn-animals" => true,
-			"spawn-mobs" => true,
+			"spawn-animals" => false,
+			"spawn-mobs" => false,
 			"gamemode" => 0,
 			"force-gamemode" => false,
 			"hardcore" => false,
@@ -240,10 +240,10 @@ class MCPE implements Addon {
 			"language" => "eng"
 		]);
 		if(!$properties->exists("spawn-animals")) {
-			$properties->set("spawn-animals", true);
+			$properties->set("spawn-animals", false);
 		}
 		if(!$properties->exists("spawn-mobs")) {
-			$properties->set("spawn-mobs", true);
+			$properties->set("spawn-mobs", false);
 		}
 		if($properties->hasChanged()) {
 			$properties->save();
@@ -281,153 +281,171 @@ class MCPE implements Addon {
 	}
 	
 	public function tick() {
-		$this->runs++;
+    	$this->runs++;
 		
 		if($this->runs % 1 === 0) {
-			if($this->core->getServer()->getConfigBool("spawn-mobs", true)) {
-                foreach($this->core->getServer()->getLevels() as $level) {
-                    if($level->getDifficulty() < Level::DIFFICULTY_EASY) {
-                        continue;
-                    }
-                    /** @var Chunk[] $chunks */
-                    $chunks = [];
+			if($this->core->getServer()->getConfigBool("spawn-mobs", false)) {
+				foreach($this->core->getServer()->getLevels() as $level) {
+					if($level->getDifficulty() < Level::DIFFICULTY_EASY) {
+						continue;
+					}
+					$disabled = [];
 
-                    foreach($level->getPlayers() as $player) {
-                        foreach($player->usedChunks as $hash => $sent) {
-                            if($sent) {
-                                Level::getXZ($hash, $chunkX, $chunkZ);
-                                $chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
-                            }
-                        }
-                    }
-                    $entities = 0;
+					foreach($this->core->getWorld()->getAreas() as $area) {
+						if(!$area->entitySpawn()) {
+							$disabled = $area;
+						}
+					}
+					if(in_array($level->getFolderName(), $disabled) or in_array($level->getName(), $disabled)) {
+						continue;
+					}
+					$entities = 0;
 
-                    foreach($chunks as $chunk) {
-                        foreach($chunk->getEntities() as $entity) {
-                            if($entity instanceof MonsterBase) {
-                                $entities += 1;
-                            }
-                            if($entities >= 200) {
-                                return;
-                            }
-                        }
-                    }
-                    foreach($chunks as $chunk) {
-                        $packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
-                        $biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-                        $entityList = self::BIOME_HOSTILE_MOBS[$biomeId];
-						
+					foreach($level->getEntities() as $entity) {
+						if($entity instanceof MonsterBase) {
+							$entities += 1;
+						}
+						if($entities >= 200) {
+							continue 2;
+						}
+					}
+					/** @var Chunk[] $chunks */
+					$chunks = [];
+
+					foreach($level->getPlayers() as $player) {
+						foreach($player->usedChunks as $hash => $sent) {
+							if($sent) {
+								Level::getXZ($hash, $chunkX, $chunkZ);
+								$chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
+							}
+						}
+					}
+					foreach($chunks as $chunk) {
+						$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
+						$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
+						$entityList = self::BIOME_HOSTILE_MOBS[$biomeId] ?? [];
+
 						if(empty($entityList)) {
 							continue;
 						}
-						$entityId = $entityList[array_rand(self::BIOME_HOSTILE_MOBS[$biomeId])];
-						
-                        if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
-                            for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
-                                $x = mt_rand(-20, 20) + $packCenter->x;
-                                $z = mt_rand(-20, 20) + $packCenter->z;
+						$entityId = $entityList[array_rand($entityList)];
 
-                                foreach($this->registeredEntities as $class) {
-                                    if($class instanceof MonsterBase and $class::NETWORK_ID === $entityId) {
-                                        $entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+						if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
+							for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
+								$x = mt_rand(-20, 20) + $packCenter->x;
+								$z = mt_rand(-20, 20) + $packCenter->z;
 
-                                        if($entity !== null) {
-                                            $currentPackSize++;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+								foreach(self::getRegisteredEntities() as $class => $arr) {
+									if($class instanceof MonsterBase and $class::NETWORK_ID === $entityId) {
+										$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+
+										if($entity !== null) {
+											$currentPackSize++;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
-			if($this->core->getServer()->getConfigBool("spawn-mobs", true) or $this->core->getServer()->getConfigBool("spawn-animals", true)) {
+			if($this->core->getServer()->getConfigBool("spawn-mobs", false) or $this->core->getServer()->getConfigBool("spawn-animals", false)) {
                 foreach($this->core->getServer()->getLevels() as $level) {
                     /** @var Chunk[] $chunks */
                     $chunks = [];
+
                     foreach($level->getPlayers() as $player) {
-                        foreach($player->usedChunks as $hash => $sent) {
-                            if($sent) {
-                                Level::getXZ($hash, $chunkX, $chunkZ);
-                                $chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
-                            }
-                        }
+                    	foreach($player->usedChunks as $hash => $sent) {
+                    		if($sent) {
+                    			Level::getXZ($hash, $chunkX, $chunkZ);
+                    			$chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
+                    		}
+                    	}
                     }
                     foreach($chunks as $chunk) {
-                        if(mt_rand(1, 50) !== 1) {
-                            continue;
-                        }
-                        foreach($chunk->getEntities() as $entity) {
-                            $distanceCheck = true;
+                    	if(mt_rand(1, 50) !== 1) {
+                    		continue;
+                    	}
+                    	foreach($chunk->getEntities() as $entity) {
+                    		$distanceCheck = true;
 
-                            foreach($entity->getViewers() as $player) {
-                                if($entity->distance($player) < 54) {
-                                    $distanceCheck = false;
-                                    break;
-                                }
-                            }
-                            //TODO: Check Age
-                            if($entity instanceof MonsterBase and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) > 8 and !$entity->isPersistent()) {
-                                $entity->flagForDespawn();
-                            } else if($entity instanceof AnimalBase and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity->isPersistent()) {
-                                $entity->flagForDespawn();
-                            }
-                        }
+                    		foreach($entity->getViewers() as $player) {
+                    			if($entity->distance($player) < 54) {
+                    				$distanceCheck = false;
+                    				break;
+                    			}
+                    		}
+                    		//TODO: Check Age
+							if($entity instanceof MonsterBase and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) > 8 and !$entity->isPersistent()) {
+								$entity->flagForDespawn();
+							} else if($entity instanceof AnimalBase and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity->isPersistent()) {
+								$entity->flagForDespawn();
+							}
+                    	}
                     }
                 }
 			}
 		}
-		if($this->runs % 20 === 0 && $this->core->getServer()->getConfigBool("spawn-mobs", true)) {
+		if($this->runs % 20 === 0 && $this->core->getServer()->getConfigBool("spawn-mobs", false)) {
             foreach($this->core->getServer()->getLevels() as $level) {
-                /** @var Chunk[] $chunks */
-                $chunks = [];
+				$disabled = [];
 
-                foreach($level->getPlayers() as $player) {
-                    foreach($player->usedChunks as $hash => $sent) {
-                        if($sent) {
-                            Level::getXZ($hash, $chunkX, $chunkZ);
-                            $chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
-                        }
-                    }
-                }
-                $entities = 0;
+				foreach($this->core->getWorld()->getAreas() as $area) {
+					if(!$area->entitySpawn()) {
+						$disabled = $area;
+					}
+				}
+				if(in_array($level->getFolderName(), $disabled) or in_array($level->getName(), $disabled)) {
+					continue;
+				}
+				$entities = 0;
 
-                foreach($chunks as $chunk) {
-                    foreach($chunk->getEntities() as $entity) {
-                        if($entity instanceof AnimalBase) {
-                            $entities += 1;
-                        }
-                        if($entities >= 200) {
-                            return;
-                        }
-                    }
-                }
-                foreach($chunks as $chunk) {
-                    $packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
-                    $biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-                    $entityList = self::BIOME_ANIMALS[$biomeId];
-						
+				foreach($level->getEntities() as $entity) {
+					if($entity instanceof AnimalBase) {
+						$entities += 1;
+					}
+					if($entities >= 200) {
+						continue 2;
+					}
+				}
+				/** @var Chunk[] $chunks */
+				$chunks = [];
+
+				foreach($level->getPlayers() as $player) {
+					foreach($player->usedChunks as $hash => $sent) {
+						if($sent) {
+							Level::getXZ($hash, $chunkX, $chunkZ);
+							$chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
+						}
+					}
+				}
+				foreach($chunks as $chunk) {
+					$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
+					$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
+					$entityList = self::BIOME_ANIMALS[$biomeId] ?? [];
+
 					if(empty($entityList)) {
 						continue;
 					}
-					$entityId = $entityList[array_rand(self::BIOME_ANIMALS[$biomeId])];
-						
-                    if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
-                        for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
-                            $x = mt_rand(-20, 20) + $packCenter->x;
-                            $z = mt_rand(-20, 20) + $packCenter->z;
-                            foreach($this->registeredEntities as $class) {
-                                if($class instanceof AnimalBase and $class::NETWORK_ID === $entityId) {
-                                    $entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+					$entityId = $entityList[array_rand($entityList)];
 
-                                    if($entity !== null) {
-                                        $currentPackSize++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+					if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
+						for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
+							$x = mt_rand(-20, 20) + $packCenter->x;
+							$z = mt_rand(-20, 20) + $packCenter->z;
+
+							foreach($this->getRegisteredEntities() as $class => $arr) {
+								if($class instanceof AnimalBase and $class::NETWORK_ID === $entityId) {
+									$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+
+									if($entity !== null) {
+										$currentPackSize++;
+									}
+								}
+							}
+						}
+					}
+				}
             }
 		}
 		if($this->runs % 20 * 60 * 60) {

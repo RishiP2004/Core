@@ -8,6 +8,7 @@ use core\mcpe\entity\{
     MonsterBase,
     Collidable,
     CollisionCheckingTrait,
+	InventoryHolder,
     ItemHolderTrait,
     AgeableTrait,
     CreatureBase
@@ -24,7 +25,7 @@ use pocketmine\level\Position;
 
 use pocketmine\item\Item;
 
-class ZombiePigman extends MonsterBase implements Ageable, Collidable {
+class ZombiePigman extends MonsterBase implements Ageable, Collidable, InventoryHolder {
     use CollisionCheckingTrait, ItemHolderTrait, AgeableTrait;
 
     const NETWORK_ID = self::ZOMBIE_PIGMAN;
@@ -53,6 +54,18 @@ class ZombiePigman extends MonsterBase implements Ageable, Collidable {
 
     public function onCollideWithEntity(Entity $entity) : void {
     }
+
+	public function equipRandomItems() : void {
+	}
+
+	public function equipRandomArmour() : void {
+	}
+
+	public function checkItemValueToMainHand(Item $item) : bool {
+	}
+
+	public function checkItemValueToOffHand(Item $item) : bool {
+	}
 
     public function getXpDropAmount() : int {
         if($this->isBaby()) {

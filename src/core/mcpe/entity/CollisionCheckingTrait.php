@@ -17,7 +17,7 @@ trait CollisionCheckingTrait {
 			}
 			$entity->scheduleUpdate();
 
-			if($entity instanceof Collidable) {
+			if($entity instanceof Collidable and $this instanceof Collidable) {
 				if($this->getBoundingBox()->intersectsWith($entity->getBoundingBox())) {
 					$entity->push($this->getBoundingBox());
 				}

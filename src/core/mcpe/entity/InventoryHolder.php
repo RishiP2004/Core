@@ -18,4 +18,8 @@ interface InventoryHolder {
 	public function checkItemValueToMainHand(Item $item) : bool;
 
 	public function checkItemValueToOffHand(Item $item) : bool;
+
+	public function getMainHand() : ?Item;
+
+	public function getOffHand() : ?Item;
 }

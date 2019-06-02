@@ -8,6 +8,7 @@ use core\mcpe\entity\{
     MonsterBase,
     Collidable,
     CollisionCheckingTrait,
+	InventoryHolder,
     ItemHolderTrait,
     CreatureBase
 };
@@ -23,7 +24,7 @@ use pocketmine\item\{
 	Item
 };
 
-class WitherSkeleton extends MonsterBase implements Collidable {
+class WitherSkeleton extends MonsterBase implements Collidable, InventoryHolder {
     use CollisionCheckingTrait, ItemHolderTrait;
 
     const NETWORK_ID = self::WITHER_SKELETON;
@@ -52,6 +53,18 @@ class WitherSkeleton extends MonsterBase implements Collidable {
 
     public function onCollideWithEntity(Entity $entity) : void {
     }
+
+	public function equipRandomItems() : void {
+	}
+
+	public function equipRandomArmour() : void {
+	}
+
+	public function checkItemValueToMainHand(Item $item) : bool {
+	}
+
+	public function checkItemValueToOffHand(Item $item) : bool {
+	}
 
     public function getDrops() : array {
         return parent::getDrops();

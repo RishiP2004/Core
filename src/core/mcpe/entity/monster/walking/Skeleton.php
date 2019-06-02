@@ -52,13 +52,18 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	public function initEntity() : void {
 		if(!isset($this->mainHand)) {
 			$this->mainHand = Item::get(Item::BOW);
-		} // TODO: random enchantments
-		// TODO: random armour
+		}
+		// TODO: Random enchantments
+		// TODO: Random armour
 		parent::initEntity();
 	}
 
 	public function getName() : string {
 		return "Skeleton";
+	}
+
+	public function canBreathe() : bool {
+		return true;
 	}
 
 	public function onUpdate(int $currentTick) : bool {
@@ -96,6 +101,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 						$nbt = Arrow::createBaseNBT(new Vector3($this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5), $this->y + $this->eyeHeight, $this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5)), new Vector3(), $yaw, $pitch);
 						/** @var Arrow $arrow */
 						$arrow = Arrow::createEntity("Arrow", $this->level, $nbt, $this);
+						$arrow->setPickupMode(Arrow::PICKUP_NONE);
 						$ev = new EntityShootBowEvent($this, Item::get(Item::ARROW, 0, 1), $arrow, $force);
 
 						$ev->call();
@@ -150,19 +156,6 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		$this->checkNearEntities();
-
-		if($this->target === null) {
-			foreach($this->hasSpawned as $player) {
-				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
-					$this->target = $player;
-				}
-			}
-		} else if($this->target instanceof CorePlayer) {
-			if($this->target->isCreative() or !$this->target->isAlive()) {
-				$this->target = null;
-			}
-		}
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->moveTime > 0) {
@@ -203,7 +196,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 			}
 			$pk = new TakeItemEntityPacket();
 			$pk->eid = $this->getId();
-			$pk->target = $this->getId();
+			$pk->target = $entity->getId();
 
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 			$this->setDropAll();

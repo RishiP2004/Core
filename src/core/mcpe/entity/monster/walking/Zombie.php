@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace core\mcpe\entity\monster\walking;
 
-use core\CorePlayer;
-
 use core\mcpe\entity\{
     MonsterBase,
     InventoryHolder,
@@ -20,8 +18,8 @@ use pocketmine\Player;
 use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\entity\{
-	Effect,
 	Entity,
+	EntityIds,
 	Ageable
 };
 
@@ -40,7 +38,8 @@ use pocketmine\event\entity\{
 
 use pocketmine\network\mcpe\protocol\{
     EntityEventPacket,
-    TakeItemEntityPacket
+    TakeItemEntityPacket,
+	LevelSoundEventPacket
 };
 
 use pocketmine\item\{
@@ -66,8 +65,10 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
             $this->setBaby();
 
             if(mt_rand(1, 100) <= 15) {
-                // TODO: zombie jockey
-            }
+                //TODO: Zombie jockey
+            } else {
+            	//ToDo: Check nearby chickens
+			}
         }
         if(mt_rand(1, 100) >= 80) {
             if((bool) mt_rand(0, 1)) {
@@ -84,17 +85,6 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
     }
 
     public function entityBaseTick(int $tickDiff = 1) : bool {
-        if($this->target === null) {
-            foreach($this->hasSpawned as $player) {
-                if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
-                    $this->target = $player;
-                }
-            }
-        } else if($this->target instanceof CorePlayer) {
-            if($this->target->isCreative() or !$this->target->isAlive()) {
-                $this->target = null;
-            }
-        }
         $hasUpdate = parent::entityBaseTick($tickDiff);
 
         if($this->moveTime > 0) {
@@ -105,32 +95,15 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
         if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) >= 15) {
             $this->setOnFire(2);
         }
-        if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { // TODO: check weather
+        if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { //TODO: check weather
             $this->extinguish();
         }
         $this->attackDelay += $tickDiff;
-
-        if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isUnderwater()) {
-            $hasUpdate = true;
-            $airTicks = $this->getAirSupplyTicks() - $tickDiff;
-
-            // TODO: drowned transformation
-            if($airTicks <= -20) {
-                $airTicks = 0;
-                $event = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-
-                $this->attack($event);
-            }
-            $this->setAirSupplyTicks($airTicks);
-        } else {
-            $this->setAirSupplyTicks(300);
-        }
         return $hasUpdate;
     }
 
     public function equipRandomItems() : void {
     }
-
 
     public function equipRandomArmour() : void {
     }
@@ -178,6 +151,19 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
         }
         return parent::onUpdate($currentTick);
     }
+
+	public function attack(EntityDamageEvent $source) : void {
+		if($source->getCause() === EntityDamageEvent::CAUSE_DROWNING and $this->getHealth() - $source->getFinalDamage() <= 0) {
+			/** @var Drowned | null $entity */
+			$entity = self::createEntity(self::DROWNED, $this->level, Drowned::createBaseNBT($this, $this->motion, $this->yaw, $this->pitch));
+
+			$entity->setMainHandItem($this->mainHand);
+			$entity->setOffHandItem($this->offHand);
+			$this->level->addEntity($entity);
+			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_CONVERT_TO_DROWNED, 0, EntityIds::ZOMBIE, $this->isBaby());
+		}
+		parent::attack($source);
+	}
 
     public function onCollideWithPlayer(Player $player) : void {
         if($this->target === $player and $this->attackDelay > 10) {
@@ -272,7 +258,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
             }
             $packet = new TakeItemEntityPacket();
             $packet->eid = $this->getId();
-            $packet->target = $this->getId();
+            $packet->target = $entity->getId();
 
             $this->server->broadcastPacket($this->getViewers(), $packet);
             $this->setDropAll();
