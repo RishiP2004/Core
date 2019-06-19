@@ -13,6 +13,7 @@ use core\mcpe\block\{
     Bed,
     BrewingStand as BrewingStandBlock,
     Cauldron as CauldronBlock,
+	DragonEgg,
     EnchantingTable,
     EndPortal,
 	EndPortalFrame,
@@ -53,6 +54,7 @@ use core\mcpe\item\{
 	LingeringPotion,
 	Minecart,
 	Record,
+	Saddle,
 	Trident
 };
 use core\mcpe\tile\{
@@ -130,6 +132,7 @@ class MCPE implements Addon {
         BlockFactory::registerBlock(new Bed(), true);
         BlockFactory::registerBlock(new BrewingStandBlock(), true);
         BlockFactory::registerBlock(new CauldronBlock(), true);
+        BlockFactory::registerBlock(new DragonEgg(), true);
         BlockFactory::registerBlock(new EnchantingTable(), true);
         BlockFactory::registerBlock(new EndPortal(), true);
 		BlockFactory::registerBlock(new EndPortalFrame(), true);
@@ -187,6 +190,7 @@ class MCPE implements Addon {
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WARD, 0, "Music Disc ward"), true);
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_11, 0, "Music Disc 11"), true);
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WAIT, 0, "Music Disc wait"), true);
+		ItemFactory::registerItem(new Saddle(), true);
 		ItemFactory::registerItem(new Trident(), true);
 		\pocketmine\item\Item::initCreativeItems();
 

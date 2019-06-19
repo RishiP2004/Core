@@ -40,13 +40,13 @@ use core\mcpe\entity\monster\jumping\{
     Slime
 };
 use core\mcpe\entity\monster\swimming\{
+	Drowned,
     ElderGuardian,
     Guardian
 };
 use core\mcpe\entity\monster\walking\{
     CaveSpider,
     Creeper,
-	Drowned,
     Enderman,
     Endermite,
     Evoker,
@@ -81,6 +81,7 @@ use core\mcpe\entity\object\{
 };
 use core\mcpe\entity\projectile\{
 	Arrow,
+	Egg,
 	Firework,
 	FishingHook,
 	LingeringPotion,
@@ -131,11 +132,11 @@ interface Addon {
 		Vex::class => ['Vex', 'minecraft:vex'],
 		MagmaCube::class => ['MagmaCube', 'minecraft:magmacube'],
 		Slime::class => ['Slime', 'minecraft:slime'],
+		Drowned::class => ['Drowned', 'minecraft:drowned'],
 		ElderGuardian::class => ['ElderGuardian', 'minecraft:elderguardian'],
 		Guardian::class => ['Guardian', 'minecraft:guardian'],
 		CaveSpider::class => ['CaveSpider', 'minecraft:cavespider'],
 		Creeper::class => ['Creeper', 'minecraft:creeper'],
-		Drowned::class => ['Drowned', 'minecraft:drowned'],
 		Enderman::class => ['Enderman', 'minecraft:enderman'],
 		Endermite::class => ['Endermite', 'minecraft:endermite'],
 		Evoker::class => ['Evoker', 'minecraft:evoker'],
@@ -166,6 +167,7 @@ interface Addon {
 		Lightning::class => ['Lightning', 'minecraft:lightning'],
 		TripodCamera::class => ['TripodCamera', 'minecraft:tripodcamera'],
 		Arrow::class => ['Arrow', 'minecraft:arrow'],
+		Egg::class => ['Egg', 'minecraft:egg'],
 		Firework::class => ['Firework', 'minecraft:firework'],
 		FishingHook::class => ['FishingHook', 'minecraft:fishinghook'],
 		LingeringPotion::class => ['LingeringPotion', 'minecraft:lingeringpotion'],

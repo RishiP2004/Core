@@ -84,21 +84,21 @@ abstract class MobSpawner extends Spawnable implements Addon {
 	}
 
 	public function setMinSpawnDelay(int $minDelay) : self {
-		if($minDelay < $this->maxSpawnDelay) {
+		if($minDelay < $this->maxSpawnDelay and !($minDelay < -0x8000 or $minDelay > 0x7fff)) {
 			$this->minSpawnDelay = $minDelay;
 		}
 		return $this;
 	}
 
 	public function setMaxSpawnDelay(int $maxDelay) : self {
-		if($this->minSpawnDelay < $maxDelay and $maxDelay !== 0) {
+		if($this->minSpawnDelay < $maxDelay and $maxDelay !== 0 and !($maxDelay < -0x8000 or $maxDelay > 0x7fff)) {
 			$this->maxSpawnDelay = $maxDelay;
 		}
 		return $this;
 	}
 
 	public function setSpawnDelay(int $delay) : self {
-		if($delay < $this->maxSpawnDelay and $delay > $this->minSpawnDelay) {
+		if($delay < $this->maxSpawnDelay and $delay > $this->minSpawnDelay and !($delay < -0x8000 or $delay > 0x7fff)) {
 			$this->delay = $delay;
 		}
 		return $this;

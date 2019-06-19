@@ -95,7 +95,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
         if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) >= 15) {
             $this->setOnFire(2);
         }
-        if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { //TODO: check weather
+        if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { //TODO: Check weather
             $this->extinguish();
         }
         $this->attackDelay += $tickDiff;
@@ -162,6 +162,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$this->level->addEntity($entity);
 			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_CONVERT_TO_DROWNED, 0, EntityIds::ZOMBIE, $this->isBaby());
 		}
+		//TODO: 10% chance to resist knockback.
 		parent::attack($source);
 	}
 

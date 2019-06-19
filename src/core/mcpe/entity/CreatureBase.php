@@ -31,34 +31,67 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	use SpawnableTrait, CollisionCheckingTrait, LinkableTrait;
 
 	protected $speed = 1.0, $stepHeight = 1.0;
-
+	/** @var Position|null $target */
 	protected $target = null;
 
 	protected $persistent = false;
 
-	protected $moveTime = 0;
+	protected $moveTime = 0, $idleTime = 0;
 
 	public function initEntity() : void {
 		parent::initEntity();
 		$this->setGenericFlag(self::DATA_FLAG_NO_AI, true);
 	}
 
-    public static function getRightSide(int $side) : int {
-		if($side >= 0 and $side <= 5) {
-			return $side ^ 0x01; //TODO: right now it gives the opposite side...
-		}
-		throw new \InvalidArgumentException("Invalid side $side given to getOppositeSide");
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
+		return null;
 	}
 
-	public static function spawnMob(Position $position, ?CompoundTag $tag = null) : ?CreatureBase {
-		return null;
+	public static function getRightSide(int $side) : int {
+		if($side >= 0 and $side <= 5) {
+			return $side ^ 0x03; // TODO: right now it gives the opposite side...
+		}
+		throw new \InvalidArgumentException("Invalid side $side given to getRightSide");
+	}
+
+	public function lookAround() : void {
+		$entities = $this->level->getNearbyEntities($this->boundingBox->expandedCopy(8,2,8), $this);
+		$entities = array_filter($entities,function(Entity $entity){
+			if($entity->isAlive() or !$entity->isFlaggedForDespawn() and $entity instanceof Player) {
+				return true;
+			}
+			return false;
+		});
+		$yaw = $this->yaw;
+		$pitch = $this->pitch;
+
+		if(!empty($entities) and mt_rand(1,3) === 1) {
+			/** @var CorePlayer $player */
+			$player = $entities[array_rand($entities)];
+
+			$this->lookAt($player->asVector3()->add(0, $player->height));
+		}else{
+			$yaw = mt_rand(0, 1) ? $yaw + mt_rand(15, 45) : $yaw - mt_rand(15, 45);
+
+			if($yaw > 360){
+				$yaw = 360;
+			} else if($yaw < 0) {
+				$yaw = 0;
+			}
+			$pitch = mt_rand(0, 1) ? $pitch + mt_rand(10, 20) : $pitch - mt_rand(10, 20);
+
+			if($pitch > 60) {
+				$pitch = 60;
+			} else if($pitch < -60) {
+				$pitch = -60;
+			}
+		}
+		$this->setRotation($yaw, $pitch);
 	}
 
 	public function move(float $dx, float $dy, float $dz) : void {
 		$this->blocksAround = null;
-
 		Timings::$entityMoveTimer->startTiming();
-
 		$movX = $dx;
 		$movY = $dy;
 		$movZ = $dz;
@@ -87,7 +120,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 			}
 			$this->boundingBox->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX !== $dx or $movZ !== $dz)) {
+			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)) {
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
@@ -119,8 +152,9 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
+
 					$this->boundingBox->setBB($axisalignedbb1);
-				 } else {
+				} else {
 					$block = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
 					$blockBB = $block->getBoundingBox() ?? new AxisAlignedBB($block->x, $block->y, $block->z, $block->x + 1, $block->y + 1, $block->z + 1);
 					$this->ySize += $blockBB->maxY - $blockBB->minY;
@@ -145,7 +179,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 		if($movZ != $dz) {
 			$this->motion->z = 0;
 		}
-		//TODO: Vehicle collision events (first we need to spawn them)
+		//TODO: Vehicle collision events
 		Timings::$entityMoveTimer->stopTiming();
 	}
 
@@ -184,7 +218,6 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 
 	public function setSpeed(float $speed) : self {
 		$this->speed = $speed;
-
 		return $this;
 	}
 
@@ -198,6 +231,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	}
 
 	public function onPlayerLook(CorePlayer $player) : void {
+		// TODO: Implement onPlayerLook() method.
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
@@ -211,11 +245,13 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 		$x = ($source->minX + $source->maxX) / 2;
 		$z = ($source->minZ + $source->maxZ) / 2;
 		$f = sqrt($x * $x + $z * $z);
+
 		if($f <= 0) {
 			return;
 		}
 		$f = 1 / $f;
 		$motion = clone $this->motion;
+
 		$motion->x /= 2;
 		$motion->z /= 2;
 		$motion->x += $x * $f * $base;

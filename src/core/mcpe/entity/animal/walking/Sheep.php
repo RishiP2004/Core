@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace core\mcpe\entity\animal\walking;
 
 use core\CorePlayer;
+
 use core\mcpe\Addon;
 use core\mcpe\entity\{
     AnimalBase,
@@ -73,7 +74,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable, Addon {
 
 	public function entityBaseTick(int $tickDiff = 1) : bool {
 		//TODO: Eat grass to recover wool
-		//TODO: Sheep will follow a player holding wheat within a radius of 8 blocks
+		//TODO: Sheep will follow a player holding wheat within 8 blocks
 		return parent::entityBaseTick($tickDiff);
 	}
 
@@ -96,7 +97,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable, Addon {
 
 		if(!$this->isBaby() and $hand instanceof Shears and !$this->sheared) {
 			$this->shear();
-			//$hand->applyDamage(1);
+			$hand->applyDamage(1);
 			$player->getInventory()->setItemInHand($hand);
 			$this->level->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_SHEAR, 0, EntityIds::PLAYER);
 		}
@@ -114,7 +115,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable, Addon {
 		$this->sheared = $sheared;
 
 		$this->setGenericFlag(self::DATA_FLAG_SHEARED, $sheared);
-		$this->namedtag->setByte("Sheared", (int)$sheared);
+		$this->namedtag->setByte("Sheared", (int) $sheared);
 		return $this;
 	}
 
@@ -133,16 +134,18 @@ class Sheep extends AnimalBase implements Collidable, Interactable, Addon {
 			$this->colorMeta = $colorMeta;
 
 			$this->getDataPropertyManager()->setPropertyValue(self::DATA_COLOUR, self::DATA_TYPE_BYTE, $colorMeta);
+			$this->namedtag->setByte("Color", $colorMeta);
 		} else {
+
 			throw new \OutOfRangeException("Meta value provided is out of range 0 - 15");
 		}
 		return $this;
 	}
 
 	public function getDrops() : array {
-		if(!$this->isBaby()) {
-			$drops = [];
+		$drops = parent::getDrops();
 
+		if(!$this->isBaby()) {
 			if($this->isOnFire()) {
 				$drops[] = ItemFactory::get(Item::COOKED_MUTTON, 0, mt_rand(1, 3));
 			} else {
@@ -154,7 +157,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable, Addon {
 			$drops[] = ItemFactory::get(Item::WOOL, $this->colorMeta);
 			return $drops;
 		} else {
-			return [];
+			return $drops;
 		}
 	}
 
