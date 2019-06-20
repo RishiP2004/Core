@@ -622,23 +622,21 @@ abstract class CorePlayer extends Player {
 		});
 	}
 
-    public function giveVoteRewards(int $multiplier) {
-        if($multiplier > 1) {
-            $this->sendMessage($this->core->getErrorPrefix() . "You haven't voted on any server lists");
-            return;
-        }
-        if($this->core->getNetwork()->getServerFromIp($this->getServer()->getIp())->getName() === "Factions") {
-            for($r = 0; $r < $this->core->getVote()->getItems() * $multiplier; $r++) {
-                $this->getInventory()->addItem(Item::getRandomItems($this->core->getVote()->getItems()) * $multiplier);
-            }
-        }
+    public function claimVote() {
+    	$item = Item::getRandomItems($this->core->getVote()->getItems());
+
+    	if($this->getInventory()->canAddItem($item)) {
+    		$this->getInventory()->addItem($item);
+		} else {
+    		$this->getLevel()->dropItem($this, $item);
+		}
         foreach($this->core->getVote()->getCommands() as $key => $command) {
             $command = str_replace("{PLAYER}", $this->getName(), $command);
 
-            for($i = 0; $i < $multiplier; $i++) {
-				$this->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
-			}
+            $this->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
         }
+		$this->sendMessage($this->core->getPrefix() . "Thanks for Voting!");
+		$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $this->getName() . " Voted for the Server and got rewarded!");
     }
 
     public function getArea() : ?Area {

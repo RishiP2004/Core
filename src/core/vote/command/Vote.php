@@ -11,6 +11,7 @@ use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
+use pocketmine\utils\TextFormat;
 
 class Vote extends PluginCommand {
     private $core;
@@ -21,7 +22,7 @@ class Vote extends PluginCommand {
         $this->core = $core;
         
         $this->setPermission("core.vote.command");
-        $this->setUsage("[player]");
+        $this->setUsage("[top] : [player]");
         $this->setDescription("Vote Command");
     }
     
@@ -30,25 +31,18 @@ class Vote extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
-        if(isset($args[0])) {
-            $user = $this->core->getStats()->getCoreUser($args[0]);
+        if(isset($args[0]) === "top") {
+        	$voters = $this->core->getVote()->getTopVoters();
+			$i = 1;
 
-            if(!$user) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
-            }
-            if(in_array($user->getName(), $this->core->getVote()->queue)) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "We are currently checking Vote lists for " . $user->getName());
-                return false;
+			$sender->sendMessage($this->core->getPrefix() . "Top Voters this Month:");
+
+			foreach($voters as $vote) {
+				$sender->sendMessage(TextFormat::GRAY . "#" . $i . ". " . $vote["nickname"] . ": " . $vote["votes"]);
+				$i++;
 			}
-			if($user->getServer()->getName() === "Lobby") {
-				$sender->sendMessage($this->core->getErrorPrefix() . "Run this command on the Gamemode you want to claim rewards");
-				return false;
-            } else {
-                $user->vote();
-                return true;
-            }
-        }
+        	return true;
+		}
         if(!$sender instanceof CorePlayer) {
             $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;

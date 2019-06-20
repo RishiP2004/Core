@@ -9,7 +9,7 @@ use core\network\server\Server;
 use core\stats\rank\Rank;
 
 use core\vote\ServerListQuery;
-use core\vote\task\RequestThread;
+use core\vote\task\VoteTask;
 
 class CoreUser {
     public $xuid = "", $name = "", $ip = "", $locale = "";
@@ -142,16 +142,7 @@ class CoreUser {
 
     public function vote() {
         Core::getInstance()->getVote()->addToQueue($this);
-        $requests = [];
-
-        foreach(Core::getInstance()->getVote()->getLists() as $list) {
-            if(isset($list["Check"]) && isset($list["Claim"])) {
-                $requests[] = new ServerListQuery($list["Check"], $list["Claim"]);
-            }
-        }
-        $query = new RequestThread($this->getName(), $requests);
-
-        Core::getInstance()->getServer()->getAsyncPool()->submitTask($query);
+        Core::getInstance()->getServer()->getAsyncPool()->submitTask(new VoteTask($this->getName(), Core::getInstance()->getVote()->getAPIKey()));
     }
 
     public function save() {

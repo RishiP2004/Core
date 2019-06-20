@@ -6,9 +6,7 @@ namespace core\vote;
 
 interface Data {
     const API_KEY = "";
-    
-    const ITEMS_PER_VOTE = 10;
-    
+
     const ITEMS = [
 		"57:0:5",
 		"264:0:32",

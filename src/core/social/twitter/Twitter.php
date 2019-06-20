@@ -62,9 +62,9 @@ class Twitter implements Access {
             }
         }
         if($result["Success"]) {
-            $sender->sendMessage($this->core->getPrefix() . "TwitterSend success");
+            $sender->sendMessage($this->core->getPrefix() . "Twittersuccess");
         } else {
-            $this->core->getServer()->getLogger()->error($this->core->getErrorPrefix() . "TwitterSend wasn't Sent, Error: " . $result["Error"]);
+            $this->core->getServer()->getLogger()->error($this->core->getErrorPrefix() . "Twitter wasn't Sent, Error: " . $result["Error"]);
         }
     }
 }
