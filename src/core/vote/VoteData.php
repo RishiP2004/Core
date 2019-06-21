@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace core\vote;
 
-interface Data {
+interface VoteData {
     const API_KEY = "";
 
     const ITEMS = [

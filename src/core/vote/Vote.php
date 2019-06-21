@@ -9,7 +9,7 @@ use core\CoreUser;
 
 use core\vote\task\TopVotersTask;
 
-class Vote implements Data {
+class Vote implements VoteData {
     private $core;
     
     public $queue = [], $lists = [];
@@ -40,7 +40,7 @@ class Vote implements Data {
 		unset($this->queue[$user->getName()]);
 	}
 
-	public function getTopVoters(int $display = 6) {
+	public function getTopVoters(int $display = 5) {
 		$this->core->getServer()->getAsyncPool()->submitTask(new TopVotersTask($this->getAPIKey(), $display));
 	}
 }

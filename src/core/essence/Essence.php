@@ -9,8 +9,11 @@ use core\Core;
 use core\essence\floatingText\{
     FloatingText,
     LobbyGreetings,
-    Parkour
+    Parkour,
+	TopVoter,
+	TopVoter2
 };
+
 use core\essence\npc\{
     NPC,
     Athie,
@@ -18,7 +21,7 @@ use core\essence\npc\{
     Lobby
 };
 
-class Essence implements Amount {
+class Essence implements EssenceData {
     private $core;
 
     private $NPCs = [], $floatingTexts = [];
@@ -28,6 +31,8 @@ class Essence implements Amount {
 
         $this->initFloatingText(new LobbyGreetings());
         $this->initFloatingText(new Parkour());
+		$this->initFloatingText(new TopVoter());
+		$this->initFloatingText(new TopVoter2());
         $this->initNPC(new Athie());
         $this->initNPC(new Factions());
         $this->initNPC(new Lobby());

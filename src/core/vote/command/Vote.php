@@ -22,7 +22,7 @@ class Vote extends PluginCommand {
         $this->core = $core;
         
         $this->setPermission("core.vote.command");
-        $this->setUsage("[top] : [player]");
+        $this->setUsage("[top] [amount] : [player]");
         $this->setDescription("Vote Command");
     }
     
@@ -32,7 +32,7 @@ class Vote extends PluginCommand {
             return false;
         }
         if(isset($args[0]) === "top") {
-        	$voters = $this->core->getVote()->getTopVoters();
+			$voters = $this->core->getVote()->getTopVoters();
 			$i = 1;
 
 			$sender->sendMessage($this->core->getPrefix() . "Top Voters this Month:");

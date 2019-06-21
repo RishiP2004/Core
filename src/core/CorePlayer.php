@@ -74,7 +74,7 @@ abstract class CorePlayer extends Player {
     private $chatTime = 0;
 
     private $AFK = false, $fishing = false;
-    /** @var null | FishingHook */
+    /** @var null|FishingHook */
     public $fishingHook = null;
 	/**
 	 * @var int|null
