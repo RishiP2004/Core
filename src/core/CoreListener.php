@@ -430,13 +430,8 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
-            $interacts = $player->addToInteract();
+            $this->core->getAntiCheat()->getCheat("autoClicker")->onRun();
 
-            if($interacts["amount"] >= $this->core->getAntiCheat()->getAutoClickAmount()) {
-                $this->core->getServer()->getLogger()->warning($this->core->getErrorPrefix() . $player->getName() . " seems to have an Auto Clicker");
-                $player->kick($this->core->getErrorPrefix() . "An Auto Clicker was detected");
-                //TODO: Full AntiCheat system
-            }
             $area = $player->getArea();
 
             if($area->getName() !== "") {

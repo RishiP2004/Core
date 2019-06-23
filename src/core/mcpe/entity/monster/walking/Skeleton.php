@@ -53,8 +53,8 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 		if(!isset($this->mainHand)) {
 			$this->mainHand = Item::get(Item::BOW);
 		}
-		// TODO: Random enchantments
-		// TODO: Random armour
+		//TODO: Random enchantments
+		//TODO: Random armour
 		parent::initEntity();
 	}
 
@@ -82,7 +82,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 				if($diff > 0) {
 					$this->motion->x = $this->speed * 0.15 * ($x / $diff);
 					$this->motion->z = $this->speed * 0.15 * ($z / $diff);
-					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
+					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); //TODO: Desync head with body when AI improves
 				}
 				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 
@@ -95,7 +95,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 				if($this->distance($this->target) <= 16) {
 					if($this->attackDelay > 30 and mt_rand(1, 32) < 4) {
 						$this->attackDelay = 0;
-						$force = 1.2; // TODO: correct speed?
+						$force = 1.2; //TODO: Correct speed?
 						$yaw = $this->yaw + mt_rand(-220, 220) / 10;
 						$pitch = $this->pitch + mt_rand(-120, 120) / 10;
 						$nbt = Arrow::createBaseNBT(new Vector3($this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5), $this->y + $this->eyeHeight, $this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5)), new Vector3(), $yaw, $pitch);
@@ -143,7 +143,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 					if($diff > 0) {
 						$this->motion->x = $this->speed * 0.15 * ($x / $diff);
 						$this->motion->z = $this->speed * 0.15 * ($z / $diff);
-						$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
+						$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); //TODO: Desync head with body when AI improves
 					}
 					$this->pitch = $y === 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 				}
@@ -166,7 +166,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 		if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) >= 15) {
 			$this->setOnFire(2);
 		}
-		if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { // TODO: check weather
+		if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { //TODO: Check weather
 			$this->extinguish();
 		}
 		$this->attackDelay += $tickDiff;
@@ -180,7 +180,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		if($entity instanceof \core\mcpe\entity\object\Item) {
+		if($entity instanceof \core\mcpe\entity\object\ItemEntity) {
 			if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
 				return;
 			}

@@ -4,11 +4,12 @@ declare(strict_types = 1);
 
 namespace core;
 
+use core\anticheat\cheat\Cheat;
+
 use core\network\server\Server;
 
 use core\stats\rank\Rank;
 
-use core\vote\ServerListQuery;
 use core\vote\task\VoteTask;
 
 class CoreUser {
@@ -26,7 +27,7 @@ class CoreUser {
      */
     public $server;
 
-    public $permissions = [];
+    public $permissions = [], $cheatHistory = [];
 
     public function __construct(string $xuid) {
         $this->xuid = $xuid;
@@ -43,6 +44,7 @@ class CoreUser {
         $this->balance = $data["balance"];
         $this->rank = Core::getInstance()->getStats()->getRank($data["rank"]);
         $this->permissions = $data["permissions"];
+        $this->cheatHistory = unserialize($data["cheatHistory"]);
         $this->server = Core::getInstance()->getNetwork()->getServer($data["server"]);
     }
 
@@ -140,6 +142,22 @@ class CoreUser {
         $this->setPermission($permissions);
     }
 
+    public function getCheatHistory() : array {
+    	return $this->cheatHistory;
+	}
+
+	public function setCheatHistory(Cheat $cheat, int $amount) {
+		$this->cheatHistory[$cheat->getId()] = $amount;
+	}
+	
+	public function addToCheatHistory(Cheat $cheat, int $amount) {
+    	$this->cheatHistory[$cheat->getId()] += $amount;
+	}
+
+	public function subtractFromCheatHistory(Cheat $cheat, int $amount) {
+		$this->cheatHistory[$cheat->getId()] -= $amount;
+	}
+
     public function vote() {
         Core::getInstance()->getVote()->addToQueue($this);
         Core::getInstance()->getServer()->getAsyncPool()->submitTask(new VoteTask($this->getName(), Core::getInstance()->getVote()->getAPIKey()));
@@ -154,6 +172,7 @@ class CoreUser {
             "balance" => $this->getBalance(),
             "rank" => $this->getRank(),
             "permissions" => $this->getPermissions(),
+            "cheatHistory" => serialize($this->getCheatHistory()),
             "server" => $this->getServer()
         ]);
     }

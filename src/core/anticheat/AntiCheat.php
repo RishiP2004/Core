@@ -4,9 +4,12 @@ declare(strict_types = 1);
 
 namespace core\anticheat;
 
+use core\anticheat\cheat\AutoClicker;
 use core\Core;
 
 use core\anticheat\entity\PrimedTNT;
+
+use core\anticheat\cheat\Cheat;
 
 use core\mcpe\entity\{
 	AnimalBase,
@@ -45,6 +48,8 @@ class AntiCheat implements Cheats {
 	 */
     public $ids = [];
 
+    public $cheats = [], $analyzers = [];
+
     public function __construct(Core $core) {
 		$this->core = $core;
 		
@@ -52,6 +57,8 @@ class AntiCheat implements Cheats {
 
         $this->onGoing = new \SplFixedArray($this->getMaxConcurrentExplosions());
         $this->queue = new \SplQueue();
+
+        $this->initCheat(new AutoClicker());
     }
 	
 	public function getMaxConcurrentExplosions() : int {
@@ -76,6 +83,25 @@ class AntiCheat implements Cheats {
 
 	public function getMaxEntities(string $key) : int {
     	return self::MAX_ENTITIES[$key];
+	}
+
+	public function initCheat(Cheat $cheat) {
+		$this->cheats[$cheat->getId()] = $cheat;
+	}
+	/**
+	 * @return Cheat[]
+	 */
+	public function getCheats() : array {
+		return $this->cheats;
+	}
+
+	public function getCheat(string $cheat) : ?Cheat {
+		$lowerKeys = array_change_key_case($this->cheats, CASE_LOWER);
+
+		if(isset($lowerKeys[strtolower($cheat)])) {
+			return $lowerKeys[strtolower($cheat)];
+		}
+		return null;
 	}
 
 	public function tick() {

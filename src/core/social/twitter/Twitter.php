@@ -15,8 +15,10 @@ class Twitter implements Access {
 
     public function __construct(Core $core) {
         $this->core = $core;
-		
-		$this->core->getServer()->getCommandMap()->register(\core\social\twitter\command\Twitter::class, new \core\social\twitter\command\Twitter($this->core));
+
+        if(!empty($this->getKey() && $this->getSecret() && $this->getToken() && $this->getTokenSecret())) {
+			$this->core->getServer()->getCommandMap()->register(\core\social\twitter\command\Twitter::class, new \core\social\twitter\command\Twitter($this->core));
+		}
     }
 
     public function getKey() : string {

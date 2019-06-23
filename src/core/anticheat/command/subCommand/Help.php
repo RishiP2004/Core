@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace core\broadcast\command\subCommand;
+namespace core\anticheat\command\subCommand;
 
 use core\Core;
 
@@ -20,7 +20,7 @@ class Help extends SubCommand {
     }
 
     public function canUse(CommandSender $sender) : bool {
-        return $sender->hasPermission("core.broadcast.subcommand.help");
+        return $sender->hasPermission("core.anticheat.subcommand.help");
     }
 
     public function getUsage() : string {
@@ -32,7 +32,7 @@ class Help extends SubCommand {
     }
 
     public function getDescription() : string {
-        return "Help about Broadcast";
+        return "Help about Cheat";
     }
 
     public function getAliases() : array {
@@ -40,11 +40,10 @@ class Help extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Broadcast Help:");
-        $sender->sendMessage(TextFormat::GRAY . "/broadcast help");
-        $sender->sendMessage(TextFormat::GRAY . "/broadcast sendmessage <message>");
-        $sender->sendMessage(TextFormat::GRAY . "/broadcast sendpopup <popup>");
-        $sender->sendMessage(TextFormat::GRAY . "/broadcast sendtitle <title>");
+        $sender->sendMessage($this->core->getPrefix() . "Cheat Help:");
+        $sender->sendMessage(TextFormat::GRAY . "/cheat help");
+        $sender->sendMessage(TextFormat::GRAY . "/cheat report <player> <cheat>");
+        $sender->sendMessage(TextFormat::GRAY . "/cheat history <add : remove : set> <player> <cheat> <amount>");
         return true;
     }
 }

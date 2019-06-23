@@ -50,7 +50,7 @@ class SnowGolem extends CreatureBase implements Collidable, Interactable {
 
 		if($this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) >= 14 or
 			$this->level->getBlock($this, true, false) instanceof Water or
-			$this->level->getBlock($this, true, false) instanceof Lava) { // TODO: check weather
+			$this->level->getBlock($this, true, false) instanceof Lava) { //TODO: Check weather
 			$this->setOnFire(200);
 		}
 		// TODO: only make snow in biomes with less than 0.8 temp

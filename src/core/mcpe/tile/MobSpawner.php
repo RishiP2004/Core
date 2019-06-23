@@ -139,7 +139,7 @@ abstract class MobSpawner extends Spawnable implements Addon {
 	}
 
 	public function onUpdate() : bool {
-		if($this->isClosed() or $this->entityId < EntityIds::CHICKEN) { // TODO: are there entities with ids less than 10?
+		if($this->isClosed() or $this->entityId < EntityIds::CHICKEN) { //TODO: Are there entities with ids less than 10?
 			return false;
 		}
 		if(--$this->delay === 0) {
@@ -179,7 +179,7 @@ abstract class MobSpawner extends Spawnable implements Addon {
 
 	protected static function getAreaEntities(AxisAlignedBB $bb, Level $level, string $type = Living::class) {
 		$nearby = [];
-		$minX = ((int) floor($bb->minX)) >> 4; // TODO: check if this is right
+		$minX = ((int) floor($bb->minX)) >> 4; //TODO: Check if this is right
 		$maxX = ((int) floor($bb->maxX)) >> 4;
 		$minZ = ((int) floor($bb->minZ)) >> 4;
 		$maxZ = ((int) floor($bb->maxZ)) >> 4;

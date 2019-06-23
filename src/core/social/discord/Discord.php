@@ -16,7 +16,9 @@ class Discord implements Access {
     public function __construct(Core $core) {
         $this->core = $core;
 
-        $this->core->getServer()->getCommandMap()->register(\core\social\discord\command\Discord::class, new \core\social\discord\command\Discord($core));
+        if(!empty($this->getWebHookURL() && $this->getChatURL() && $this->getChatUsername())) {
+			$this->core->getServer()->getCommandMap()->register(\core\social\discord\command\Discord::class, new \core\social\discord\command\Discord($core));
+		}
     }
 
     public function getWebHookURL() : string {

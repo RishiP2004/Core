@@ -17,7 +17,9 @@ class Vote implements VoteData {
     public function __construct(Core $core) {
         $this->core = $core;
 
-        $core->getServer()->getCommandMap()->register("vote", new \vote\command\Vote($core));
+        if(!empty($this->getAPIKey())) {
+			$core->getServer()->getCommandMap()->register("vote", new \vote\command\Vote($core));
+		}
     }
 
     public function getAPIKey() : string {

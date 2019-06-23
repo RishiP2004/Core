@@ -22,10 +22,13 @@ use core\mcpe\form\element\{
 	Label};
 use core\mcpe\network\PlayerNetworkSessionAdapter;
 use core\mcpe\entity\{
-	CreatureBase,
+	Linkable,
+	Lookable,
 	Interactable
 };
 use core\mcpe\entity\projectile\FishingHook;
+use core\mcpe\entity\monster\walking\Enderman;
+use core\mcpe\block\Pumpkin;
 
 use core\network\server\Server;
 
@@ -85,6 +88,10 @@ abstract class CorePlayer extends Player {
 		parent::__construct($interface, $ip, $port);
 
 		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
+
+		foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
+			$cheat->set($this);
+		}
 	}
 
 	public function __destruct() {
@@ -839,20 +846,29 @@ abstract class CorePlayer extends Player {
 
         switch($pk->action) {
             case InteractPacket::ACTION_LEAVE_VEHICLE:
-                //TODO: Entity linking
+				$target = $this->level->getEntity($pk->target);
+
+				$this->setTargetEntity($target);
+
+				if($target instanceof Linkable) {
+					$target->unlink();
+				}
             break;
             case InteractPacket::ACTION_MOUSEOVER:
-                $target = $this->level->getEntity($pk->target);
+				$target = $this->level->getEntity($pk->target);
 
-                $this->setTargetEntity($target);
+				$this->setTargetEntity($target);
+				//TODO: Check distance
+				if($target instanceof Lookable) {
+					if($target instanceof Enderman and $this->getArmorInventory()->getHelmet() instanceof Pumpkin) {
+						break;
+					}
+					$target->onPlayerLook($this);
+				} else if($target === null) {
 
-                if($target instanceof CreatureBase) {
-                    //TODO: Check player looking at head and if wearing jack 'o lantern
-                    $target->onPlayerLook($this);
-                } else if($target === null) {
 					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
 				}
-                $return = true;
+				$return = true;
             break;
             default:
                 $this->server->getLogger()->debug("Unhandled/unknown interaction type " . $pk->action . "received from " . $this->getName());

@@ -45,7 +45,7 @@ class SetRank extends PluginCommand {
         $rank = $this->core->getStats()->getRank($args[1]);
 
         if(!$rank instanceof Rank) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $rank->getName() . " is not a valid Rank");
+            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Rank");
             return false;
         } else {
             $user->setRank($rank);

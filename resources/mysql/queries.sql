@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS stats (
 	  balance BIGINT DEFAULT 0,
     rank VARCHAR(16),
     permissions TEXT,
+    cheatHistory TEXT,
 		server VARCHAR(32)
 )
 -- # }
 
 -- # { get
-SELECT xuid, registerDate, username, ip, locale, coins, balance, rank, permissions, server FROM stats;
+SELECT xuid, registerDate, username, ip, locale, coins, balance, rank, permissions, cheatHistory, server FROM stats;
 -- # }
 
 -- # { register
@@ -49,9 +50,10 @@ INSERT INTO stats (
 -- #    :balance int
 -- #    :rank string
 -- #    :permissions string
+-- #    :cheatHistory string
 -- #    :server string
 -- #    :xuid string
-UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, balance = :balance, rank = :rank, permissions = :permissions, server = :server WHERE xuid = :xuid;
+UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, balance = :balance, rank = :rank, permissions = :permissions, cheatHistory = :cheatHistory, server = :server WHERE xuid = :xuid;
 -- # }
 
 -- # { delete
