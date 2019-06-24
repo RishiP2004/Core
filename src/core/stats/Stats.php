@@ -29,6 +29,32 @@ use core\stats\task\{
 	AFKSetter,
 	TopEconomy
 };
+use core\stats\command\{
+	Accounts,
+	AddPlayerPermission,
+	BuyRank,
+	CurrencyChange,
+	DeleteAccount,
+	GiveBalance,
+	GiveCoins,
+	PayBalance,
+	PayCoins,
+	PluginPermissions,
+	Profile,
+	RankInformation,
+	Ranks,
+	RemovePlayerPermission,
+	Servers,
+	SetBalance,
+	SetCoins,
+	SetPlayerPermission,
+	SetRank,
+	TakeBalance,
+	TakeCoins,
+	TopBalance,
+	TopCoins,
+	UserInformation
+};
 
 use pocketmine\command\CommandSender;
 
@@ -45,6 +71,7 @@ class Stats implements Statistics {
         $this->core = $core;
 
         $core->saveResource("/stats/fallback.png");
+		$core->saveResource("/stats/humanoid.json");
 
         $fallbackSkin = new Skin("fallback", Entity::skinFromImage($core->getDataFolder() . "/stats/fallback.png"));
 
@@ -71,6 +98,30 @@ class Stats implements Statistics {
         $this->initRank(new YouTuber());
         $this->initUsers();
         $this->scheduleAFKSetter();
+		$this->core->getServer()->getCommandMap()->register(Accounts::class, new Accounts($this->core));
+		$this->core->getServer()->getCommandMap()->register(AddPlayerPermission::class, new AddPlayerPermission($this->core));
+		$this->core->getServer()->getCommandMap()->register(BuyRank::class, new BuyRank($this->core));
+		$this->core->getServer()->getCommandMap()->register(CurrencyChange::class, new CurrencyChange($this->core));
+		$this->core->getServer()->getCommandMap()->register(DeleteAccount::class, new DeleteAccount($this->core));
+		$this->core->getServer()->getCommandMap()->register(GiveBalance::class, new GiveBalance($this->core));
+		$this->core->getServer()->getCommandMap()->register(GiveCoins::class, new GiveCoins($this->core));
+		$this->core->getServer()->getCommandMap()->register(PayBalance::class, new PayBalance($this->core));
+		$this->core->getServer()->getCommandMap()->register(PayCoins::class, new PayCoins($this->core));
+		$this->core->getServer()->getCommandMap()->register(PluginPermissions::class, new PluginPermissions($this->core));
+		$this->core->getServer()->getCommandMap()->register(Profile::class, new Profile($this->core));
+		$this->core->getServer()->getCommandMap()->register(RankInformation::class, new RankInformation($this->core));
+		$this->core->getServer()->getCommandMap()->register(Ranks::class, new Ranks($this->core));
+		$this->core->getServer()->getCommandMap()->register(RemovePlayerPermission::class, new RemovePlayerPermission($this->core));
+		$this->core->getServer()->getCommandMap()->register(Servers::class, new Servers($this->core));
+		$this->core->getServer()->getCommandMap()->register(SetBalance::class, new SetBalance($this->core));
+		$this->core->getServer()->getCommandMap()->register(SetCoins::class, new SetCoins($this->core));
+		$this->core->getServer()->getCommandMap()->register(SetPlayerPermission::class, new SetPlayerPermission($this->core));
+		$this->core->getServer()->getCommandMap()->register(SetRank::class, new SetRank($this->core));
+		$this->core->getServer()->getCommandMap()->register(TakeBalance::class, new TakeBalance($this->core));
+		$this->core->getServer()->getCommandMap()->register(TakeCoins::class, new TakeCoins($this->core));
+		$this->core->getServer()->getCommandMap()->register(TopBalance::class, new TopBalance($this->core));
+		$this->core->getServer()->getCommandMap()->register(TopCoins::class, new TopCoins($this->core));
+		$this->core->getServer()->getCommandMap()->register(UserInformation::class, new UserInformation($this->core));
     }
 
     public function getCoinValue() : int {

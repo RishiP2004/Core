@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace core\network;
 
+use core\Core;
+
 use pocketmine\{
 	Server,
 	Thread
@@ -12,13 +14,13 @@ use pocketmine\{
 class BackThread extends Thread {
 	public function run() {
 		$timeStamp = date("Y-m-d-H-i") . "/";
-		$pass = Server::getDataPath();
+		$pass = Server::getInstance()->getDataPath();
 
-		$this->dirCopy($pass . "players/", $this->getDataFolder() . $timeStamp . "/players");
-		$this->dirCopy($pass . "plugins/", $this->getDataFolder() . $timeStamp . "/plugins");
-		$this->dirCopy($pass . "worlds/", $this->getDataFolder() . $timeStamp . "/worlds");
-		copy($pass . "ops.txt", $this->getDataFolder() . $timeStamp . "/ops.txt");
-		copy($pass . "white-list.txt", $this->getDataFolder() . $timeStamp . "/white-list.txt");
+		$this->dirCopy($pass . "players/", Core::getInstance()->getDataFolder() . $timeStamp . "/players");
+		$this->dirCopy($pass . "plugins/", Core::getInstance()->getDataFolder() . $timeStamp . "/plugins");
+		$this->dirCopy($pass . "worlds/", Core::getInstance()->getDataFolder() . $timeStamp . "/worlds");
+		copy($pass . "ops.txt", Core::getInstance()->getDataFolder() . $timeStamp . "/ops.txt");
+		copy($pass . "white-list.txt", Core::getInstance()->getDataFolder() . $timeStamp . "/white-list.txt");
 	}
 
 	public function dirCopy($dirName, $newDir) {

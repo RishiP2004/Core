@@ -133,7 +133,7 @@ class CoreListener implements Listener {
             $muteList = $this->core->getEssentials()->getNameMutes();
             $ipMuteList = $this->core->getEssentials()->getIpMutes();
 
-            if($muteList->isBanned($player)) {
+            if($muteList->isBanned($player->getName())) {
                 $entries = $muteList->getEntries();
                 $entry = $entries[strtolower($player->getName())];
                 $reason = $entry->getReason();
@@ -553,7 +553,7 @@ class CoreListener implements Listener {
             $banList = $this->core->getEssentials()->getNameBans();
             $ipBanList = $this->core->getEssentials()->getIpBans();
 
-            if($banList->isBanned($player)) {
+            if($banList->isBanned($player->getName())) {
                 $entries = $banList->getEntries();
                 $entry = $entries[strtolower($player->getName())];
 
@@ -583,7 +583,7 @@ class CoreListener implements Listener {
                 $event->setCancelled(true);
                 $player->sendMessage($banMessage);
             }
-            if($ipBanList->isBanned($player)) {
+            if($ipBanList->isBanned($player->getName())) {
                 $entries = $ipBanList->getEntries();
                 $entry = $entries[strtolower($player->getName())];
 

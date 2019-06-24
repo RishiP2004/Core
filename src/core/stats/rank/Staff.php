@@ -26,8 +26,10 @@ class Staff extends Rank {
     }
 
     public function getValue() : int {
+    	return self::STAFF;
     }
 
     public function getChatTime() : int {
+    	return 0;
     }
 }

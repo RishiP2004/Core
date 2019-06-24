@@ -16,7 +16,7 @@ use core\network\command\{
 	Restarter
 };
 
-use pocketmine\scheduler\Task;
+use core\utils\Math;
 
 class Network implements Networking {
     private $core;
@@ -28,6 +28,8 @@ class Network implements Networking {
     const CHAT = 0;
     const POPUP = 1;
     const TITLE = 2;
+
+    private $runs = 0;
 
     public function __construct(Core $core) {
         $this->core = $core;
@@ -43,39 +45,77 @@ class Network implements Networking {
         return $this->timer;
     }
 
-    public function getCountdownStart() : int {
-        return self::COUNTDOWN_START;
-    }
+    public function getRestart() : int {
+    	return self::RESTART;
+	}
 
-    public function getInterval() : int {
-        return self::INTERVAL;
-    }
+	public function getServerBackup() : int {
+		return self::SERVER_BACKUP;
+	}
+
+	public function getCountdownStart() : int {
+    	return self::COUNTDOWN_START;
+	}
 
     public function getMemoryLimit() : string {
         return self::MEMORY_LIMIT;
     }
 
-    public function getCountdownType() : string {
-        return self::COUNTDOWN_TYPE;
+    public function getDisplayType() : int {
+        return self::DISPLAY_TYPE;
     }
 
     public function restartOnOverload() : bool {
         return self::RESTART_ON_OVERLOAD;
     }
 
-    public function getMessages() : array {
-        return self::MESSAGES;
+    public function getBroadcastInterval() : int {
+    	return self::BROADCAST_INTERVAL;
+	}
+
+    public function getMessages(string $key) {
+        return self::MESSAGES[$key];
     }
 
     public function tick() {
-    	if(is_int(self::SERVER_BACKUP)) {
-    		$this->core->getScheduler()->scheduleRepeatingTask(new class extends Task {
-    			public function onRun(int $currentTick) {
-					$backThread = new BackThread;
+    	$this->runs++;
 
-					$backThread->run();
+		if(is_int($this->getRestart())) {
+			if($this->runs === $this->getRestart() * 60) {
+				if(!$this->getTimer()->isPaused()) {
+					$this->getTimer()->subtractTime(1);
+
+					if($this->getTimer()->getTime() <= $this->getCountdownStart()) {
+						$this->getTimer()->broadcastTime($this->getMessages("countdown"), $this->getDisplayType());
+					}
+					if($this->getTimer()->getTime() < 1) {
+						$this->getTimer()->initiateRestart(Timer::NORMAL);
+					}
 				}
-			}, self::SERVER_BACKUP)	;
+			}
+		}
+		if(is_int($this->getServerBackup())) {
+			if($this->runs === $this->getServerBackup() * 60 * 60) {
+				$backThread = new BackThread();
+
+				$backThread->run();
+			}
+		}
+		if($this->restartOnOverload()) {
+			if($this->runs === 6000) {
+				if(Math::isOverloaded($this->getMemoryLimit())) {
+					$this->getTimer()->initiateRestart(Timer::OVERLOADED);
+				}
+			}
+		}
+		if(is_int($this->getBroadcastInterval())) {
+			if($this->runs === $this->getBroadcastInterval()) {
+				if(!$this->getTimer()->isPaused()) {
+					if($this->getTimer()->getTime() >= $this->getCountdownStart()) {
+						$this->getTimer()->broadcastTime($this->getMessages("broadcast"), $this->getDisplayType());
+					}
+				}
+			}
 		}
 	}
 
@@ -89,11 +129,11 @@ class Network implements Networking {
         return $this->servers;
     }
 
-    public function getServer(string $area) : ?Server {
+    public function getServer(string $server) : ?Server {
         $lowerKeys = array_change_key_case($this->servers, CASE_LOWER);
 
-        if(isset($lowerKeys[strtolower($area)])) {
-            return $lowerKeys[strtolower($area)];
+        if(isset($lowerKeys[strtolower($server)])) {
+            return $lowerKeys[strtolower($server)];
         }
         return null;
     }
@@ -101,7 +141,7 @@ class Network implements Networking {
     public function getServerFromIp(string $ip) : Server {
         foreach($this->getServers() as $server) {
             if($server->getIp() === $ip) {
-                return $this->getServer($server);
+                return $this->getServer($server->getName());
             }
         }
         return $this->getServer("Lobby");

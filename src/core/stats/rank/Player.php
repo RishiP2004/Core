@@ -30,5 +30,6 @@ class Player extends Rank {
     }
 
     public function getChatTime() : int {
+    	return 3;
     }
 }

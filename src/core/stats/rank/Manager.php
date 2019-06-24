@@ -30,5 +30,6 @@ class Manager extends Rank {
     }
 
     public function getChatTime() : int {
+    	return 0;
     }
 }

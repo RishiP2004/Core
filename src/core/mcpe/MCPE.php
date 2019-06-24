@@ -157,8 +157,7 @@ class MCPE implements Addon {
 				ItemEntity::class,
 				SnowGolem::class,
 				IronGolem::class,
-				self::NON_ENTITIES
-			])) {
+			]) && !in_array($className, self::NON_ENTITIES)) {
 				$item = new SpawnEgg(constant($className . "::NETWORK_ID"));
 
 				if(!\pocketmine\item\Item::isCreativeItem($item)) {
@@ -298,7 +297,7 @@ class MCPE implements Addon {
 
 					foreach($this->core->getWorld()->getAreas() as $area) {
 						if(!$area->entitySpawn()) {
-							$disabled = $area;
+							$disabled[] = $area;
 						}
 					}
 					if(in_array($level->getFolderName(), $disabled) or in_array($level->getName(), $disabled)) {

@@ -32,5 +32,6 @@ class Universal extends Rank {
     }
 
     public function getChatTime() : int {
+    	return 1;
     }
 }

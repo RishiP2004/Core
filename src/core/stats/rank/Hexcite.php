@@ -28,7 +28,7 @@ class Hexcite extends Rank {
     }
 
     public function getValue() : int {
-        return self::PAID;
+        return self::FREE;
     }
 
     public function getChatTime() : int {

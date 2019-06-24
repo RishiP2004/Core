@@ -47,7 +47,7 @@ class Timer implements Networking {
                     if($this->core->getServer()->getIp() === $this->core->getNetwork()->getServer("Lobby")->getIp() and $this->core->getServer()->getPort() === 19132) {
                         $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted, you will be rejoined");
                     }
-                    $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted, you will be transferred to the LobbyGreetings");
+                    $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted, you will be transferred to the Lobby");
                 }
                 $this->core->getServer()->getLogger()->info($this->core->getPrefix() . "Server Restarted");
             break;
@@ -56,7 +56,7 @@ class Timer implements Networking {
                     if($this->core->getServer()->getIp() === $this->core->getNetwork()->getServer("Lobby")->getIp() and $this->core->getServer()->getPort() === 19132) {
                         $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted because of Overload, you will be rejoined");
                     }
-                    $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted because of Overload, you will be transferred to the LobbyGreetings");
+                    $onlinePlayer->sendMessage($this->core->getPrefix() . "Server Restarted because of Overload, you will be transferred to the Lobby");
                 }
                 $this->core->getServer()->getLogger()->info($this->core->getPrefix() . "Server Restarted because of Overload");
             break;

@@ -32,5 +32,6 @@ class Eonive extends Rank {
     }
 
     public function getChatTime() : int {
+    	return 2.5;
     }
 }

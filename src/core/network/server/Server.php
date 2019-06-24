@@ -47,7 +47,7 @@ abstract class Server {
                 $this->online = true;
             }
         } catch(MinecraftQueryException $exception) {
-            Core::getInstance()->getServer()->getLogger()->critical(Core::getInstance()->getErrorPrefix() . $exception->getMessage());
+            Core::getInstance()->getServer()->getLogger()->error(Core::getInstance()->getErrorPrefix() . $exception->getMessage());
         }
     }
 

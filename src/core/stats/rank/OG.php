@@ -8,7 +8,7 @@ class OG extends Rank {
     public function __construct() {
         parent::__construct("OG");
 
-        $this->setFreePrice(5000);
+        $this->setFreePrice(10000);
     }
 
     public function getFormat() : string {
@@ -32,5 +32,6 @@ class OG extends Rank {
     }
 
     public function getChatTime() : int {
+    	return 0;
     }
 }
