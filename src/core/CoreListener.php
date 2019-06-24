@@ -547,9 +547,9 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
-            if($this->core->getStats()->getCoreUserXuid($player->getXuid())->getName() !== $player->getName()) {
-                $player->getCoreUser()->setName($player->getName());
-            }
+			if(!$this->core->getStats()->getCoreUserXuid($player->getXuid())) {
+				$this->core->getStats()->registerCoreUser($player);
+			}
             $banList = $this->core->getEssentials()->getNameBans();
             $ipBanList = $this->core->getEssentials()->getIpBans();
 

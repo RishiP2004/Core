@@ -4,10 +4,10 @@
 -- # { init
 CREATE TABLE IF NOT EXISTS stats (
     xuid VARCHAR(16) PRIMARY KEY,
-    registerDate VARCHAR(11),
+    registerDate VARCHAR(18),
     username VARCHAR(16),
     ip VARCHAR(15),
-    locale VARCHAR(6) DEFAULT 'eng',
+    locale VARCHAR(6) DEFAULT 'en_us',
 	  coins BIGINT DEFAULT 0,
 	  balance BIGINT DEFAULT 0,
     rank VARCHAR(16),

@@ -273,12 +273,12 @@ class Stats implements Statistics {
             foreach($rows as [
                 "xuid" => $xuid,
             ]) {
-                $coreUser = new CoreUser($xuid);
-                $users[$xuid] = $coreUser;
+				$coreUser = new CoreUser($xuid);
+				$users[$xuid] = $coreUser;
 
-                $coreUser->load($rows);
-            }
-        $this->coreUsers = $users;
+				$coreUser->load($rows);
+			}
+            $this->coreUsers = $users;
         });
     }
     /**
@@ -312,14 +312,18 @@ class Stats implements Statistics {
             "registerDate" => date("m:d:y h:A"),
             "username" => $player->getName(),
             "ip" => $player->getAddress(),
-            "locale"
+            "locale" => $player->getLocale()
         ]);
+		$coreUser = new CoreUser($player->getXuid());
+		$user[$player->getXuid()] = $coreUser;
+		$this->coreUsers[] = $coreUser;
     }
 
     public function unregisterCoreUser(CoreUser $user) {
         $this->core->getDatabase()->executeChange("stats.unregister", [
             "xuid" => $user->getXuid()
         ]);
+        unset($this->coreUsers[$user->getXuid()]);
     }
 
     public function scheduleAFKSetter() {

@@ -24,8 +24,6 @@ use pocketmine\math\AxisAlignedBB;
 
 class Minecart extends Entity implements Interactable, Linkable, Lookable, Collidable {
 	use LinkableTrait, CollisionCheckingTrait;
-	/** @var CreatureBase $link */
-	private $link;
 
 	public function initEntity() : void {
 		parent::initEntity();

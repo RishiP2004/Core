@@ -100,7 +100,7 @@ class Math extends \pocketmine\math\Math {
         return true;
     }
 
-    public static function expirationStringToTimer(string $format) : \DateTime {
+    public static function expirationStringToTimer(string $format) {
         if(is_numeric($format)) {
             if(intval($format) <= 0) {
                 throw new \InvalidArgumentException("0 and negative values are not allowed in time format");

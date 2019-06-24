@@ -88,10 +88,6 @@ abstract class CorePlayer extends Player {
 		parent::__construct($interface, $ip, $port);
 
 		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
-
-		foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
-			$cheat->set($this);
-		}
 	}
 
 	public function __destruct() {
@@ -114,6 +110,13 @@ abstract class CorePlayer extends Player {
         $this->spawnFloatingTexts();
         $this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp()));
         $this->core->getScheduler()->scheduleDelayedTask(new PlayerJoin($this->core, $this), 20);
+
+		foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
+			$cheat->set($this);
+		}
+		if($this->core->getStats()->getCoreUserXuid($this->getXuid())->getName() !== $this->getName()) {
+			$this->getCoreUser()->setName($this->getName());
+		}
     }
 
     public function leave() {

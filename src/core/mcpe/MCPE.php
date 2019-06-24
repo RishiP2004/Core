@@ -396,7 +396,7 @@ class MCPE implements Addon {
 
 				foreach($this->core->getWorld()->getAreas() as $area) {
 					if(!$area->entitySpawn()) {
-						$disabled = $area;
+						$disabled[] = $area;
 					}
 				}
 				if(in_array($level->getFolderName(), $disabled) or in_array($level->getName(), $disabled)) {
