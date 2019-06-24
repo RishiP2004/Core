@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace core\mcpe\entity;
 
-use core\CorePlayer;
-
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ListTag;
 
@@ -16,6 +14,8 @@ use pocketmine\item\{
 
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
+
+use pocketmine\Player;
 
 trait ItemHolderTrait {
 	/** @var Item|null */
@@ -82,7 +82,7 @@ trait ItemHolderTrait {
 		return $this;
 	}
 
-	protected function sendSpawnPacket(CorePlayer $player) : void {
+	protected function sendSpawnPacket(Player $player) : void {
 		parent::sendSpawnPacket($player);
 
 		$pk = new MobEquipmentPacket();

@@ -12,6 +12,7 @@ use core\mcpe\entity\{
     ClimbingTrait,
     CreatureBase
 };
+use core\mcpe\entity\monster\swimming\Drowned;
 
 use pocketmine\Player;
 
@@ -243,7 +244,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
             $this->server->broadcastPacket($this->hasSpawned, $packet);
             $entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
         }
-        if($entity instanceof \core\mcpe\entity\object\Item) {
+        if($entity instanceof \core\mcpe\entity\object\ItemEntity) {
             if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
                 return;
             }

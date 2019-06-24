@@ -50,13 +50,13 @@ class Core extends PluginBase {
     }
 
     public function onEnable() {
-        if(!mkdir($concurrentDirectory = $this->getDataFolder()) && !is_dir($concurrentDirectory)) {
+        if(!is_dir($concurrentDirectory = $this->getDataFolder()) && !mkdir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
-		if(!mkdir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mcpe") && !is_dir($concurrentDirectory)) {
+		if(!is_dir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mcpe") && !mkdir($concurrentDirectory)) {
 			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}
-        if(!mkdir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mysql") && !is_dir($concurrentDirectory)) {
+        if(!is_dir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mysql") && !mkdir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
         $this->saveDefaultConfig();
