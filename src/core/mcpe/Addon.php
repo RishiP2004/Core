@@ -180,6 +180,30 @@ interface Addon {
 		Minecart::class => ['Minecart', 'minecraft:minecart'],
 		TNTMinecart::class => ['TNTMinecart', 'minecraft:tntminecart']
 	];
+	const NON_ENTITIES = [
+		AreaEffectCloud::class,
+		ArmorStand::class,
+		EnderCrystal::class,
+		EyeOfEnder::class,
+		ItemEntity::class,
+		LeadKnot::class,
+		Lightning::class,
+		TripodCamera::class,
+		Arrow::class,
+		Egg::class,
+		Firework::class,
+		FishingHook::class,
+		LingeringPotion::class,
+		Trident::class,
+		WitherSkull::class,
+		Boat::class,
+		ChestMinecart::class,
+		CommandBlockMinecart::class,
+		HopperMinecart::class,
+		Minecart::class,
+		TNTMinecart::class
+	];
+
 	public const BIOME_ENTITIES = [
 		Biome::OCEAN => [
 		    Dolphin::NETWORK_ID,

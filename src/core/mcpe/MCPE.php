@@ -156,7 +156,8 @@ class MCPE implements Addon {
 				Endermite::class,
 				ItemEntity::class,
 				SnowGolem::class,
-				IronGolem::class
+				IronGolem::class,
+				self::NON_ENTITIES
 			])) {
 				$item = new SpawnEgg(constant($className . "::NETWORK_ID"));
 
@@ -190,7 +191,7 @@ class MCPE implements Addon {
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WARD, 0, "Music Disc ward"), true);
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_11, 0, "Music Disc 11"), true);
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WAIT, 0, "Music Disc wait"), true);
-		ItemFactory::registerItem(new Saddle(), true);
+		//ItemFactory::registerItem(new Saddle(), true);
 		ItemFactory::registerItem(new Trident(), true);
 		\pocketmine\item\Item::initCreativeItems();
 
