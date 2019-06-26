@@ -36,7 +36,7 @@ abstract class Rank {
 
     public abstract function getValue() : int;
 
-    public abstract function getChatTime() : int;
+    public abstract function getChatTime() : float;
 
     public function setFreePrice(int $freePrice) {
         if($this->getValue() === self::FREE) {

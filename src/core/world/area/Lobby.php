@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace core\world\area;
 
+use pocketmine\Server;
+
 use pocketmine\level\Position;
 
 class Lobby extends Area {
@@ -12,11 +14,15 @@ class Lobby extends Area {
     }
 
     public function getPosition1() : Position {
-        return new Position(0, 0, 0, "Lobby");
+		$level = Server::getInstance()->getLevelByName("Lobby");
+
+        return new Position(0, 0, 0, $level);
     }
 
     public function getPosition2() : Position {
-        return new Position(0, 0, 0, "Lobby");
+		$level = Server::getInstance()->getLevelByName("Lobby");
+
+        return new Position(0, 0, 0, $level);
     }
 
     public function allowedEnter() : bool {

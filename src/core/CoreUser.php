@@ -36,16 +36,29 @@ class CoreUser {
     }
 
     public function load(array $data) {
-        $this->registerDate = $data["registerDate"];
-        $this->name = $data["username"];
-        $this->ip = $data["ip"];
-        $this->locale = $data["locale"];
-        $this->coins = $data["coins"];
-        $this->balance = $data["balance"];
-        $this->rank = Core::getInstance()->getStats()->getRank($data["rank"]);
-        $this->permissions = $data["permissions"];
-        $this->cheatHistory = unserialize($data["cheatHistory"]);
-        $this->server = Core::getInstance()->getNetwork()->getServer($data["server"]);
+    	foreach($data as [
+    		"registerDate" => $registerDate,
+			"username" => $name,
+			"ip" => $ip,
+			"locale" => $locale,
+			"coins" => $coins,
+			"balance" => $balance,
+			"rank" => $rank,
+			"permissions" => $permissions,
+			"cheatHistory" => $cheatHistory,
+			"server" => $server
+    	]) {
+			$this->registerDate = $registerDate;
+			$this->name = $name;
+			$this->ip = $ip;
+			$this->locale = $locale;
+			$this->coins = $coins;
+			$this->balance = $balance;
+			$this->rank = Core::getInstance()->getStats()->getRank($rank);
+			$this->permissions = unserialize($permissions);
+			$this->cheatHistory = unserialize($cheatHistory);
+			$this->server = Core::getInstance()->getNetwork()->getServer($server);
+		}
     }
 
     public function getXuid() : string {
@@ -79,14 +92,6 @@ class CoreUser {
     public function setIp(string $ip) {
         $this->ip = $ip;
     }
-	
-    public function getServer() : ?Server {
-        return $this->server;
-    }
-
-    public function setServer(?Server $server) {
-        $this->server = $server;
-    }
 
     public function getCoins() : int {
         return $this->coins;
@@ -105,6 +110,13 @@ class CoreUser {
 	}
 	
 	public function getRank() : Rank {
+    	if(is_null($this->rank)) {
+    		foreach(Core::getInstance()->getStats()->getRanks() as $rank) {
+    			if($rank->getValue() === Rank::DEFAULT) {
+    				return $rank;
+				}
+			}
+		}
 		return $this->rank;
 	}
 	
@@ -158,6 +170,17 @@ class CoreUser {
 		$this->cheatHistory[$cheat->getId()] -= $amount;
 	}
 
+	public function getServer() : ?Server {
+    	if(is_null($this->server)) {
+    		return Core::getInstance()->getNetwork()->getServer("Lobby");
+		}
+		return $this->server;
+	}
+
+	public function setServer(?Server $server) {
+		$this->server = $server;
+	}
+
     public function vote() {
         Core::getInstance()->getVote()->addToQueue($this);
         Core::getInstance()->getServer()->getAsyncPool()->submitTask(new VoteTask($this->getName(), Core::getInstance()->getVote()->getAPIKey()));
@@ -170,10 +193,11 @@ class CoreUser {
             "locale" => $this->getLocale(),
             "coins" => $this->getCoins(),
             "balance" => $this->getBalance(),
-            "rank" => $this->getRank(),
-            "permissions" => $this->getPermissions(),
+            "rank" => $this->getRank()->getName(),
+            "permissions" => serialize($this->getPermissions()),
             "cheatHistory" => serialize($this->getCheatHistory()),
-            "server" => $this->getServer()
+            "server" => $this->getServer()->getName(),
+			"xuid" => $this->getXuid()
         ]);
     }
 }

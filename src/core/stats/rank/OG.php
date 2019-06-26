@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace core\stats\rank;
 
+use pocketmine\utils\TextFormat;
+
 class OG extends Rank {
     public function __construct() {
         parent::__construct("OG");
@@ -11,27 +13,31 @@ class OG extends Rank {
         $this->setFreePrice(10000);
     }
 
-    public function getFormat() : string {
-    }
+	public function getFormat() : string {
+		return TextFormat::BOLD . TextFormat::GOLD . "OG" . TextFormat::RESET;
+	}
 
-    public function getChatFormat() : string {
-    }
+	public function getChatFormat() : string {
+		return $this->getFormat() . "{DISPLAY_NAME}" . TextFormat::LIGHT_PURPLE . ": " . TextFormat::GRAY . "{MESSAGE}";
+	}
 
-    public function getNameTagFormat() : string {
-    }
+	public function getNameTagFormat() : string {
+		return $this->getFormat() . "{DISPLAY_NAME}";
+	}
 
-    public function getPermissions() : array {
-    }
+	public function getPermissions() : array {
+		return [];
+	}
 
-    public function getInheritance() : Rank {
-        return new Player();
-    }
+	public function getInheritance() : Rank {
+		return new Hexcite();
+	}
 
-    public function getValue() : int {
-        return self::FREE;
-    }
+	public function getValue() : int {
+		return self::FREE;
+	}
 
-    public function getChatTime() : int {
-    	return 0;
-    }
+	public function getChatTime() : float {
+		return 1;
+	}
 }

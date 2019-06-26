@@ -6,6 +6,8 @@ namespace core\essence\npc;
 
 use core\utils\Entity;
 
+use pocketmine\Server;
+
 use pocketmine\level\Position;
 
 use pocketmine\entity\Skin;
@@ -20,7 +22,9 @@ class Factions extends NPC {
     }
 
     public function getPosition() : Position {
-        return new Position(138.5, 15, 127.5, "Lobby");
+		$level = Server::getInstance()->getLevelByName("Lobby");
+
+        return new Position(138.5, 15, 127.5, $level);
     }
 
     public function getSize() : float {

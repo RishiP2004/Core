@@ -327,23 +327,23 @@ class CoreListener implements Listener {
 
             switch($cause) {
                 case $cause::CAUSE_CONTACT:
-                    $stringCause = "Contact";
+                    $stringCause = "contact";
 
                     if($cause instanceof EntityDamageByBlockEvent) {
                         $replaces["{BLOCK}"] = $cause->getDamager()->getName();
                         break;
                     }
-                    $replaces["{BLOCK}"] = "Unknown";
+                    $replaces["{BLOCK}"] = "unknown";
                 break;
                 case $cause::CAUSE_ENTITY_ATTACK:
-                    $stringCause = "Kill";
+                    $stringCause = "kill";
                     $killer = $cause->getEntity();
 
                     if($killer instanceof Living) {
                         $array["{KILLER}"] = $killer->getName();
                         break;
                     }
-                    $array["{KILLER}"] = "Unknown";
+                    $array["{KILLER}"] = "unknown";
                 break;
                 case $cause::CAUSE_PROJECTILE:
                     $stringCause = "projectile";
@@ -353,44 +353,44 @@ class CoreListener implements Listener {
                         $array["{KILLER}"] = $killer->getName();
                         break;
                     }
-                    $array["{KILLER}"] = "Unknown";
+                    $array["{KILLER}"] = "unknown";
                 break;
                 case $cause::CAUSE_SUFFOCATION:
-                    $stringCause = "Suffocation";
+                    $stringCause = "suffocation";
                 break;
                 case $cause::CAUSE_STARVATION:
-                    $stringCause = "Starvation";
+                    $stringCause = "starvation";
                 break;
                 case $cause::CAUSE_FALL:
-                    $stringCause = "Fall";
+                    $stringCause = "fall";
                 break;
                 case $cause::CAUSE_FIRE:
-                    $stringCause = "Fire";
+                    $stringCause = "fire";
                 break;
                 case $cause::CAUSE_FIRE_TICK:
-                    $stringCause = "On-Fire";
+                    $stringCause = "on-fire";
                 break;
                 case $cause::CAUSE_LAVA:
-                    $stringCause = "Lava";
+                    $stringCause = "lava";
                 break;
                 case $cause::CAUSE_DROWNING:
-                    $stringCause = "Drowning";
+                    $stringCause = "drowning";
                 break;
                 case $cause::CAUSE_ENTITY_EXPLOSION:
                 case $cause::CAUSE_BLOCK_EXPLOSION:
-                    $stringCause = "Explosion";
+                    $stringCause = "explosion";
                 break;
                 case $cause::CAUSE_VOID:
-                    $stringCause = "Void";
+                    $stringCause = "void";
                 break;
                 case $cause::CAUSE_SUICIDE:
-                    $stringCause = "Suicide";
+                    $stringCause = "suicide";
                 break;
                 case $cause::CAUSE_MAGIC:
-                    $stringCause = "Magic";
+                    $stringCause = "magic";
                 break;
                 default:
-                    $stringCause = "Normal";
+                    $stringCause = "normal";
                 break;
             }
             if(!empty($this->core->getBroadcast()->getDeaths($stringCause))) {
@@ -489,7 +489,7 @@ class CoreListener implements Listener {
             $message = "";
 
             if(!$player->hasPlayedBefore()) {
-                if(!empty(Broadcasts::JOINS["First"])) {
+                if(!empty(Broadcasts::JOINS["first"])) {
                     $message = str_replace([
                         "{PLAYER}",
                         "{TIME}",

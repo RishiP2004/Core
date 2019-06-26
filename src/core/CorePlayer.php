@@ -66,7 +66,7 @@ use pocketmine\command\ConsoleCommandSender;
 
 use pocketmine\event\player\PlayerKickEvent;
 
-abstract class CorePlayer extends Player {
+class CorePlayer extends Player {
     /**
      * @var \core\Core
      */
@@ -286,10 +286,6 @@ abstract class CorePlayer extends Player {
             }
         }
     }
-
-    public abstract function getNameTagFormat() : string;
-
-    public abstract function getChatFormat(string $message) : string;
 
     public function isAFK() : bool {
         return $this->AFK;

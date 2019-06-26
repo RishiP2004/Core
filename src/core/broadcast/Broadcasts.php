@@ -43,38 +43,38 @@ interface Broadcasts {
         ""
     ];
     const JOINS = [
-        "First" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " has joined the GratonePix community!",
-        "Normal" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " has joined the Server"
+        "first" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " has joined the GratonePix community!",
+        "normal" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " has joined the Server"
     ];
     const DEATHS = [
-        "Contact" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by {BLOCK}",
-        "Kill" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by {KILLER}",
+        "contact" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by {BLOCK}",
+        "kill" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by {KILLER}",
         "projectile" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by {KILLER}",
-        "Suffocation" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " suffocated",
-        "Starvation" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " starved to death",
-        "Fall" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " fell from a high distance",
-        "Fire" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " went up in flames",
-        "On-Fire" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " burned",
-        "Lava" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " tried to swim in lava",
-        "Drowning" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " rowned",
-        "Explosion" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " exploded",
-        "Void" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " fell into the void",
-        "Suicide" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " committed suicide",
-        "Magic" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by magic",
-        "Normal" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " died"
+        "suffocation" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " suffocated",
+        "starvation" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " starved to death",
+        "fall" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " fell from a high distance",
+        "fire" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " went up in flames",
+        "on-fire" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " burned",
+        "lava" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " tried to swim in lava",
+        "drowning" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " rowned",
+        "explosion" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " exploded",
+        "void" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " fell into the void",
+        "suicide" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " committed suicide",
+        "magic" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " was killed by magic",
+        "normal" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " died"
     ];
     const QUITS = [
-        "Normal" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " has left the Server"
+        "normal" => "{NAME_TAG_FORMAT}" . TextFormat::GRAY . " has left the Server"
     ];
     const DIMENSIONS = [
-        "Change" => ""
+        "change" => ""
     ];
     const KICKS = [
-        "Outdated" => [
-            "Client" => "{PREFIX}Your Minecraft client is outdated",
-            "Server" => "{PREFIX}This server is outdated"
+        "outdated" => [
+            "client" => "{PREFIX}Your Minecraft client is outdated",
+            "server" => "{PREFIX}This server is outdated"
         ],
-        "Whitelisted" => "{PREFIX}This server is whitelisted",
-        "Full" => "{PREFIX}This server is full {ONLINE_PLAYERS}/{MAX_PLAYERS}"
+        "whitelisted" => "{PREFIX}This server is whitelisted",
+        "full" => "{PREFIX}This server is full {ONLINE_PLAYERS}/{MAX_PLAYERS}"
     ];
 }
