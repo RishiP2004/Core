@@ -8,6 +8,8 @@ use core\Core;
 
 use factions\Factions;
 
+use pocketmine\Server;
+
 use pocketmine\level\Position;
 
 use pocketmine\utils\TextFormat;
@@ -18,7 +20,9 @@ class TopVoter2 extends FloatingText {
     }
 
     public function getPosition() : Position {
-        return new Position(126, 15, 98, "Factions");
+		$level = Server::getInstance()->getLevelByName("Factions");
+	
+        return new Position(126, 15, 98, $level);
     }
 
     public function getText() : string {

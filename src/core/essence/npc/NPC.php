@@ -158,12 +158,10 @@ abstract class NPC {
         if(!empty($this->getArmor()["boots"])) {
             $boots = $this->getArmor()["boots"];
         }
-        $maep->slots = [
-            Item::get($helmet),
-            Item::get($chestplate),
-            Item::get($leggings),
-            Item::get($boots)
-        ];
+        $maep->head = Item::get($helmet);
+		$maep->chest = Item::get($chestplate);
+		$maep->legs = Item::get($leggings);
+		$maep->feet = Item::get($boots);
 
         $player->sendDataPacket($maep);
 

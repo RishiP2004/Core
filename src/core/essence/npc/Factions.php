@@ -36,7 +36,7 @@ class Factions extends NPC {
     }
 
     public function getSkin() : Skin {
-        $image = imagecreatefrompng("https://jpsierens.files.wordpress.com/2012/10/skin.png");
+        $image = "https://jpsierens.files.wordpress.com/2012/10/skin.png";
 
         return new Skin($this->getName(), Entity::skinFromImage($image) ?? "", "", "geometry.humanoid.custom", "");
     }

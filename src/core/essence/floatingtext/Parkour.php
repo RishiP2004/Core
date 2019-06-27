@@ -6,6 +6,8 @@ namespace core\essence\floatingtext;
 
 use lobby\Lobby;
 
+use pocketmine\Server;
+
 use pocketmine\level\Position;
 
 class Parkour extends FloatingText {
@@ -14,7 +16,9 @@ class Parkour extends FloatingText {
     }
 
     public function getPosition() : Position {
-        return new Position(126, 15, 98, "Lobby");
+		$level = Server::getInstance()->getLevelByName("Lobby");
+		
+        return new Position(126, 15, 98, $level);
     }
 
     public function getText() : string {

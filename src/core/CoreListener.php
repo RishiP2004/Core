@@ -478,7 +478,14 @@ class CoreListener implements Listener {
 
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
-
+			
+			$this->core->getWorld()->players[$player->getName()] = "";
+			
+			$player->updateArea();
+			
+			if(!$this->core->getStats()->getCoreUserXuid($player->getXuid())) {
+				$this->core->getStats()->registerCoreUser($player);
+			}
             if(in_array($player->getLevel(), Messages::WORLDS)) {
                 if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
                     $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$player], str_replace("{PREFIX}", $this->core->getPrefix(), Messages::NOT_REGISTERED_MESSAGE));
@@ -547,9 +554,6 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
-			if(!$this->core->getStats()->getCoreUserXuid($player->getXuid())) {
-				$this->core->getStats()->registerCoreUser($player);
-			}
             $banList = $this->core->getEssentials()->getNameBans();
             $ipBanList = $this->core->getEssentials()->getIpBans();
 
@@ -664,6 +668,7 @@ class CoreListener implements Listener {
 
         if($player instanceof CorePlayer) {
         	$this->core->getMCPE()->getScoreboardManager()->removePotentialViewer($player->getName());
+			
             $message = "";
 
             if($player->hasPermission("core.stats.quit")) {
