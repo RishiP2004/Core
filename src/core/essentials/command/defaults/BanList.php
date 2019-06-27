@@ -44,7 +44,7 @@ class BanList extends PluginCommand {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Banned Players " . count($list)  . ":");
+                    $sender->sendMessage($this->core->getPrefix() . "Banned Players (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
                 case "ips":
@@ -53,7 +53,7 @@ class BanList extends PluginCommand {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Banned Ips " . count($list)  . ":");
+                    $sender->sendMessage($this->core->getPrefix() . "Banned Ips (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
             }

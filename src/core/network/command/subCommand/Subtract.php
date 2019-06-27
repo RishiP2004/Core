@@ -45,7 +45,7 @@ class Subtract extends SubCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Numeric");
             return false;
         } else {
-            $this->core->getNetwork()->getTimer()->subtractTime($args[0]);
+            $this->core->getNetwork()->getTimer()->subtractTime((int) $args[0]);
             $sender->sendMessage($this->core->getPrefix() . "Subtracted " . $args[0] . " seconds from Restart timer");
             return true;
         }

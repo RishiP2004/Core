@@ -39,7 +39,7 @@ class SendMessage extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        if(count($args) < 2) {
+        if(count($args) < 1) {
             return false;
         } else {
             if($sender instanceof CommandSender) {

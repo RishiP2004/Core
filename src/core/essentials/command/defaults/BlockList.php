@@ -44,7 +44,7 @@ class BlockList extends PluginCommand {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Blocked Players " . count($list)  . ":");
+                    $sender->sendMessage($this->core->getPrefix() . "Blocked Players (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
                 case "ips":
@@ -53,7 +53,7 @@ class BlockList extends PluginCommand {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Blocked Ips " . count($list)  . ":");
+                    $sender->sendMessage($this->core->getPrefix() . "Blocked Ips (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
             }

@@ -20,13 +20,11 @@ use pocketmine\utils\TextFormat;
 class TopEconomy extends AsyncTask implements Statistics {
 	private $sender;
 
-	private $unit = "";
+	private $unit;
 
-	private $allEconomy = [], $ops = [], $banned = [];
+	private $allEconomy, $ops, $banned;
 
-	private $page = 1;
-
-	private $max = 0;
+	private $page, $max = 0;
 
 	private $topList;
 
@@ -44,9 +42,9 @@ class TopEconomy extends AsyncTask implements Statistics {
 	}
 
 	private function getTopList() {
-		$allEconomy = $this->allEconomy;
-		$banned = $this->banned;
-		$ops = $this->ops;
+		$allEconomy = (array) $this->allEconomy;
+		$banned = (array) $this->banned;
+		$ops = (array) $this->ops;
 
 		arsort($allEconomy);
 

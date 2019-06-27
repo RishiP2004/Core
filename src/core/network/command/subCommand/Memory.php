@@ -46,7 +46,10 @@ class Memory extends SubCommand {
         $sender->sendMessage($this->core->getPrefix() . "Restarter Memory Info:");
         $sender->sendMessage(TextFormat::GRAY . "Bytes: " . memory_get_usage(true) . "/" . Math::calculateBytes($this->core->getNetwork()->getMemoryLimit()));
         $sender->sendMessage(TextFormat::GRAY . "Memory-limit: " . $this->core->getNetwork()->getMemoryLimit());
-        $sender->sendMessage(TextFormat::GRAY . "Overloaded: " . Math::isOverloaded($this->core->getNetwork()->getMemoryLimit()) ? "Yes" : "No");
+		
+		$overloaded = Math::isOverloaded($this->core->getNetwork()->getMemoryLimit()) ? "Yes" : "No";
+		
+        $sender->sendMessage(TextFormat::GRAY . "Overloaded: " . $overloaded);
         return true;
     }
 }

@@ -40,7 +40,7 @@ class TopCoins extends PluginCommand {
             $ops = [];
 
             foreach($this->core->getServer()->getOps()->getAll() as $op) {
-                if($this->core->getStats()->getCoreUser($op)) {
+                if($this->core->getStats()->getCoreUser((string) $op)) {
                     $ops[] = $op;
                 }
             }

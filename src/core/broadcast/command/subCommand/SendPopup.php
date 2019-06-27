@@ -49,12 +49,17 @@ class SendPopup extends SubCommand {
             } else {
                 $player = null;
             }
+			if(is_null($player)) {
+				$p = "everyone";
+			} else {
+				$p = $player->getName();
+			}
             if($sender instanceof CommandSender) {
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, $this->core->getBroadcast()->getDurations("Popup"), $this->core->getBroadcast()->broadcastByConsole($sender, $args[0])), 10);
-                $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $player->getName() ?? "everyone");
+                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, $this->core->getBroadcast()->getDurations("popup"), $this->core->getBroadcast()->broadcastByConsole($sender, $args[0])), 10);
+                $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $p);
             } else if($sender instanceof CorePlayer) {
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, $this->core->getBroadcast()->getDurations("Popup"), $sender->broadcast($args[0])), 10);
-                $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $player->getName() ?? "everyone");
+                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, $this->core->getBroadcast()->getDurations("popup"), $sender->broadcast($args[0])), 10);
+                $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $p);
             }
             return true;
         }

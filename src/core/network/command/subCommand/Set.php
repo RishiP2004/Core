@@ -42,10 +42,10 @@ class Set extends SubCommand {
             return false;
         }
         if(!is_numeric($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Numeric");
+            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Numeric");
             return false;
         } else {
-            $this->core->getNetwork()->getTimer()->setTime($args[0]);
+            $this->core->getNetwork()->getTimer()->setTime((int) $args[0]);
             $sender->sendMessage($this->core->getPrefix() . "Set Restart Timer to " . $args[0] . " seconds");
             return true;
         }

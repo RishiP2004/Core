@@ -29,7 +29,7 @@ class Save extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         } else {
-            if($args[0]) {
+            if(isset($args[0])) {
                 switch(strtolower($args[0])) {
                     case "on":
                         $this->core->getServer()->setAutoSave(true);

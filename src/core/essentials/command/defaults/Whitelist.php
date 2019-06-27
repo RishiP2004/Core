@@ -34,10 +34,6 @@ class Whitelist extends PluginCommand {
         if(count($args) < 1) {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /whitelist" . " " . $this->getUsage());
             return false;
-        }
-        if(!$user = $this->core->getStats()->getCoreUser($args[1])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
-            return false;
         } else {
             switch(strtolower($args[0])) {
 				case "reload":
@@ -53,14 +49,14 @@ class Whitelist extends PluginCommand {
                     $sender->sendMessage($this->core->getPrefix() . "Turned the Whitelist Off");
                 break;
                 case "list":
-                    $entries = $sender->getServer()->getWhitelisted()->getAll(\true);
+                    $entries = $sender->getServer()->getWhitelisted()->getAll(true);
                     $message = \implode($entries, ", ");
 
                     $sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($entries)  . ":");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
                 case "add":
-                    if(count($args) < 2) {
+                    if(count($args) < 1) {
                         $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /whitelist" . " " . $this->getUsage());
                         return false;
                     } else {
@@ -70,7 +66,7 @@ class Whitelist extends PluginCommand {
                     }
                 break;
                 case "remove":
-                    if(count($args) < 2) {
+                    if(count($args) < 1) {
                         $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /whitelist" . " " . $this->getUsage());
                         return false;
                     } else {

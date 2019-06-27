@@ -44,7 +44,7 @@ class MuteList extends PluginCommand {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Muted Players " . count($list)  . ":");
+                    $sender->sendMessage($this->core->getPrefix() . "Muted Players (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
                 case "ips":
@@ -53,7 +53,7 @@ class MuteList extends PluginCommand {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Muted IPs " . count($list)  . ":");
+                    $sender->sendMessage($this->core->getPrefix() . "Muted IPs (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
             }
