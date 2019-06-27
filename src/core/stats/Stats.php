@@ -316,7 +316,7 @@ class Stats implements Statistics {
         ]);
 		$coreUser = new CoreUser($player->getXuid());
 		$user[$player->getXuid()] = $coreUser;
-		$this->coreUsers[] = $coreUser;
+		$this->coreUsers[] = $user;
     }
 
     public function unregisterCoreUser(CoreUser $user) {

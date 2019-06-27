@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS sentences (
 -- # }
 
 -- # { get
-SELECT xuid, registerDate, type, username, sentencer, reason, expires FROM stats;
+SELECT xuid, registerDate, type, username, sentencer, reason, expires FROM sentences;
 -- # }
 
 -- # { register

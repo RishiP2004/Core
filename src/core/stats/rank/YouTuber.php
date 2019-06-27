@@ -32,7 +32,7 @@ class YouTuber extends Rank {
         return self::STAFF;
     }
 
-    public function getChatTime() : int {
+    public function getChatTime() : float {
         return 0;
     }
 }

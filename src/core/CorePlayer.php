@@ -374,6 +374,12 @@ class CorePlayer extends Player {
 		}
     }
 
+    public function getNameTagFormat() : string {
+    }
+
+    public function getChatFormat(string $message) : string {
+    }
+
     public function getAttachment() : PermissionAttachment {
         return $this->attachments[$this->getName()];
     }

@@ -21,7 +21,7 @@ class Timer implements Networking {
     public function __construct() {
         $this->core = Core::getInstance();
 
-        $this->time = self::INTERVAL * 60;
+        $this->time = self::RESTART * 60;
     }
 
     public function addTime(int $seconds) {
