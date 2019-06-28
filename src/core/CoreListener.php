@@ -99,7 +99,6 @@ use pocketmine\network\mcpe\protocol\{
 };
 
 class CoreListener implements Listener {
-<<<<<<< HEAD
     private $core;
 
     public function __construct(Core $core) {
@@ -479,386 +478,14 @@ class CoreListener implements Listener {
 
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
-			
-=======
-	private $core;
 
-	public function __construct(Core $core) {
-		$this->core = $core;
-	}
-
-	public function onPlayerBedEnter(PlayerBedEnterEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$area = $player->getArea();
-
-			if($area->getName() !== "") {
-				if(!$player->hasPermission("core.world.area.playerbedenter")) {
-					if(!$area->sleep()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Sleep in the Area: " . $area->getName());
-						$event->setCancelled();
-					}
-				}
-			}
-		}
-	}
-
-	public function onPlayerCreation(PlayerCreationEvent $event) {
-		$event->setPlayerClass(CorePlayer::class);
-	}
-
-	public function onPlayerChat(PlayerChatEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$muteList = $this->core->getEssentials()->getNameMutes();
-			$ipMuteList = $this->core->getEssentials()->getIpMutes();
-
-			if($muteList->isBanned($player->getName())) {
-				$entries = $muteList->getEntries();
-				$entry = $entries[strtolower($player->getName())];
-				$reason = $entry->getReason();
-
-				if($entry->getExpires() === null) {
-					if($reason !== null or $reason !== "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted for " . $reason;
-					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted";
-					}
-				} else {
-					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
-
-					if($entry->hasExpired()) {
-						$muteList->remove($entry->getName());
-						return;
-					}
-					if($reason !== null or $reason !== "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted for " . $reason . " until " . $expiry;
-					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted until " . $expiry;
-					}
-				}
-				$event->setCancelled(true);
-				$player->sendMessage($muteMessage);
-			}
-			if($ipMuteList->isBanned($player->getAddress())) {
-				$entries = $ipMuteList->getEntries();
-				$entry = $entries[strtolower($player->getAddress())];
-				$reason = $entry->getReason();
-
-				if($entry->getExpires() === null) {
-					if($reason != null or $reason != "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted for " . $reason;
-					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted";
-					}
-				} else {
-					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
-
-					if($entry->hasExpired()) {
-						$ipMuteList->remove($entry->getName());
-						return;
-					}
-					if($reason !== null or $reason !== "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted for " . $reason . " until " . $expiry;
-					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted until " . $expiry;
-					}
-				}
-				$event->setCancelled(true);
-				$player->sendMessage($muteMessage);
-			}
-			$area = $player->getArea();
-
-			if($area->getName() !== "") {
-				if(!$player->hasPermission("core.world.area.playerchat")) {
-					if(!$area->sendChat()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Chat in the Area: " . $area->getName());
-						$event->setCancelled();
-					}
-				}
-			}
-			$muted = $this->core->getWorld()->muted;
-
-			if(!empty($muted)) {
-				$difference = array_diff($this->core->getServer()->getOnlinePlayers(), $muted);
-
-				if(!in_array($player, $difference)) {
-					$difference[] = $player;
-				}
-				$event->setRecipients($difference);
-			}
-			if(!$player->canChat()) {
-				$event->setCancelled(true);
-				$player->sendMessage($this->core->getErrorPrefix() . "You are currently in Chat cool down. Upgrade your Rank to reduce this cool down!");
-			}
-			$player->setChatTime();
-		}
-	}
-
-	public function onPlayerCommandPreprocess(PlayerCommandPreprocessEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$blockList = $this->core->getEssentials()->getNameBlocks();
-			$ipBlockList = $this->core->getEssentials()->getIpBlocks();
-			$str = str_split($event->getMessage());
-
-			if($str[0] !== "/") {
-				return;
-			}
-			if($blockList->isBanned($player->getName())) {
-				$entries = $blockList->getEntries();
-				$entry = $entries[strtolower($player->getName())];
-				$reason = $entry->getReason();
-
-				if($entry->getExpires() === null) {
-					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked for " . $reason;
-					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked";
-					}
-				} else {
-					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
-
-					if($entry->hasExpired()) {
-						$blockList->remove($entry->getName());
-						return;
-					}
-					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked for " . $reason . " until " . $expiry;
-					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked until " . $expiry;
-					}
-				}
-				$event->setCancelled(true);
-				$player->sendMessage($blockMessage);
-			}
-			if($ipBlockList->isBanned($player->getAddress())) {
-				$entries = $ipBlockList->getEntries();
-				$entry = $entries[strtolower($player->getAddress())];
-				$reason = $entry->getReason();
-
-				if($entry->getExpires() == null) {
-					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked for " . $reason;
-					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked";
-					}
-				} else {
-					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
-
-					if($entry->hasExpired()) {
-						$ipBlockList->remove($entry->getName());
-						return;
-					}
-					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked for " . $reason . " until " . $expiry;
-					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked until " . $expiry;
-					}
-				}
-				$event->setCancelled(true);
-				$player->sendMessage($blockMessage);
-
-				$area = $player->getArea();
-
-				if($area->getName() !== "") {
-					if(!$player->hasPermission("core.world.area.playercommandpreprocess")) {
-						$command = explode(" ", $event->getMessage())[0];
-
-						if(substr($command, 0, 1) === "/") {
-							if(in_array($command, $area->getBlockedCommands())) {
-								$player->sendMessage($this->core->getErrorPrefix() . "You cannot use " . $command . " in the Area: " . $area->getName());
-								$event->setCancelled();
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public function onPlayerDropItem(PlayerDropItemEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$area = $player->getArea();
-
-			if($area->getName() !== "") {
-				if(!$player->hasPermission("core.world.area.playerdropitem")) {
-					if(!$area->itemDrop()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Drop Items in the Area: " . $area->getName());
-						$event->setCancelled();
-					}
-				}
-			}
-		}
-	}
-
-	public function onPlayerDeath(PlayerDeathEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$replaces = ["{PLAYER}" => $player->getName()];
-			$message = "";
-			$cause = $player->getLastDamageCause();
-
-			switch($cause) {
-				case $cause::CAUSE_CONTACT:
-					$stringCause = "contact";
-
-					if($cause instanceof EntityDamageByBlockEvent) {
-						$replaces["{BLOCK}"] = $cause->getDamager()->getName();
-						break;
-					}
-					$replaces["{BLOCK}"] = "unknown";
-				break;
-				case $cause::CAUSE_ENTITY_ATTACK:
-					$stringCause = "kill";
-					$killer = $cause->getEntity();
-
-					if($killer instanceof Living) {
-						$array["{KILLER}"] = $killer->getName();
-						break;
-					}
-					$array["{KILLER}"] = "unknown";
-				break;
-				case $cause::CAUSE_PROJECTILE:
-					$stringCause = "projectile";
-					$killer = $cause->getEntity();
-
-					if($killer instanceof Living) {
-						$array["{KILLER}"] = $killer->getName();
-						break;
-					}
-					$array["{KILLER}"] = "unknown";
-				break;
-				case $cause::CAUSE_SUFFOCATION:
-					$stringCause = "suffocation";
-				break;
-				case $cause::CAUSE_STARVATION:
-					$stringCause = "starvation";
-				break;
-				case $cause::CAUSE_FALL:
-					$stringCause = "fall";
-				break;
-				case $cause::CAUSE_FIRE:
-					$stringCause = "fire";
-				break;
-				case $cause::CAUSE_FIRE_TICK:
-					$stringCause = "on-fire";
-				break;
-				case $cause::CAUSE_LAVA:
-					$stringCause = "lava";
-				break;
-				case $cause::CAUSE_DROWNING:
-					$stringCause = "drowning";
-				break;
-				case $cause::CAUSE_ENTITY_EXPLOSION:
-				case $cause::CAUSE_BLOCK_EXPLOSION:
-					$stringCause = "explosion";
-				break;
-				case $cause::CAUSE_VOID:
-					$stringCause = "void";
-				break;
-				case $cause::CAUSE_SUICIDE:
-					$stringCause = "suicide";
-				break;
-				case $cause::CAUSE_MAGIC:
-					$stringCause = "magic";
-				break;
-				default:
-					$stringCause = "normal";
-				break;
-			}
-			if(!empty($this->core->getBroadcast()->getDeaths($stringCause))) {
-				$message = $this->core->getBroadcast()->getJoins($stringCause);
-
-				foreach($replaces as $key => $value) {
-					$message = str_replace(["{" . $key . "}", "{NAME_TAG_FORMAT}"], [$value, str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())], $message);
-				}
-			}
-			$event->setDeathMessage($message);
-		}
-	}
-
-	public function onPlayerExhaust(PlayerExhaustEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$area = $player->getArea();
-
-			if($area->getName() !== "") {
-				if(!$player->hasPermission("core.world.area.playerexhaust")) {
-					if(!$area->exhaust()) {
-						$event->setCancelled();
-					}
-				}
-			}
-		}
-	}
-
-	public function onPlayerInteract(PlayerInteractEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER)->onRun();
-
-			$area = $player->getArea();
-
-			if($area->getName() !== "") {
-				if(!$player->hasPermission("core.world.area.playerinteract")) {
-					if(!$area->usable()) {
-						if(in_array($event->getBlock()->getId(), Entity::USABLES)) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot Interact with " . $event->getBlock()->getName() . " in the Area: " . $area->getName());
-							$event->setCancelled();
-						}
-					}
-					if(!$area->consume()) {
-						if(in_array($event->getBlock()->getId(), Entity::CONSUMABLES)) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot Use " . $event->getItem()->getName() . " in the Area: " . $area->getName());
-							$event->setCancelled();
-						}
-					}
-					if(!$area->editable()) {
-						if(in_array($event->getBlock()->getId(), Entity::OTHER)) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot Edit the Area: " . $area->getName());
-							$event->setCancelled();
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public function onPlayerItemHeld(PlayerItemHeldEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			if($player->isFishing()) {
-				if($event->getSlot() !== $player->lastHeldSlot) {
-					$player->setFishing(false);
-				}
-			}
-			$player->lastHeldSlot = $event->getSlot();
-		}
-	}
-
-	public function onPlayerJoin(PlayerJoinEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$player->setCore($this->core);
->>>>>>> de8324cdb0112358c544272ef565d26c80210376
 			$this->core->getWorld()->players[$player->getName()] = "";
+
 			$player->updateArea();
 
 			if(!$this->core->getStats()->getCoreUserXuid($player->getXuid())) {
 				$this->core->getStats()->registerCoreUser($player);
 			}
-<<<<<<< HEAD
             if(in_array($player->getLevel(), Messages::WORLDS)) {
                 if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
                     $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$player], str_replace("{PREFIX}", $this->core->getPrefix(), Messages::NOT_REGISTERED_MESSAGE));
@@ -1084,181 +711,6 @@ class CoreListener implements Listener {
                         }
                     }
                 }
-=======
-			if(in_array($player->getLevel(), Messages::WORLDS)) {
-				if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
-					$this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$player], str_replace("{PREFIX}", $this->core->getPrefix(), Messages::NOT_REGISTERED_MESSAGE));
-				} else {
-					$player->sendBossBar($this->core->getBroadcast()->getBossBar()->entityRuntimeId, $player->getBossBarText());
-				}
-			}
-			$message = "";
-
-			if(!$player->hasPlayedBefore()) {
-				if(!empty(Broadcasts::JOINS["first"])) {
-					$message = str_replace(["{PLAYER}", "{TIME}", "{NAME_TAG_FORMAT}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time")), str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())], $this->core->getBroadcast()->getJoins("first"));
-				}
-			}
-			if($player->hasPermission("core.stats.join")) {
-				if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
-					$message = str_replace(["{PLAYER}", "{TIME}", "{NAME_TAG_FORMAT}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time")), str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())], $this->core->getBroadcast()->getJoins("normal"));
-				}
-			}
-			$event->setJoinMessage($message);
-			$player->join();
-		}
-	}
-
-	public function onPlayerLogin(PlayerLoginEvent $event) {
-		if($event->getPlayer() instanceof CorePlayer) {
-			$event->getPlayer()->setSkin($this->core->getStats()->getStrippedSkin($event->getPlayer()->getSkin()));
-		}
-	}
-
-	public function onPlayerMove(PlayerMoveEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$player->rotateNPCs();
-
-			if(!$event->getFrom()->equals($event->getTo())) {
-				if($player->updateArea()) {
-					$player->setMotion($event->getFrom()->subtract($player->getLocation()->normalize()->multiply(4)));
-				}
-			}
-			if($player->getArea()->getName() === "Lobby" && $event->getTo()->getFloorY() < 0) {
-				$player->teleport($player->getLevel()->getSafeSpawn());
-			}
-		}
-	}
-
-	public function onPlayerPreLogin(PlayerPreLoginEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$banList = $this->core->getEssentials()->getNameBans();
-			$ipBanList = $this->core->getEssentials()->getIpBans();
-
-			if($banList->isBanned($player->getName())) {
-				$entries = $banList->getEntries();
-				$entry = $entries[strtolower($player->getName())];
-
-				if($entry->getExpires() === null) {
-					$reason = $entry->getReason();
-
-					if($reason !== null or $reason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned for " . $reason;
-					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned";
-					}
-				} else {
-					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
-
-					if($entry->hasExpired()) {
-						$banList->remove($entry->getName());
-						return;
-					}
-					$banReason = $entry->getReason();
-
-					if($banReason !== null || $banReason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned for " . $banReason . " until " . $expiry;
-					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned until " . $expiry;
-					}
-				}
-				$event->setCancelled(true);
-				$player->sendMessage($banMessage);
-			}
-			if($ipBanList->isBanned($player->getName())) {
-				$entries = $ipBanList->getEntries();
-				$entry = $entries[strtolower($player->getName())];
-
-				if($entry->getExpires() === null) {
-					$reason = $entry->getReason();
-
-					if($reason !== null or $reason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned for " . $reason;
-					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned";
-					}
-				} else {
-					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
-
-					if($entry->hasExpired()) {
-						$ipBanList->remove($entry->getName());
-						return;
-					}
-					$banReason = $entry->getReason();
-
-					if($banReason !== null || $banReason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned for " . $banReason . " until " . $expiry;
-					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned until " . $expiry;
-					}
-				}
-				$event->setCancelled(true);
-				$player->sendMessage($banMessage);
-			}
-			if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
-				$server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
-
-				if(!$server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-					if(!empty($this->core->getBroadcast()->getKicks("whitelisted"))) {
-						$message = str_replace(["{PLAYER}", "{TIME}", "{ONLINE_PLAYERS}", "{MAX_PLAYERS}", "{PREFIX}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time")), count($this->core->getServer()->getOnlinePlayers()), $this->core->getServer()->getMaxPlayers(), $this->core->getPrefix()], $this->core->getBroadcast()->getKicks("whitelisted"));
-
-						$player->close($message);
-						$event->setCancelled();
-					}
-				}
-			} else {
-				if(!empty($this->core->getBroadcast()->getKicks("full"))) {
-					$message = str_replace(["{PLAYER}", "{TIME}", "{ONLINE_PLAYERS}", "{MAX_PLAYERS}", "{PREFIX}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time")), count($this->core->getServer()->getOnlinePlayers()), $this->core->getServer()->getMaxPlayers(), $this->core->getPrefix()], $this->core->getBroadcast()->getKicks("full"));
-
-					$player->close($message);
-					$event->setCancelled();
-				}
-			}
-		}
-	}
-
-	public function onPlayerQuit(PlayerQuitEvent $event) {
-		$player = $event->getPlayer();
-
-		if($player instanceof CorePlayer) {
-			$this->core->getMCPE()->getScoreboardManager()->removePotentialViewer($player->getName());
-			$message = "";
-
-			if($player->hasPermission("core.stats.quit")) {
-				if(!empty($this->core->getBroadcast()->getQuits("normal"))) {
-					$message = str_replace(["{PLAYER}", "{TIME}", "{NAME_TAG_FORMAT}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time")), str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())], $this->core->getBroadcast()->getQuits("normal"));
-				}
-			}
-			$event->setQuitMessage($message);
-			$player->leave();
-		}
-	}
-
-	public function onEntityDamage(EntityDamageEvent $event) {
-		$entity = $event->getEntity();
-
-		if($event->isCancelled()) {
-			return;
-		}
-		if($entity instanceof CorePlayer) {
-			$player = $entity;
-
-			if($event instanceof EntityDamageByEntityEvent) {
-				$area = $player->getArea();
-
-				if($area->getName() !== "") {
-					if(!$player->hasPermission("core.world.area.entitydamage")) {
-						if(!$area->pvp()) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot PvP in the Area: " . $area->getName());
-							$event->setCancelled();
-						}
-					}
-				}
->>>>>>> de8324cdb0112358c544272ef565d26c80210376
 				$damager = $event->getDamager();
 
 				if(!$damager instanceof Entity or !$damager->isAlive()) {
@@ -1317,7 +769,6 @@ class CoreListener implements Listener {
 		}
 	}
 
-<<<<<<< HEAD
     public function onEntityLevelChange(EntityLevelChangeEvent $event) {
         $entity = $event->getEntity();
 
@@ -1367,51 +818,6 @@ class CoreListener implements Listener {
         }
     }
 
-    public function onEntitySpawn(EntitySpawnEvent $event) {
-    	$entity = $event->getEntity();
-    	$data = $this->core->getAntiCheat();
-
-    	if($entity instanceof Human) {
-    		return;
-=======
-	public function onEntityLevelChange(EntityLevelChangeEvent $event) {
-		$entity = $event->getEntity();
-
-		if($entity instanceof CorePlayer) {
-			if(!in_array($event->getTarget(), $this->core->getBroadcast()->getBossBar()->getWorlds())) {
-				$this->core->getBroadcast()->getBossBar()->remove([$entity], $this->core->getBroadcast()->getBossBar()->entityRuntimeId);
-			}
-			if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
-				$this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$entity], str_replace("{PREFIX}", $this->core->getPrefix(), $this->core->getBroadcast()->getBossBar()->getNotRegisteredMessage()));
-			} else {
-				$entity->sendBossBar($this->core->getBroadcast()->getBossBar()->entityRuntimeId, $entity->getBossBarText());
-			}
-			$origin = $event->getOrigin();
-			$target = $event->getTarget();
-
-			if(!empty($this->core->getBroadcast()->getDimensions("change"))) {
-				$message = str_replace(["{PLAYER}", "{TIME}", "{ORIGIN}", "{TARGET}", "{NAME_TAG_FORMAT}"], [$entity->getName(), date($this->core->getBroadcast()->getFormats("date_time")), $origin->getName(), $target->getName(), str_replace("{DISPLAY_NAME}", $entity->getName(), $entity->getCoreUser()->getRank()->getNameTagFormat())], $this->core->getBroadcast()->getDimensions("change"));
-
-				$this->core->getServer()->broadcastMessage($message);
-			}
-			$entity->checkNPCLevelChange($event->getTarget());
-			$entity->checkFloatingTextsLevelChange($event->getTarget());
-		}
-	}
-
-	public function onEntityExplode(EntityExplodeEvent $event) {
-		foreach($event->getBlockList() as $block) {
-			$area = $this->core->getWorld()->getAreaFromPosition($block);
-
-			if($area->getName() !== "") {
-				if(!$area->explosion()) {
-					$event->setCancelled();
-				}
-			}
->>>>>>> de8324cdb0112358c544272ef565d26c80210376
-		}
-	}
-
 	public function onEntitySpawn(EntitySpawnEvent $event) {
 		$entity = $event->getEntity();
 		$data = $this->core->getAntiCheat();
@@ -1453,12 +859,8 @@ class CoreListener implements Listener {
 			return;
 		}
 		$area = $this->core->getWorld()->getAreaFromPosition($entity);
-<<<<<<< HEAD
-
+		
 		if(!is_null($area)) {
-=======
-		if($area->getName() !== "") {
->>>>>>> de8324cdb0112358c544272ef565d26c80210376
 			if(!$area->entitySpawn()) {
 				$event->setCancelled();
 			}
@@ -1476,7 +878,7 @@ class CoreListener implements Listener {
 			}
 			$area = $this->core->getWorld()->getAreaFromPosition($entity);
 
-			if($area->getName() !== "") {
+			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.projectilelaunch")) {
 					if(!$area->enderPearl()) {
 						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Enderpearl in the Area: " . $area->getName());
@@ -1487,42 +889,12 @@ class CoreListener implements Listener {
 		}
 	}
 
-<<<<<<< HEAD
-    public function onProjectileLaunch(ProjectileLaunchEvent $event) {
-        $entity = $event->getEntity();
-        $player = $entity->shootingEntity;
-
-        if($player instanceof CorePlayer) {
-            if($entity::NETWORK_ID !== 87) {
-                return;
-            }
-            $area = $this->core->getWorld()->getAreaFromPosition($entity);
-
-            if(!is_null($area)) {
-                if(!$player->hasPermission("core.world.area.projectilelaunch")) {
-                    if(!$area->enderPearl()) {
-                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Enderpearl in the Area: " . $area->getName());
-                        $event->setCancelled();
-                    }
-                }
-            }
-        }
-    }
-
-    public function onDataPacketReceive(DataPacketReceiveEvent $event) {
-        $player = $event->getPlayer();
-        $pk = $event->getPacket();
-
-        if($player instanceof CorePlayer) {
-        	switch(true) {
-=======
 	public function onDataPacketReceive(DataPacketReceiveEvent $event) {
 		$player = $event->getPlayer();
 		$pk = $event->getPacket();
 
 		if($player instanceof CorePlayer) {
 			switch(true) {
->>>>>>> de8324cdb0112358c544272ef565d26c80210376
 				case $pk instanceof ServerSettingsRequestPacket:
 					$ev = new ServerSettingsRequestEvent($player);
 
@@ -1606,114 +978,13 @@ class CoreListener implements Listener {
 		}
 	}
 
-<<<<<<< HEAD
-    public function onBlockBreak(BlockBreakEvent $event) {
-        $player = $event->getPlayer();
-
-        if($player instanceof CorePlayer) {
-            $area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
-
-            if(!is_null($area)) {
-                if(!$player->hasPermission("core.world.area.blockbreak")) {
-                    if(!$area->editable()) {
-                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Break Blocks in the Area: " . $area->getName());
-                        $event->setCancelled();
-                    }
-                }
-            }
-        }
-    }
-
-    public function onBlockPlace(BlockPlaceEvent $event) {
-        $player = $event->getPlayer();
-
-        if($player instanceof CorePlayer) {
-            $area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
-
-            if(!is_null($area)) {
-                if(!$player->hasPermission("core.world.area.blockplace")) {
-                    if(!$area->editable()) {
-                        $player->sendMessage($this->core->getErrorPrefix() . "You cannot Place Blocks in the Area: " . $area->getName());
-                        $event->setCancelled();
-                    }
-                }
-            }
-        }
-    }
-
-    public function onInventoryPickupArrow(InventoryPickupArrowEvent $event) {
-        $viewer = $event->getViewers();
-
-        if($viewer instanceof CorePlayer) {
-            $area = $viewer->getArea();
-
-            if(!is_null($area)) {
-                if(!$viewer->hasPermission("core.world.area.inventorypickuparrow")) {
-                    if(!$area->itemPickup()) {
-                        $viewer->sendMessage($this->core->getErrorPrefix() . "You cannot Pickup Items in the Area: " . $area->getName());
-                        $event->setCancelled();
-                    }
-                }
-            }
-        }
-    }
-
-    public function onInventoryPickupItem(InventoryPickupItemEvent $event) {
-        $viewer = $event->getViewers();
-
-        if($viewer instanceof CorePlayer) {
-            $area = $viewer->getArea();
-
-            if(!is_null($area)) {
-                if(!$viewer->hasPermission("core.world.area.inventorypickupitem")) {
-                    if(!$area->itemPickup()) {
-                        $viewer->sendMessage($this->core->getErrorPrefix() . "You cannot Pickup Items in the Area: " . $area->getName());
-                        $event->setCancelled();
-                    }
-                }
-            }
-        }
-    }
-
-    public function onInventoryTransaction(InventoryTransactionEvent $event) {
-        $actions = $event->getTransaction()->getActions();
-        $source = $event->getTransaction()->getSource();
-
-        if($source instanceof CorePlayer) {
-            $area = $source->getArea();
-
-			if(!is_null($area)) {
-                if(!$source->hasPermission("core.world.area.inventorytransaction")) {
-                    if(!$area->inventoryTransaction()) {
-                        foreach($actions as $action) {
-                            if($action instanceof SlotChangeAction) {
-                                $inventory = $action->getInventory();
-
-                                if($inventory instanceof PlayerInventory or $inventory instanceof PlayerCursorInventory) {
-                                    $source->sendMessage($this->core->getErrorPrefix() . "You cannot do Transactions in your Inventory in the Area: " . $area->getName());
-                                    $event->setCancelled();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public function onChunkLoad(ChunkLoadEvent $event) {
-        $chunk = $event->getChunk();
-        $level = $event->getLevel();
-        $packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
-        $lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
-=======
 	public function onBlockBreak(BlockBreakEvent $event) {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
 			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
 
-			if($area->getName() !== "") {
+			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.blockbreak")) {
 					if(!$area->editable()) {
 						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Break Blocks in the Area: " . $area->getName());
@@ -1730,7 +1001,7 @@ class CoreListener implements Listener {
 		if($player instanceof CorePlayer) {
 			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
 
-			if($area->getName() !== "") {
+			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.blockplace")) {
 					if(!$area->editable()) {
 						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Place Blocks in the Area: " . $area->getName());
@@ -1764,7 +1035,7 @@ class CoreListener implements Listener {
 		if($viewer instanceof CorePlayer) {
 			$area = $viewer->getArea();
 
-			if($area->getName() !== "") {
+			if(!is_null($area)) {
 				if(!$viewer->hasPermission("core.world.area.inventorypickupitem")) {
 					if(!$area->itemPickup()) {
 						$viewer->sendMessage($this->core->getErrorPrefix() . "You cannot Pickup Items in the Area: " . $area->getName());
@@ -1774,7 +1045,6 @@ class CoreListener implements Listener {
 			}
 		}
 	}
->>>>>>> de8324cdb0112358c544272ef565d26c80210376
 
 	public function onInventoryTransaction(InventoryTransactionEvent $event) {
 		$actions = $event->getTransaction()->getActions();
@@ -1783,7 +1053,7 @@ class CoreListener implements Listener {
 		if($source instanceof CorePlayer) {
 			$area = $source->getArea();
 
-			if($area->getName() !== "") {
+			if(!is_null($area)) {
 				if(!$source->hasPermission("core.world.area.inventorytransaction")) {
 					if(!$area->inventoryTransaction()) {
 						foreach($actions as $action) {
