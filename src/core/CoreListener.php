@@ -504,7 +504,7 @@ class CoreListener implements Listener {
                     ], [
                         $player->getName(),
                         date($this->core->getBroadcast()->getFormats("date_time")),
-                        str_replace("{DISPLAY_NAME}", $player->getName(), $player->getNameTagFormat())
+                        str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())
                     ], $this->core->getBroadcast()->getJoins("first"));
                 }
             }
@@ -518,7 +518,7 @@ class CoreListener implements Listener {
                         $player->getName(),
                         date($this->core->getBroadcast()->getFormats("date_time")),
 
-                        str_replace("{DISPLAY_NAME}", $player->getName(), $player->getNameTagFormat())
+                        str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())
                     ], $this->core->getBroadcast()->getJoins("normal"));
                 }
             }

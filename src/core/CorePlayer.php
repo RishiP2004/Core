@@ -103,7 +103,7 @@ class CorePlayer extends Player {
     }
 
     public function join() {
-        $this->setNameTag($this->getNameTagFormat());
+        $this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
         $this->attach();
         $this->updatePermissions();
 		$this->spawnNPCs();
@@ -372,14 +372,6 @@ class CorePlayer extends Player {
 				$this->fishingHook = null;
 			}
 		}
-    }
-
-    public function getNameTagFormat() : string {
-		return "";
-    }
-
-    public function getChatFormat(string $message) : string {
-		return "";
     }
 
     public function getAttachment() : PermissionAttachment {
