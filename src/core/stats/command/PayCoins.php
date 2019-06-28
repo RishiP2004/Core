@@ -60,7 +60,7 @@ class PayCoins extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have enough Coins");
             return false;
         } else {
-            $user->setCoins($user->getCoins() + $args[1]);
+            $user->setCoins($user->getCoins() + (int) $args[1]);
             $sender->getCoreUser()->setCoins($sender->getCoreUser()->getCoins() - $args[1]);
 
             $player = $this->core->getServer()->getPlayer($user->getName());

@@ -31,8 +31,6 @@ class CoreUser {
 
     public function __construct(string $xuid) {
         $this->xuid = $xuid;
-
-        $this->save();
     }
 
     public function load(array $data) {
@@ -55,10 +53,16 @@ class CoreUser {
 			$this->coins = $coins;
 			$this->balance = $balance;
 			$this->rank = Core::getInstance()->getStats()->getRank($rank);
-			$this->permissions = unserialize($permissions);
-			$this->cheatHistory = unserialize($cheatHistory);
-			$this->server = Core::getInstance()->getNetwork()->getServer($server);
+			$this->permissions = [];
+			$this->cheatHistory = [];
+			$this->server = null;
+			
+			if(!is_null($permissions) && !is_null($cheatHistory)) {
+				$this->permissions = unserialize($permissions);
+				$this->cheatHistory = unserialize($cheatHistory);
+			}
 		}
+		$this->save();
     }
 
     public function getXuid() : string {
@@ -172,7 +176,7 @@ class CoreUser {
 
 	public function getServer() : ?Server {
     	if(is_null($this->server)) {
-    		return Core::getInstance()->getNetwork()->getServer("Lobby");
+    		return null;
 		}
 		return $this->server;
 	}
@@ -187,6 +191,11 @@ class CoreUser {
     }
 
     public function save() {
+		if(is_null($this->getServer())) {
+			$server = null;
+		} else {
+			$server = $this->getServer()->getName();
+		}
 		Core::getInstance()->getDatabase()->executeChange("stats.update", [
 		    "username" => $this->getName(),
             "ip" => $this->getIp(),
@@ -196,7 +205,7 @@ class CoreUser {
             "rank" => $this->getRank()->getName(),
             "permissions" => serialize($this->getPermissions()),
             "cheatHistory" => serialize($this->getCheatHistory()),
-            "server" => $this->getServer()->getName(),
+            "server" => $server,
 			"xuid" => $this->getXuid()
         ]);
     }

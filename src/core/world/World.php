@@ -51,7 +51,7 @@ class World {
 
     public function getAreaFromPosition(Position $position) : ?Area {
         foreach($this->getAreas() as $name => $area) {
-            if($area->getPosition1()->getLevel()->getName() === $position->getLevel()->getName()) {
+            if($area->getPosition1()->getLevel() === $position->getLevel()) {
                 $area1 = $area->getPosition1();
                 $area2 = $area->getPosition2();
                 $x = array_flip(range($area1->getX(), $area2->getX()));

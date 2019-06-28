@@ -8,6 +8,7 @@ use core\Core;
 
 use core\essentials\command\{
     AFK,
+	Chat,
     ClearInventory,
     Compass,
     Fly,
@@ -84,6 +85,7 @@ class Essentials {
         $this->core->getDatabase()->executeGeneric("sentences.init");
 
         $this->core->getServer()->getCommandMap()->register(AFK::class, new AFK($this->core));
+		$this->core->getServer()->getCommandMap()->register(Chat::class, new Chat($this->core));
         $this->core->getServer()->getCommandMap()->register(ClearInventory::class, new ClearInventory($this->core));
         $this->core->getServer()->getCommandMap()->register(Compass::class, new Compass($this->core));
         $this->core->getServer()->getCommandMap()->register(Fly::class, new Fly($this->core));

@@ -53,7 +53,7 @@ class SetBalance extends PluginCommand {
 			$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " will have over the Maximum amount of Balance");
 			return false;
 		} else {
-			$user->setBalance($args[1]);
+			$user->setBalance((int) $args[1]);
 
 			$player = $this->core->getServer()->getPlayer($user->getName());
 

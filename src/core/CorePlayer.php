@@ -99,7 +99,7 @@ class CorePlayer extends Player {
     }
 
     public function getCoreUser() : CoreUser {
-        return $this->core->getStats()->getCoreUser($this->getName()) ?? $this->core->getStats()->getCoreUserXuid($this->getXuid());
+        return $this->core->getStats()->getCoreUserXuid($this->getXuid()) ?? $this->core->getStats()->getCoreUser($this->getName());
     }
 
     public function join() {
@@ -375,9 +375,11 @@ class CorePlayer extends Player {
     }
 
     public function getNameTagFormat() : string {
+		return "";
     }
 
     public function getChatFormat(string $message) : string {
+		return "";
     }
 
     public function getAttachment() : PermissionAttachment {
@@ -657,13 +659,16 @@ class CorePlayer extends Player {
 
     public function updateArea() : bool {
         $oldArea = $this->core->getWorld()->players[$this->getName()];
+		$newArea = $this->core->getWorld()->getAreaFromPosition($this->getPosition());
+		
+		if(!is_null($newArea)) {
+			if($newArea->getName() !== $oldArea) {
+				$this->core->getWorld()->players[$this->getName()] = $newArea;
 
-        if(($newArea = $this->core->getWorld()->getAreaFromPosition($this->getPosition())->getName()) !== $oldArea) {
-            $this->core->getWorld()->players[$this->getName()] = $newArea;
-
-            return $this->areaChange($oldArea, $newArea);
-        }
-        return true;
+				return $this->areaChange($oldArea, $newArea);
+			}
+		}
+        return false;
     }
 
     public function areaChange(string $oldArea, string $newArea) : bool {

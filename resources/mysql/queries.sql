@@ -10,10 +10,10 @@ CREATE TABLE IF NOT EXISTS stats (
     locale VARCHAR(6) DEFAULT 'en_us',
 	  coins BIGINT DEFAULT 0,
 	  balance BIGINT DEFAULT 0,
-    rank VARCHAR(16),
+    rank VARCHAR(16) DEFAULT 'Player',
     permissions TEXT,
     cheatHistory TEXT,
-		server VARCHAR(32)
+		server VARCHAR(32) DEFAULT NULL
 )
 -- # }
 
@@ -51,7 +51,7 @@ INSERT INTO stats (
 -- #    :rank string
 -- #    :permissions string
 -- #    :cheatHistory string
--- #    :server string
+-- #    :server string | null
 -- #    :xuid string
 UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, balance = :balance, rank = :rank, permissions = :permissions, cheatHistory = :cheatHistory, server = :server WHERE xuid = :xuid;
 -- # }

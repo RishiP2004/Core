@@ -61,7 +61,7 @@ class PayBalance extends PluginCommand {
 			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have enough Balance");
 			return false;
 		} else {
-			$user->setBalance($user->getBalance() + $args[1]);
+			$user->setBalance($user->getBalance() + (int) $args[1]);
 			$sender->getCoreUser()->setBalance($sender->getCoreUser()->getBalance() - $args[1]);
 
 			$player = $this->core->getServer()->getPlayer($user->getName());

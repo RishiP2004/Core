@@ -118,6 +118,8 @@ class MCPE implements Addon {
     public static $endName = "ender";
     /** @var Level */
     public static $endLevel;
+
+    public static $loaded = false;
 	
     public function __construct(Core $core) {
         $this->core = $core;
@@ -205,7 +207,10 @@ class MCPE implements Addon {
         Tile::registerTile(MobSpawner::class);
         Tile::registerTile(ShulkerboxTile::class);
 
-		GeneratorManager::addGenerator(Ender::class, "ender");
+        if(!self::$loaded) {
+        	self::$loaded = true;
+			GeneratorManager::addGenerator(Ender::class, "ender");
+		}
 
         if(!$this->core->getServer()->loadLevel(self::$netherName)) {
             $this->core->getServer()->generateLevel(self::$netherName, time(), GeneratorManager::getGenerator("nether"));

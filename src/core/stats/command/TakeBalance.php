@@ -53,7 +53,7 @@ class TakeBalance extends PluginCommand {
 			$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " will have less than 0 Balance");
 			return false;
 		} else {
-			$user->setBalance($user->getBalance() - $args[1]);
+			$user->setBalance($user->getBalance() - (int) $args[1]);
 
 			$player = $this->core->getServer()->getPlayer($user->getName());
 

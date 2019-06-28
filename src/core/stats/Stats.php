@@ -290,18 +290,22 @@ class Stats implements Statistics {
 
     public function getCoreUser(string $name) : ?CoreUser {
         foreach($this->getCoreUsers() as $coreUser) {
-            if($coreUser->getName() === $name) {
-                return $coreUser;
-            }
+			if($coreUser instanceof CoreUser) {
+				if($coreUser->getName() === $name) {
+					return $coreUser;
+				}
+			}
         }
         return null;
     }
 
     public function getCoreUserXuid(string $xuid) : ?CoreUser {
         foreach($this->getCoreUsers() as $coreUser) {
-            if($coreUser->getXuid() === $xuid) {
-                return $coreUser;
-            }
+			if($coreUser instanceof CoreUser) {
+				if($coreUser->getXuid() === $xuid) {
+					return $coreUser;
+				}
+			}
         }
         return null;
     }
@@ -325,6 +329,14 @@ class Stats implements Statistics {
         ]);
         unset($this->coreUsers[$user->getXuid()]);
     }
+	
+	public function saveUsers() {
+		foreach($this->getCoreUsers() as $coreUser) {
+			if($coreUser instanceof CoreUser) {
+				$coreUser->save();
+			}
+		}
+	}
 
     public function scheduleAFKSetter() {
         if($this->getAFKAutoSet() > 0) {

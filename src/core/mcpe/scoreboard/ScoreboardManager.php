@@ -78,10 +78,12 @@ class ScoreboardManager {
 	}
 
 	public function removePotentialViewer(string $playerName) : void {
-		foreach($this->viewers as $name => $data) {
-			if(in_array($playerName, $data)) {
-				if(($key = array_search($playerName, $data)) !== false) {
-					unset($this->viewers[$name][$key]);
+		if(!empty($this->viewers)) {
+			foreach($this->viewers as $name => $data) {
+				if(in_array($playerName, $data)) {
+					if(($key = array_search($playerName, $data)) !== false) {
+						unset($this->viewers[$name][$key]);
+					}
 				}
 			}
 		}

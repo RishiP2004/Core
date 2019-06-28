@@ -52,7 +52,7 @@ class GiveCoins extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " will have over the Maximum amount of Coins");
             return false;
         } else {
-            $user->setCoins($user->getCoins() - $args[1]);
+            $user->setCoins($user->getCoins() - (int) $args[1]);
 
             $player = $this->core->getServer()->getPlayer($user->getName());
 		
