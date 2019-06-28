@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace core\network;
 
 interface Networking {
-	const RESTART = 150;
-	const SERVER_BACKUP = 3;
+	const RESTART = 240;
+	const SERVER_SAVE = 120;
 	const COUNTDOWN_START = 10;
 	const BROADCAST_INTERVAL = 20;
 

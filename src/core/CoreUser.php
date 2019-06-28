@@ -62,7 +62,6 @@ class CoreUser {
 				$this->cheatHistory = unserialize($cheatHistory);
 			}
 		}
-		$this->save();
     }
 
     public function getXuid() : string {

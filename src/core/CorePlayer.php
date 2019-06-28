@@ -660,7 +660,7 @@ class CorePlayer extends Player {
 		$newArea = $this->core->getWorld()->getAreaFromPosition($this->getPosition());
 		
 		if(!is_null($newArea)) {
-			if($newArea->getName() !== $oldArea) {
+			if($newArea !== $oldArea) {
 				$this->core->getWorld()->players[$this->getName()] = $newArea;
 
 				return $this->areaChange($oldArea, $newArea);
@@ -669,10 +669,8 @@ class CorePlayer extends Player {
         return false;
     }
 
-    public function areaChange(string $oldArea, string $newArea) : bool {
-        if($oldArea !== "") {
-            $oldArea = $this->core->getWorld()->getArea($oldArea);
-
+    public function areaChange(Area $oldArea, Area $newArea) : bool {
+        if(is_null($oldArea)) {
             if($oldArea->allowedLeave()) {
                 $this->sendMessage($this->core->getErrorPrefix() . "You cannot leave this area");
                 return false;
@@ -715,9 +713,7 @@ class CorePlayer extends Player {
                 }
             }
         }
-        if($newArea !== "") {
-            $newArea = $this->core->getWorld()->getArea($newArea);
-
+        if(is_null($newArea)) {
             if(!$newArea->allowedEnter()) {
                 $this->sendMessage($this->core->getErrorPrefix() . "You cannot enter this area");
                 return false;

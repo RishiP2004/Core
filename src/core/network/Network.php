@@ -49,8 +49,8 @@ class Network implements Networking {
     	return self::RESTART;
 	}
 
-	public function getServerBackup() : int {
-		return self::SERVER_BACKUP;
+	public function getServerSave() : int {
+		return self::SERVER_SAVE;
 	}
 
 	public function getCountdownStart() : int {
@@ -94,11 +94,12 @@ class Network implements Networking {
 				}
 			}
 		}
-		if(is_int($this->getServerBackup())) {
-			if($this->runs === $this->getServerBackup() * 60 * 60) {
+		if(is_int($this->getServerSave())) {
+			if($this->runs === $this->getServerSave() * 60) {
 				$backThread = new BackThread();
 
 				$backThread->run();
+				$this->core->getStats()->saveUsers();
 			}
 		}
 		if($this->restartOnOverload()) {

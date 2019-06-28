@@ -327,7 +327,7 @@ class Entity extends \pocketmine\entity\Entity {
         ];
     }
 
-    public static function getParticle(string $name, ?int $data = null) : ?Particle{
+    public static function getParticle(string $name, ?int $data = null) : ?Particle {
         switch($name){
             case "explode":
                 return new ExplodeParticle();

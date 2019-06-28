@@ -34,7 +34,6 @@ use pocketmine\event\player\{
 	PlayerDeathEvent,
 	PlayerExhaustEvent,
 	PlayerInteractEvent,
-	PlayerItemHeldEvent,
 	PlayerJoinEvent,
 	PlayerLoginEvent,
 	PlayerMoveEvent,
@@ -85,8 +84,6 @@ use pocketmine\inventory\{
 	PlayerCursorInventory
 };
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-
-use pocketmine\item\enchantment\Enchantment;
 
 use pocketmine\network\mcpe\protocol\{
 	LoginPacket,
@@ -430,7 +427,7 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
-            $this->core->getAntiCheat()->getCheat("autoClicker")->onRun();
+            $this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER)->onRun();
 
             $area = $player->getArea();
 
@@ -456,20 +453,6 @@ class CoreListener implements Listener {
                     }
                 }
             }
-        }
-    }
-
-    public function onPlayerItemHeld(PlayerItemHeldEvent $event) {
-        $player = $event->getPlayer();
-
-        if($player instanceof CorePlayer) {
-
-            if($player->isFishing()) {
-                if($event->getSlot() !== $player->lastHeldSlot) {
-                    $player->setFishing(false);
-                }
-            }
-            $player->lastHeldSlot = $event->getSlot();
         }
     }
 
@@ -707,30 +690,6 @@ class CoreListener implements Listener {
                         }
                     }
                 }
-				$damager = $event->getDamager();
-
-				if(!$damager instanceof Entity or !$damager->isAlive()) {
-					return;
-				}
-				if($damager instanceof CorePlayer && $player instanceof Living) {
-					$itemInHand = $damager->getInventory()->getItemInHand();
-					$damage = $event->getModifier(EntityDamageEvent::MODIFIER_ARMOR);
-
-					foreach($itemInHand->getEnchantments() as $enchantment) {
-						$level = $enchantment->getLevel();
-
-						switch($enchantment->getId()) {
-							case Enchantment::BANE_OF_ARTHROPODS:
-								if(in_array(strtolower($player->getName()), array_map("strtolower", self::BANE_OF_ARTHROPODS_AFFECTED_ENTITIES))) {
-									$event->setModifier($damage + ($level * 2.5), EntityDamageEvent::MODIFIER_ARMOR);
-								}
-							break;
-							case Enchantment::SMITE:
-								$event->setModifier($damage + ($level * 2.5), EntityDamageEvent::MODIFIER_ARMOR);
-							break;
-						}
-					}
-				}
 			}
 			if($event->getCause() === EntityDamageEvent::CAUSE_FALL) {
 				if($event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === SlimeBlock::class) {
