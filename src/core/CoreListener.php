@@ -479,10 +479,6 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
 
-			$this->core->getWorld()->players[$player->getName()] = "";
-
-			$player->updateArea();
-
 			if(!$this->core->getStats()->getCoreUserXuid($player->getXuid())) {
 				$this->core->getStats()->registerCoreUser($player);
 			}

@@ -108,15 +108,21 @@ class CorePlayer extends Player {
         $this->updatePermissions();
 		$this->spawnNPCs();
         $this->spawnFloatingTexts();
-        $this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp()));
-        $this->core->getScheduler()->scheduleDelayedTask(new PlayerJoin($this->core, $this), 20);
+
+		$this->core->getWorld()->players[$this->getName()] = "";
+
+        $this->updateArea();
 
 		foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
 			$cheat->set($this);
 		}
+        $this->core->getScheduler()->scheduleDelayedTask(new PlayerJoin($this->core, $this), 20);
+
 		if($this->core->getStats()->getCoreUserXuid($this->getXuid())->getName() !== $this->getName()) {
 			$this->getCoreUser()->setName($this->getName());
 		}
+		$this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp()));
+		$this->getCoreUser()->save();
     }
 
     public function leave() {
