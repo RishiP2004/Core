@@ -462,49 +462,45 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
 
-			$this->core->getStats()->getCoreUser($args[0], function($user) use($player) {
+			$this->core->getStats()->getCoreUser($player->getXuid(), function($user) use($player, $event) {
+				$message = "";
+				
 				if(is_null($user)) {
-					$this->core->getStats()->registerCoreUser($player);
+					$this->core->getStats()->registerCoreUser($player);		
+
+					if(!$player->hasPlayedBefore()) {
+						if(!empty(Broadcasts::JOINS["first"])) {
+							$message = str_replace([
+								"{PLAYER}",
+								"{TIME}",
+								"{NAME_TAG_FORMAT}"
+							], [
+								$player->getName(),
+								date($this->core->getBroadcast()->getFormats("date_time")),
+								str_replace("{DISPLAY_NAME}", $player->getName(), $user->getRank()->getNameTagFormat())
+							], $this->core->getBroadcast()->getJoins("first"));
+						}
+					}					
+				} else {
+					if($user->loaded()) {
+						if($player->hasPermission("core.stats.join")) {
+							if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
+								$message = str_replace([
+									"{PLAYER}",
+									"{TIME}",
+									"{NAME_TAG_FORMAT}"
+								], [
+									$player->getName(),
+									date($this->core->getBroadcast()->getFormats("date_time")),
+									str_replace("{DISPLAY_NAME}", $player->getName(), $user->getRank()->getNameTagFormat())
+								], $this->core->getBroadcast()->getJoins("normal"));
+							}
+						}
+						$player->join();
+					}
 				}
-			});
-            if(in_array($player->getLevel(), Messages::WORLDS)) {
-                if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
-                    $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$player], str_replace("{PREFIX}", $this->core->getPrefix(), Messages::NOT_REGISTERED_MESSAGE));
-                } else {
-                    $player->sendBossBar($this->core->getBroadcast()->getBossBar()->entityRuntimeId, $player->getBossBarText());
-                }
-            }
-            $message = "";
-
-            if(!$player->hasPlayedBefore()) {
-                if(!empty(Broadcasts::JOINS["first"])) {
-                    $message = str_replace([
-                        "{PLAYER}",
-                        "{TIME}",
-                        "{NAME_TAG_FORMAT}"
-                    ], [
-                        $player->getName(),
-                        date($this->core->getBroadcast()->getFormats("date_time")),
-                        str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())
-                    ], $this->core->getBroadcast()->getJoins("first"));
-                }
-            }
-            if($player->hasPermission("core.stats.join")) {
-                if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
-                    $message = str_replace([
-                        "{PLAYER}",
-                        "{TIME}",
-                        "{NAME_TAG_FORMAT}"
-                    ], [
-                        $player->getName(),
-                        date($this->core->getBroadcast()->getFormats("date_time")),
-
-                        str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())
-                    ], $this->core->getBroadcast()->getJoins("normal"));
-                }
-            }
-            $event->setJoinMessage($message);
-            $player->join();
+				$event->setJoinMessage($message);
+			});     
         }
     }
 

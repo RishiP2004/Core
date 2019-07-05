@@ -341,6 +341,11 @@ class Stats implements Statistics {
 		$coreUser->setName($name);
 		$coreUser->setIp($ip);
 		$coreUser->setLocale($locale);
+		$coreUser->setLoaded();
+		
+		if($coreUser->loaded()) {
+			$player->join();
+		}
     }
 
     public function unregisterCoreUser(CoreUser $user) {

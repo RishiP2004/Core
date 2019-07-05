@@ -13,6 +13,8 @@ use core\stats\rank\Rank;
 use core\vote\task\VoteTask;
 
 class CoreUser {
+	public $loaded = false;
+
     public $xuid = "", $name = "", $ip = "", $locale = "";
 
     public $registerDate;
@@ -62,9 +64,19 @@ class CoreUser {
 				$this->cheatHistory = unserialize($cheatHistory);
 			}
 			Core::getInstance()->getStats()->coreUsers[$this->getXuid()] = $this;
+			
+			$this->setLoaded();
 		}
     }
 
+	public function loaded() : bool {
+		return $this->loaded;
+	}
+	
+	public function setLoaded(bool $loaded = true) {
+		$this->loaded = $loaded;
+	}
+	
     public function getXuid() : string {
         return $this->xuid;
     }
