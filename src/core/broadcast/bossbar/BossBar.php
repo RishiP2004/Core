@@ -57,9 +57,11 @@ class BossBar implements Messages {
     }
 
     public function tick() {
+    	$this->run++;
+
         if($this->getChanging("enabled")) {
             if($this->run === $this->getChanging("time") * 20) {
-                $this->core->getBroadcast()->getBossBar()->send();
+                $this->send();
             }
         }
     }
