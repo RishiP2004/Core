@@ -23,7 +23,7 @@ class BanList extends \pocketmine\permission\BanList {
             $users = [];
 
             foreach($rows as [
-                    "xuid" => $xuid,
+				"xuid" => $xuid,
             ]) {
                 $coreUser = new CoreUser($xuid);
                 $users[$xuid] = $coreUser;

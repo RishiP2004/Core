@@ -36,34 +36,37 @@ class Block extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /block" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-            return false;
-        }
-        $blockList = $this->core->getEssentials()->getNameBlocks();
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$blockList = $this->core->getEssentials()->getNameBlocks();
 
-        if($blockList->isBanned($user->getName())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Blocked");
-            return false;
-        } else {
-            $expires = null;
+			if($blockList->isBanned($user->getName())) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Blocked");
+				return false;
+			} else {
+				$expires = null;
 
-            if(isset($args[2])) {
-                $expires = Math::expirationStringToTimer($args[2]);
-            }
-            $expire = $expires ?? "Not provided";
-            $reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
+				if(isset($args[2])) {
+					$expires = Math::expirationStringToTimer($args[2]);
+				}
+				$expire = $expires ?? "Not provided";
+				$reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
 
-            $blockList->addBan($user->getName(), $reason, $expires, $sender->getName());
+				$blockList->addBan($user->getName(), $reason, $expires, $sender->getName());
 
-            $player = $this->core->getServer()->getPlayer($user->getName());
+				$player = $this->core->getServer()->getPlayer($user->getName());
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Blocked By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Blocked " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Blocked by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Blocked By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Blocked " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Blocked by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
+				return true;
+			}
+        });
+		return false;
     }
 }

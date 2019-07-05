@@ -34,31 +34,34 @@ class UnmuteIp extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unmute-ip" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0]) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-            return false;
-        }
-        $ip = $args[0];
-        $player = null;
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player or Ip");
+				return false;
+			}
+			$ip = $args[0];
+			$player = null;
 
-        if($user) {
-            $ip = $user->getIp();
-            $player = $this->core->getServer()->getPlayer($user->getName());
-        }
-        $muteList = $this->core->getEssentials()->getIpMutes();
+			if($user) {
+				$ip = $user->getIp();
+				$player = $this->core->getServer()->getPlayer($user->getName());
+			}
+			$muteList = $this->core->getEssentials()->getIpMutes();
 
-        if(!$muteList->isBanned($ip)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $ip . " is not Muted");
-            return false;
-        } else {
-            $muteList->remove($ip);
+			if(!$muteList->isBanned($ip)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $ip . " is not Muted");
+				return false;
+			} else {
+				$muteList->remove($ip);
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Un-Ip Muted By: " . $sender->getName());
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Un-Ip Muted " . $user->getName());
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Un-Ip Muted by " . $sender->getName());
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Un-Ip Muted By: " . $sender->getName());
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Un-Ip Muted " . $user->getName());
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Un-Ip Muted by " . $sender->getName());
+				return true;
+			}
+        });
+		return false;
     }
 }

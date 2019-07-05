@@ -32,16 +32,16 @@ class Accounts extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         } else {
-			$sender->sendMessage($this->core->getPrefix() . "Total Accounts Registered (x" . count($this->core->getStats()->getCoreUsers()) . ")");
-		
-			$users = [];
-		
-			foreach($this->core->getStats()->getCoreUsers() as $user) {
-			    if($user instanceof CoreUser) {
-                    $users[] = $user->getName();
-                }
-			}
-			$sender->sendMessage(TextFormat::GRAY . implode(", ", $users));
+			$this->core->getStats()->getAllCoreUsers(function($users) use($sender) {
+				$sender->sendMessage($this->core->getPrefix() . "Total Accounts Registered (x" . count($users) . ")");
+				
+				$allUsers = [];
+				
+				foreach($users as $user) {
+					$allUsers[] = $user->getName();
+				}
+				$sender->sendMessage(TextFormat::GRAY . implode(", ", $allUsers));
+			});
 			return true;
 		}
     }

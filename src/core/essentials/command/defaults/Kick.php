@@ -35,10 +35,6 @@ class Kick extends PluginCommand {
         if(count($args) < 1) {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /kick" . " " . $this->getUsage());
             return false;
-        }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0]) && $args[0] !== "all") {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player or Option");
-            return false;
         } else {
             $reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
 
@@ -55,8 +51,8 @@ class Kick extends PluginCommand {
                 return false;
             } else {
                 $player->kick($this->core->getPrefix() . "You have been Kicked!\n" . TextFormat::GRAY . "Kicked by: " . $sender->getName() . "\n" . TextFormat::GRAY . "Reason: " . $reason);
-                $sender->sendMessage($this->core->getPrefix() . "You have Kicked " . $user->getName(). " for the Reason: " . $reason);
-                $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Kicked by " . $sender->getName() . " for the Reason: " . $reason);
+                $sender->sendMessage($this->core->getPrefix() . "You have Kicked " . $player->getName(). " for the Reason: " . $reason);
+                $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $player->getName() . " has been Kicked by " . $sender->getName() . " for the Reason: " . $reason);
             }
             return true;
         }

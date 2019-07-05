@@ -34,26 +34,29 @@ class Unmute extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unmute" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-            return false;
-        }
-        $muteList = $this->core->getEssentials()->getNameMutes();
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$muteList = $this->core->getEssentials()->getNameMutes();
 
-        if(!$muteList->isBanned($user->getName())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Blocked");
-            return false;
-        } else {
-            $muteList->remove($user->getName());
+			if(!$muteList->isBanned($user->getName())) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Muted");
+				return false;
+			} else {
+				$muteList->remove($user->getName());
 
-            $player = $this->core->getServer()->getPlayer($user->getName());
+				$player = $this->core->getServer()->getPlayer($user->getName());
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Unmuted By: " . $sender->getName());
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Unmuted " . $user->getName());
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Unmuted by " . $sender->getName());
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Unmuted By: " . $sender->getName());
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Unmuted " . $user->getName());
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Unmuted by " . $sender->getName());
+				return true;
+			}
+        });
+		return false;
     }
 }

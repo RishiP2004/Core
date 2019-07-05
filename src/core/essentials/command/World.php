@@ -56,10 +56,6 @@ class World extends PluginCommand {
             if(!$player instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
-            }
-            if(!$this->core->getStats()->getCoreUser($args[0])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
             } else {
                 $player->teleport($this->core->getServer()->getLevelByName($args[0])->getSpawnLocation(), 0, 0);
                 $sender->sendMessage($this->core->getPrefix() . "Teleported " . $player->getName() . " to the World: " . $args[0]);

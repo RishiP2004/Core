@@ -36,35 +36,38 @@ class Mute extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /mute" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-            return false;
-        }
-        $muteList = $this->core->getEssentials()->getNameMutes();
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$muteList = $this->core->getEssentials()->getNameMutes();
 
-        if($muteList->isBanned($user->getName())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Muted");
-            return false;
-        } else {
-            $expires = null;
+			if($muteList->isBanned($user->getName())) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Muted");
+				return false;
+			} else {
+				$expires = null;
 
-            if(isset($args[2])) {
-                $expires = Math::expirationStringToTimer($args[2]);
-            }
-            $expire = $expires ?? "Not provided";
-            $reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
+				if(isset($args[2])) {
+					$expires = Math::expirationStringToTimer($args[2]);
+				}
+				$expire = $expires ?? "Not provided";
+				$reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
 
-            $muteList->addBan($user->getName(), $reason, $expires, $sender->getName());
+				$muteList->addBan($user->getName(), $reason, $expires, $sender->getName());
 
-            $player = $this->core->getServer()->getPlayer($user->getName());
+				$player = $this->core->getServer()->getPlayer($user->getName());
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Muted By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Muted " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Muted by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Muted By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Muted " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Muted by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
+				return true;
+			}
+		});
+		return false;
     }
 }
 

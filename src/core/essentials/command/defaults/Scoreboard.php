@@ -95,7 +95,7 @@ class Scoreboard extends PluginCommand {
 							$p = $this->core->getServer()->getPlayer($args[1]);
 
 							if(!$p instanceof CorePlayer) {
-								$sender->sendMessage($this->core->getErrorPrefix() . $p . " is not a valid Player");
+								$sender->sendMessage($this->core->getErrorPrefix() . $p . " is not Online");
 							}
 							$scoreboard->addDisplay($p);
 							$sender->sendMessage($this->core->getPrefix() . "Sent " . $args[2] . " Scoreboard to  " . $p->getName());
@@ -176,7 +176,7 @@ class Scoreboard extends PluginCommand {
 							$p = $this->core->getServer()->getPlayer($args[1]);
 
 							if(!$p instanceof CorePlayer) {
-								$sender->sendMessage($this->core->getErrorPrefix() . $p . " is not a valid Player");
+								$sender->sendMessage($this->core->getErrorPrefix() . $p . " is not a Online");
 							}
 							$scoreboard->removeDisplay($p);
 							$sender->sendMessage($this->core->getPrefix() . "Removed the display of the Scoreboard " . $args[2] . " for " . $p->getName());

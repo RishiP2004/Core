@@ -35,21 +35,22 @@ class SetPlayerPermission extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /setplayerpermission" . " " . $this->getUsage());
             return false;
 		}
-        $user = $this->core->getStats()->getCoreUser($args[0]);
-		
-		if(!$user) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-			return false;
-        } else {
-            $user->setPermission(explode(", ", $args[1]));
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			} else {
+				$user->setPermission(explode(", ", $args[1]));
 
-            $player = $this->core->getServer()->getPlayer($user->getName());
+				$player = $this->core->getServer()->getPlayer($user->getName());
 		
-			if($player instanceof CorePlayer) {
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Permission(s) to " . implode(", ", $args[1]));
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Permission(s) to " . implode(", ", $args[1]));
+				}
+				$sender->sendMessage($this->core->getPrefix() . "Set the Permission(s) of " . $user->getName() . " to " . implode(", ", $args[1]));
+				return true;
 			}
-            $sender->sendMessage($this->core->getPrefix() . "Set the Permission(s) of " . $user->getName() . " to " . implode(", ", $args[1]));
-            return true;
-        }
+        });
+		return false;
     }
 }

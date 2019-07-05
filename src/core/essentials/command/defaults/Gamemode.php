@@ -53,16 +53,12 @@ class Gamemode extends PluginCommand {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
             }
-            if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
-            }
 			if($player->getGamemode() === $gamemode) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $gamemode . " is already " . $user->getName() . "'s Gamemode");
+				$sender->sendMessage($this->core->getErrorPrefix() . $gamemode . " is already " . $player->getName() . "'s Gamemode");
 				return false;
             } else {
                 $player->setGamemode($gamemode);
-				$sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Gamemode to " . $gamemode);
+				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s Gamemode to " . $gamemode);
 				$player->sendMessage($sender->getName() . " set your Gamemode to " . $gamemode);
                 return true;
             }

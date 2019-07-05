@@ -29,21 +29,28 @@ class TopCoins extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         } else {
-            $page = $args[0] ?? 1;
-            $banned = [];
-
-            foreach($this->core->getServer()->getNameBans()->getEntries() as $entry) {
-                if($this->core->getStats()->getCoreUser($entry->getName())) {
-                    $banned[] = $entry->getName();
-                }
-            }
-            $ops = [];
-
-            foreach($this->core->getServer()->getOps()->getAll() as $op) {
-                if($this->core->getStats()->getCoreUser((string) $op)) {
-                    $ops[] = $op;
-                }
-            }
+			$page = $args[0] ?? 1;
+			$banned = [];
+			$ops = [];
+			
+			if(!empty($this->core->getServer()->getNameBans()->getEntries())) {
+				foreach($this->core->getServer()->getNameBans()->getEntries() as $entry) {
+					$this->core->getStats()->getCoreUser($entry->getName(), function($user) use ($banned) {
+						if(!is_null($user)) {
+							$banned[] = $user;
+						}
+					});
+				}
+			}
+			if(!empty($this->core->getServer()->getOps()->getAll())) {
+				foreach($this->core->getServer()->getOps()->getAll() as $op) {
+					$this->core->getStats()->getCoreUser((string) $op, function($user) use ($banned) {
+						if(!is_null($user)) {
+							$ops[] = $user;
+						}
+					});
+				}
+			}
             $this->core->getStats()->sendTopEconomy("coins", $sender, $page, $ops, $banned);
             return true;
         }

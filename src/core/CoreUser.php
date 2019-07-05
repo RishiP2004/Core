@@ -61,6 +61,7 @@ class CoreUser {
 				$this->permissions = unserialize($permissions);
 				$this->cheatHistory = unserialize($cheatHistory);
 			}
+			Core::getInstance()->getStats()->coreUsers[$this->getXuid()] = $this;
 		}
     }
 
@@ -80,20 +81,20 @@ class CoreUser {
         $this->name = $name;
     }
 
-    public function getLocale() : string {
-        return $this->locale;
-    }
-
-    public function setLocale(string $locale) {
-        $this->locale = $locale;
-    }
-
     public function getIp() : string {
         return $this->ip;
     }
 
     public function setIp(string $ip) {
         $this->ip = $ip;
+    }
+	
+    public function getLocale() : string {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale) {
+        $this->locale = $locale;
     }
 
     public function getCoins() : int {
@@ -208,4 +209,9 @@ class CoreUser {
 			"xuid" => $this->getXuid()
         ]);
     }
+	
+	public function unload() {
+		$this->save();
+		unset(Core::getInstance()->getStats()->coreUsers[$this->getXuid()]);
+	}
 }

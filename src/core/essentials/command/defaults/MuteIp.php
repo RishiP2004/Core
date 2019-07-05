@@ -36,38 +36,41 @@ class MuteIp extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /mute-ip" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0]) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player/Ip");
-            return false;
-        }
-        $ip = $args[0];
-        $player = null;
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player or Ip");
+				return false;
+			}
+			$ip = $args[0];
+			$player = null;
 
-        if($user) {
-            $ip = $user->getIp();
-            $player = $this->core->getServer()->getPlayer($user->getName());
-        }
-        $expires = null;
+			if($user) {
+				$ip = $user->getIp();
+				$player = $this->core->getServer()->getPlayer($user->getName());
+			}
+			$expires = null;
 
-        if(isset($args[2])) {
-            $expires = Math::expirationStringToTimer($args[2]);
-        }
-        $expire = $expires ?? "Not provided";
-        $reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
-        $muteList = $this->core->getEssentials()->getIpBlocks();
+			if(isset($args[2])) {
+				$expires = Math::expirationStringToTimer($args[2]);
+			}
+			$expire = $expires ?? "Not provided";
+			$reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
+			$muteList = $this->core->getEssentials()->getIpBlocks();
 
-        if($muteList->isBanned($ip)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $ip . " is already Ip-Muted");
-            return false;
-        } else {
-            $muteList->addBan($ip, $reason, $expires, $sender->getName());
+			if($muteList->isBanned($ip)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $ip . " is already Ip-Muted");
+				return false;
+			} else {
+				$muteList->addBan($ip, $reason, $expires, $sender->getName());
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Ip-Muted By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Ip-Muted " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Ip-Muted by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Ip-Muted By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Ip-Muted " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Ip-Muted by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
+				return true;
+			}
+        });
+		return false;
     }
 }

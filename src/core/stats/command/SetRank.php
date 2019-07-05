@@ -36,27 +36,28 @@ class SetRank extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /setrank" . " " . $this->getUsage());
             return false;
         }
-		$user = $this->core->getStats()->getCoreUser($args[0]);
-		
-		if(!$user) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-			return false;
-		}
-        $rank = $this->core->getStats()->getRank($args[1]);
-
-        if(!$rank instanceof Rank) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Rank");
-            return false;
-        } else {
-            $user->setRank($rank);
-
-            $player = $this->core->getServer()->getPlayer($user->getName());
-		
-			if($player instanceof CorePlayer) {
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Rank to " . $rank->getName());
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
 			}
-            $sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Rank to " . $rank->getName());
-            return true;
-        }
+			$rank = $this->core->getStats()->getRank($args[1]);
+
+			if(!$rank instanceof Rank) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Rank");
+				return false;
+			} else {
+				$user->setRank($rank);
+
+				$player = $this->core->getServer()->getPlayer($user->getName());
+		
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Rank to " . $rank->getName());
+				}
+				$sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Rank to " . $rank->getName());
+				return true;
+			}
+        });
+		return false;
     }
 }

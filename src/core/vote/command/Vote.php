@@ -22,7 +22,7 @@ class Vote extends PluginCommand {
         $this->core = $core;
         
         $this->setPermission("core.vote.command");
-        $this->setUsage("[top] [amount] : [player]");
+        $this->setUsage("[top]");
         $this->setDescription("Vote Command");
     }
     

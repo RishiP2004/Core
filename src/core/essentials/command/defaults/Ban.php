@@ -38,34 +38,37 @@ class Ban extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /ban" . " " . $this->getUsage());
             return false;
         }
-		if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-			return false;
-		}
-        $banList = $this->core->getEssentials()->getNameBans();
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$banList = $this->core->getEssentials()->getNameBans();
+			
+			if($banList->isBanned($user->getName())) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Banned");
+				return false;
+			} else {
+				$expires = null;
 
-        if($banList->isBanned($user->getName())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Banned");
-            return false;
-        } else {
-            $expires = null;
+				if(isset($args[2])) {
+					$expires = Math::expirationStringToTimer($args[2]);
+				}
+				$expire = $expires ?? "Not provided";
+				$reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
 
-            if(isset($args[2])) {
-                $expires = Math::expirationStringToTimer($args[2]);
-            }
-            $expire = $expires ?? "Not provided";
-            $reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
+				$banList->addBan($user->getName(), $reason, null, $sender->getName());
 
-            $banList->addBan($user->getName(), $reason, null, $sender->getName());
+				$player = $this->core->getServer()->getPlayer($user->getName());
 
-            $player = $this->core->getServer()->getPlayer($user->getName());
-
-            if($player instanceof CorePlayer) {
-                $player->kick($this->core->getPrefix() . "You have been Banned By: " . $sender->getName() . "\n" . TextFormat::GRAY . "Reason: " . $reason . "\n" . TextFormat::GRAY . "Expires: " . $expire);
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Banned " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Banned by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->kick($this->core->getPrefix() . "You have been Banned By: " . $sender->getName() . "\n" . TextFormat::GRAY . "Reason: " . $reason . "\n" . TextFormat::GRAY . "Expires: " . $expire);
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Banned " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Banned by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
+				return true;
+			}
+		});
+		return false;
     }
 }

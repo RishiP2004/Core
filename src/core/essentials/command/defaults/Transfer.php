@@ -52,13 +52,9 @@ class Transfer extends PluginCommand {
             if(!$player instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not Online");
                 return false;
-            }
-            if(!$user = $this->core->getStats()->getCoreUser($args[2])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Player");
-                return false;
             } else {
                 $player->transfer($args[0], $args[1], $sender->getName() . " Transferred you to IP: " . $args[0] . " and Port: " . $args[1]);
-				$sender->sendMessage($this->core->getPrefix() . "Transferring " . $user->getName() . " to IP: " . $args[0] . " and Port: " . $args[1]);
+				$sender->sendMessage($this->core->getPrefix() . "Transferring " . $player->getName() . " to IP: " . $args[0] . " and Port: " . $args[1]);
                 return true;
             }
         }
