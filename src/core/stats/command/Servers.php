@@ -26,10 +26,6 @@ class Servers extends PluginCommand {
     }
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
-        if(!$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
-            return false;
-        }
         if(!$sender->hasPermission($this->getPermission())) {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;

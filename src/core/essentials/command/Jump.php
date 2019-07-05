@@ -47,10 +47,6 @@ class Jump extends PluginCommand {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
             }
-            if(!$this->core->getStats()->getCoreUser($args[1])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
-            }
             $block = $player->getTargetBlock(100, Entity::NON_SOLID_BLOCKS);
 
 			if($block === null) {

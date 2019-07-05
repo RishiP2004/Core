@@ -35,15 +35,16 @@ class Profile extends PluginCommand {
             return false;
         }
         if(isset($args[0])) {
-            $user = $this->core->getStats()->getCoreUser($args[0]);
-
-            if(!$user) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
-            } else {
-                $sender->sendProfileForm($user->getName());
-                return true;
-            }
+			$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+				if(is_null($user)) {
+					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+					return false;
+				} else {
+					$sender->sendProfileForm($user->getName());
+					return true;
+				}
+			});
+			return false;
         } else if(!isset($args[0])) {
             if(!$sender instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");

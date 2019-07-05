@@ -45,14 +45,10 @@ class Kill extends PluginCommand {
 
             if(!$player instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
-                return false;
-            }
-            if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
+                return false;           
             } else {
                 $player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-                $sender->sendMessage($this->core->getPrefix() . "Killed " . $user->getName());
+                $sender->sendMessage($this->core->getPrefix() . "Killed " . $player->getName());
                 $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Killed you");
                 return true;
             }

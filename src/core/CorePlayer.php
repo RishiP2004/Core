@@ -99,7 +99,7 @@ class CorePlayer extends Player {
     }
 
     public function getCoreUser() : CoreUser {
-        return $this->core->getStats()->getCoreUserXuid($this->getXuid()) ?? $this->core->getStats()->getCoreUser($this->getName());
+        return $this->core->getStats()->getCoreUser($this->getXuid(), function($user) {});
     }
 
     public function join() {
@@ -117,8 +117,8 @@ class CorePlayer extends Player {
 			$cheat->set($this);
 		}
         $this->core->getScheduler()->scheduleDelayedTask(new PlayerJoin($this->core, $this), 20);
-
-		if($this->core->getStats()->getCoreUserXuid($this->getXuid())->getName() !== $this->getName()) {
+		
+		if($this->getCoreUser()->getName() !== $this->getName()) {
 			$this->getCoreUser()->setName($this->getName());
 		}
 		$this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp()));
@@ -348,6 +348,9 @@ class CorePlayer extends Player {
     }
 
     public function addToInteract() {
+		$this->interacts[] = "time";
+		$this->interacts[] = "amount";
+		
         if($this->interacts["time"] === time()) {
             $this->interacts["amount"]++;
             return;

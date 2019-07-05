@@ -40,7 +40,7 @@ class Time extends PluginCommand {
         } else {
             switch(strtolower($args[0])) {
                 case "add":
-                    if(!$sender->hasPermission($this->getPermission() . ".Add")){
+                    if(!$sender->hasPermission($this->getPermission() . ".add")){
                         $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                         return false;
                     }
@@ -53,7 +53,7 @@ class Time extends PluginCommand {
                     $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Added " . $value . " to the Time");
                 break;
                 case "set":
-                    if(!$sender->hasPermission($this->getPermission() . ".Set")){
+                    if(!$sender->hasPermission($this->getPermission() . ".set")){
                         $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                         return false;
                     }
@@ -80,7 +80,7 @@ class Time extends PluginCommand {
                     $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Set the Time to " . $value);
                 break;
                 case "start":
-                    if(!$sender->hasPermission($this->getPermission() . ".Start")){
+                    if(!$sender->hasPermission($this->getPermission() . ".start")){
                         $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                         return false;
                     }
@@ -91,7 +91,7 @@ class Time extends PluginCommand {
                     $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Started the Time");
                 break;
                 case "stop":
-                    if(!$sender->hasPermission($this->getPermission() . ".Stop")){
+                    if(!$sender->hasPermission($this->getPermission() . ".stop")){
                         $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                         return false;
                     }
@@ -102,7 +102,7 @@ class Time extends PluginCommand {
                     $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Stopped the Time");
                 break;
                 case "query":
-                    if(!$sender->hasPermission($this->getPermission() . ".Query")){
+                    if(!$sender->hasPermission($this->getPermission() . ".query")){
                         $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                         return false;
                     }

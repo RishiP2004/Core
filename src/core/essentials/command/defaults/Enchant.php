@@ -59,14 +59,10 @@ class Enchant extends PluginCommand {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
             }
-            if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
-            }
             $item = $player->getInventory()->getItemInHand();
 
 			if($item->getId() <= 0) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " doesn't have an Item in their hand");
+                $sender->sendMessage($this->core->getErrorPrefix() . $player->getName() . " doesn't have an Item in their hand");
                 return false;
             } else {
                 $item->addEnchantment(new EnchantmentInstance($enchantment, $args[1] ?? 1));

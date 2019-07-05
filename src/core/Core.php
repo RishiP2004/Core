@@ -150,7 +150,7 @@ class Core extends PluginBase {
     }
 
     public function onDisable() {
-		$this->getStats()->saveUsers();
+		$this->getStats()->unloadUsers();
         $this->getServer()->getLogger()->notice($this->getPrefix() . "Core Disabled");
     }
 }

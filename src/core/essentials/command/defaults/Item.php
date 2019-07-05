@@ -77,14 +77,10 @@ class Item extends PluginCommand {
             if(!$player instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not Online");
                 return false;
-            }
-            if(!$user = $this->core->getStats()->getCoreUser($args[3])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not a valid Player");
-                return false;
             } else {
 				$player->getInventory()->addItem(clone $item);
 				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Gave you the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount());
-				$sender->sendMessage($this->core->getPrefix() . "Gave the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount() . " to " . $user->getName());
+				$sender->sendMessage($this->core->getPrefix() . "Gave the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount() . " to " . $player->getName());
                 return true;
             }
         }

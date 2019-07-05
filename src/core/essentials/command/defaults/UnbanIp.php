@@ -34,31 +34,34 @@ class UnbanIp extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unban-ip" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[0]) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player/Ip");
-            return false;
-        }
-        $ip = $args[0];
-        $player = null;
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player or Ip");
+				return false;
+			}
+			$ip = $args[0];
+			$player = null;
 
-        if($user) {
-            $ip = $user->getIp();
-            $player = $this->core->getServer()->getPlayer($user->getName());
-        }
-        $banList = $this->core->getEssentials()->getIpBans();
+			if($user) {
+				$ip = $user->getIp();
+				$player = $this->core->getServer()->getPlayer($user->getName());
+			}
+			$banList = $this->core->getEssentials()->getIpBans();
 
-        if(!$banList->isBanned($ip)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $ip . " is not Banned");
-            return false;
-        } else {
-            $banList->remove($ip);
+			if(!$banList->isBanned($ip)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $ip . " is not Banned");
+				return false;
+			} else {
+				$banList->remove($ip);
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Un-Ip Banned By: " . $sender->getName());
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Un-Ip Banned " . $user->getName());
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Un-Ip Banned by " . $sender->getName());
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Un-Ip Banned By: " . $sender->getName());
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Un-Ip Banned " . $user->getName());
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Un-Ip Banned by " . $sender->getName());
+				return true;
+			}
+        });
+		return false;
     }
 }

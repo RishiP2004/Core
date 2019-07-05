@@ -42,10 +42,6 @@ class Effect extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Online");
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[1])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
-            return false;
-        }
         if(isset($args[0]) === "clear") {
             if(!$sender->hasPermission($this->getPermission() . ".Other")) {
                 $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
@@ -53,7 +49,7 @@ class Effect extends PluginCommand {
             } else {
                 foreach($this->core->getServer()->getPlayer($args[1])->getEffects() as $effect) {
                     $player->removeEffect($effect->getId());
-                    $sender->sendMessage($this->core->getPrefix() . "Cleared " . $user->getName() . "'s Effects");
+                    $sender->sendMessage($this->core->getPrefix() . "Cleared " . $player->getName() . "'s Effects");
                     $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Cleared your Effects");
                 }
                 return true;
@@ -99,18 +95,18 @@ class Effect extends PluginCommand {
         }
         if($duration === 0) {
             if(!$player->hasEffect($effect->getId())) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " doesn't have the Effect " . $effect->getName());
+                $sender->sendMessage($this->core->getErrorPrefix() . $player->getName() . " doesn't have the Effect " . $effect->getName());
                 return false;
             }
             $player->removeEffect($effect->getId());
-            $sender->sendMessage($this->core->getPrefix() . "Removed the Effect " . $effect->getName() . " from " . $user->getName());
+            $sender->sendMessage($this->core->getPrefix() . "Removed the Effect " . $effect->getName() . " from " . $player->getName());
             $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Removed the Effect " . $effect->getName() . " from you");
             return true;
         } else {
             $effectInstance = new EffectInstance($effect, $duration, $amplification, $visible);
 
             $player->addEffect($effectInstance);
-            $sender->sendMessage($this->core->getPrefix() . "Added the Effect " . $effect->getName() . " to " . $user->getName() . " for " . $duration . " Seconds, " . $amplification . " Amplifier and Hidden: " . $visible);
+            $sender->sendMessage($this->core->getPrefix() . "Added the Effect " . $effect->getName() . " to " . $player->getName() . " for " . $duration . " Seconds, " . $amplification . " Amplifier and Hidden: " . $visible);
             $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Removed the Effect " . $effect->getName() . " from you");
             return true;
         }

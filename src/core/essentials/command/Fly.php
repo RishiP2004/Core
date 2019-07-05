@@ -57,10 +57,6 @@ class Fly extends PluginCommand {
             if(!$player instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Online");
                 return false;
-            }
-            if(!$this->core->getStats()->getCoreUser($args[1])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
-                return false;
             } else {
 				if(isset($args[0])) {
 					$flying = $value;

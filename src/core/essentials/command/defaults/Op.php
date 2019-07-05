@@ -34,24 +34,26 @@ class Op extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /op" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[1])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
-            return false;
-        }
-        $player = $sender->getServer()->getOfflinePlayer($user->getName());
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$player = $sender->getServer()->getOfflinePlayer($user->getName());
 
-        if(!$player->isOp()) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Op");
-            return false;
-        } else {
-            $player->setOp(true);
+			if($player->isOp()) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is already Op");
+				return false;
+			} else {
+				$player->setOp(true);
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Oped you");
-            }
-            $sender->sendMessage($this->core->getPrefix() . $user->getName() . " is now Op");
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Oped by " . $sender->getName());
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Oped you");
+				}
+				$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is now Op");
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Oped by " . $sender->getName());
+				return true;
+			}
+        });
     }
 }

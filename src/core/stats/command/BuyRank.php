@@ -7,6 +7,8 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\rank\Rank;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -33,7 +35,7 @@ class BuyRank extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
             return false;
         }
-        if($sender->getCoreUser()->getRank()->getName() !== "Player") {
+        if($sender->getCoreUser()->getRank()->getValue() !== Rank::DEFAULT) {
             $sender->sendMessage($this->core->getPrefix() . "You already have a Rank that is OG or higher");
             return false;
         }

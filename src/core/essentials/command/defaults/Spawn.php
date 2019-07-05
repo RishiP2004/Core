@@ -46,13 +46,9 @@ class Spawn extends PluginCommand {
             if(!$player instanceof CorePlayer) {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
-            }
-            if(!$user = $this->core->getStats()->getCoreUser($args[0])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
             } else {
                 $player->teleport(Location::fromObject($this->core->getServer()->getDefaultLevel()->getSpawnLocation(), $this->core->getServer()->getDefaultLevel()));
-				$sender->sendMessage($this->core->getPrefix() . "Teleported " . $user->getName() . " to Spawn");
+				$sender->sendMessage($this->core->getPrefix() . "Teleported " . $player->getName() . " to Spawn");
 				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Teleported you to Spawn");
                 return true;
             }

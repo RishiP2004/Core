@@ -34,26 +34,29 @@ class Unblock extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unblock" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $user = $this->core->getStats()->getCoreUser($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-            return false;
-        }
-        $blockList = $this->core->getEssentials()->getNameBlocks();
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$blockList = $this->core->getEssentials()->getNameBlocks();
 
-        if(!$blockList->isBanned($user->getName())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Blocked");
-            return false;
-        } else {
-            $blockList->remove($user->getName());
+			if(!$blockList->isBanned($user->getName())) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Blocked");
+				return false;
+			} else {
+				$blockList->remove($user->getName());
 
-            $player = $this->core->getServer()->getPlayer($user->getName());
+				$player = $this->core->getServer()->getPlayer($user->getName());
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . "You have been Unblocked By: " . $sender->getName());
-            }
-            $sender->sendMessage($this->core->getPrefix() . "You have Unblocked " . $user->getName());
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Unblocked by " . $sender->getName());
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . "You have been Unblocked By: " . $sender->getName());
+				}
+				$sender->sendMessage($this->core->getPrefix() . "You have Unblocked " . $user->getName());
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Unblocked by " . $sender->getName());
+				return true;
+			}
+        });
+		return false;
     }
 }

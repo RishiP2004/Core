@@ -63,9 +63,11 @@ use pocketmine\entity\Skin;
 class Stats implements Statistics {
     private $core;
 
-    public $ranks = [], $coreUsers = [], $skinBounds = [];
+    public $ranks = [], $coreUsers = [], $allCoreUsers = [], $skinBounds = [];
 
     public $fallbackSkinData;
+	
+	public $user;
 
     public function __construct(Core $core) {
         $this->core = $core;
@@ -96,7 +98,6 @@ class Stats implements Statistics {
         $this->initRank(new Staff());
         $this->initRank(new Universal());
         $this->initRank(new YouTuber());
-        $this->initUsers();
         $this->scheduleAFKSetter();
 		$this->core->getServer()->getCommandMap()->register(Accounts::class, new Accounts($this->core));
 		$this->core->getServer()->getCommandMap()->register(AddPlayerPermission::class, new AddPlayerPermission($this->core));
@@ -266,21 +267,54 @@ class Stats implements Statistics {
         return null;
     }
 	
-    public function initUsers() {
-        $this->core->getDatabase()->executeSelect("stats.get", [], function(array $rows) {
-            $users = [];
-
-            foreach($rows as [
+    public function getCoreUser(string $string, callable $callback) : ?CoreUser {
+		if(!empty($this->getCoreUsers())) {
+			foreach($this->getCoreUsers() as $coreUser) {
+				if($coreUser instanceof CoreUser) {
+					if($coreUser->getXuid() === $string or $coreUser->getName() === $string) {
+						$callback($coreUser);
+					} else {
+						$this->getDirectUser($string, $callback);
+					}
+				}
+			}
+		}
+		return $this->getDirectUser($string, $callback);
+    }
+	
+	public function getDirectUser(string $string, callable $callback) : ?CoreUser {
+		$this->core->getDatabase()->executeSelect("stats.get", ['key' => $string], function(array $rows) use($callback) {
+			foreach($rows as [
+				"xuid" => $xuid,
+				"username" => $name
+			]) {
+				$coreUser = new CoreUser($xuid);
+				$users[$xuid] = $coreUser;
+							
+				$coreUser->load($rows);
+				$callback($coreUser);
+			}
+		});
+		$callback(null);
+		return null;
+	}
+	
+	public function getAllCoreUsers(callable $callback) : array {
+		$this->core->getDatabase()->executeSelect("stats.getAll", [], function(array $rows) use($callback) {
+			$users = [];
+			
+			foreach($rows as [
                 "xuid" => $xuid,
+				"username" => $name
             ]) {
 				$coreUser = new CoreUser($xuid);
 				$users[$xuid] = $coreUser;
-
-				$coreUser->load($rows);
+				
+				$coreUser->setName($name);
 			}
-            $this->coreUsers = $users;
+			$callback($users);
         });
-    }
+	}
     /**
      * @return CoreUser[]
      */
@@ -288,39 +322,25 @@ class Stats implements Statistics {
         return $this->coreUsers;
     }
 
-    public function getCoreUser(string $name) : ?CoreUser {
-        foreach($this->getCoreUsers() as $coreUser) {
-			if($coreUser instanceof CoreUser) {
-				if($coreUser->getName() === $name) {
-					return $coreUser;
-				}
-			}
-        }
-        return null;
-    }
-
-    public function getCoreUserXuid(string $xuid) : ?CoreUser {
-        foreach($this->getCoreUsers() as $coreUser) {
-			if($coreUser instanceof CoreUser) {
-				if($coreUser->getXuid() === $xuid) {
-					return $coreUser;
-				}
-			}
-        }
-        return null;
-    }
-
     public function registerCoreUser(CorePlayer $player) {
+		$name = $player->getName();
+		$ip = $player->getAddress();
+		$locale = $player->getLocale();
+		
         $this->core->getDatabase()->executeInsert("stats.register", [
             "xuid" => $player->getXuid(),
             "registerDate" => date("m:d:y h:A"),
-            "username" => $player->getName(),
-            "ip" => $player->getAddress(),
-            "locale" => $player->getLocale()
+            "username" => $name,
+            "ip" => $ip,
+            "locale" => $locale
         ]);
 		$coreUser = new CoreUser($player->getXuid());
 		$user[$player->getXuid()] = $coreUser;
 		$this->coreUsers[] = $user;
+		
+		$coreUser->setName($name);
+		$coreUser->setIp($ip);
+		$coreUser->setLocale($locale);
     }
 
     public function unregisterCoreUser(CoreUser $user) {
@@ -334,6 +354,14 @@ class Stats implements Statistics {
 		foreach($this->getCoreUsers() as $coreUser) {
 			if($coreUser instanceof CoreUser) {
 				$coreUser->save();
+			}
+		}
+	}
+	
+	public function unloadUsers() {
+		foreach($this->getCoreUsers() as $coreUser) {
+			if($coreUser instanceof CoreUser) {
+				$coreUser->unload();
 			}
 		}
 	}

@@ -462,9 +462,11 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
 
-			if(!$this->core->getStats()->getCoreUserXuid($player->getXuid())) {
-				$this->core->getStats()->registerCoreUser($player);
-			}
+			$this->core->getStats()->getCoreUser($args[0], function($user) use($player) {
+				if(is_null($user)) {
+					$this->core->getStats()->registerCoreUser($player);
+				}
+			});
             if(in_array($player->getLevel(), Messages::WORLDS)) {
                 if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
                     $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$player], str_replace("{PREFIX}", $this->core->getPrefix(), Messages::NOT_REGISTERED_MESSAGE));

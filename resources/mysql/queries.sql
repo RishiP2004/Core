@@ -18,7 +18,12 @@ CREATE TABLE IF NOT EXISTS stats (
 -- # }
 
 -- # { get
-SELECT xuid, registerDate, username, ip, locale, coins, balance, rank, permissions, cheatHistory, server FROM stats;
+-- # 	:key string
+SELECT * FROM stats WHERE xuid = :key OR username = :key;
+-- # }
+
+-- # { getAll
+SELECT * FROM stats;
 -- # }
 
 -- # { register

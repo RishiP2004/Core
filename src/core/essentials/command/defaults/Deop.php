@@ -34,24 +34,27 @@ class Deop extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /deop" . " " . $this->getUsage());
             return false;
         }
-        if(!$user = $this->core->getStats()->getCoreUser($args[1])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
-            return false;
-        }
-        $player = $sender->getServer()->getOfflinePlayer($user->getName());
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			}
+			$player = $sender->getServer()->getOfflinePlayer($user->getName());
 
-        if(!$player->isOp()) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Op");
-            return false;
-        } else {
-            $player->setOp(false);
+			if(!$player->isOp()) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " is not Op");
+				return false;
+			} else {
+				$player->setOp(false);
 
-            if($player instanceof CorePlayer) {
-                $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Deoped you");
-            }
-            $sender->sendMessage($this->core->getPrefix() . $user->getName() . " is now Deoped");
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Deoped by " . $sender->getName());
-            return true;
-        }
+				if($player instanceof CorePlayer) {
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Deoped you");
+				}
+				$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is now Deoped");
+				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Deoped by " . $sender->getName());
+				return true;
+			}
+        });
+		return false;
     }
 }

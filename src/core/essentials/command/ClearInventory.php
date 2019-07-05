@@ -42,10 +42,6 @@ class ClearInventory extends PluginCommand {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
                 return false;
 			}
-            if(!$this->core->getStats()->getCoreUser($args[0])) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-                return false;
-            }
 			if($player->getGamemode() === CorePlayer::SPECTATOR) {
 				$sender->sendMessage($this->core->getErrorPrefix() . $player->getName() . " is in " . $this->core->getServer()->getGamemodeString($args[0]->getGamemode()) . " Mode");
 				return false;
