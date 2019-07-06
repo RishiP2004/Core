@@ -7,7 +7,6 @@ namespace core;
 use core\anticheat\cheat\AutoClicker;
 
 use core\broadcast\Broadcasts;
-use core\broadcast\bossbar\Messages;
 
 use core\utils\{
 	Entity,

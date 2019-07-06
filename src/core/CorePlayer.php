@@ -19,7 +19,8 @@ use core\mcpe\form\element\{
 	Dropdown,
 	Image,
 	Input,
-	Label};
+	Label
+};
 use core\mcpe\network\PlayerNetworkSessionAdapter;
 use core\mcpe\entity\{
 	Linkable,
@@ -350,7 +351,7 @@ class CorePlayer extends Player {
     public function addToInteract() {
 		$this->interacts[] = "time";
 		$this->interacts[] = "amount";
-		
+
         if($this->interacts["time"] === time()) {
             $this->interacts["amount"]++;
             return;
@@ -601,33 +602,35 @@ class CorePlayer extends Player {
 				$type = $data->getDropdown()->getSelectedOption();
 				$amount = $data->getInput()->getValue();
 
-				if(!$type or !is_int($amount)) {
-					$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
-					return;
-				}
-				$user = Core::getInstance()->getStats()->getCoreUser($player->getName());
+				if($player instanceof CorePlayer) {
+					if(!$type or !is_int($amount)) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
+						return;
+					}
+					$user = $player->getCoreUser();
 
-				if($type === "Coins") {
-					if($amount > 1000) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
-						return;
+					if($type === "Coins") {
+						if($amount > 1000) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
+							return;
+						}
+						if($user->getCoins() < $amount) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
+							return;
+						}
+						$user->setCoins($amount / 1000);
+						$user->setBalance($user->getBalance() - $amount);
+						$player->sendMessage("Transferred " . $amount . " Balance to Coins");
 					}
-					if($user->getCoins() < $amount) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
-						return;
+					if($type === "Balance") {
+						if($user->getBalance() < $amount) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
+							return;
+						}
+						$user->setBalance($user->getBalance() * 1000);
+						$user->setCoins($user->getCoins() - $amount);
+						$player->sendMessage("Transferred " . $amount . " Coins to Balance");
 					}
-					$user->setCoins($amount / 1000);
-					$user->setBalance($user->getBalance() - $amount);
-					$player->sendMessage("Transferred " . $amount . " Balance to Coins");
-				}
-				if($type === "Balance") {
-					if($user->getBalance() < $amount) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
-						return;
-					}
-					$user->setBalance($user->getBalance() * 1000);
-					$user->setCoins($user->getCoins() - $amount);
-					$player->sendMessage("Transferred " . $amount . " Coins to Balance");
 				}
 			}
 
