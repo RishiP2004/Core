@@ -67,7 +67,7 @@ class Core extends PluginBase {
                 "mysql" => "mysql/queries.sql"
             ]);
         } catch(\Exception $exception) {
-            $this->getServer()->getLogger()->error($this->getErrorPrefix() . "Core Database connection failed");
+            $this->getServer()->getLogger()->error($this->getErrorPrefix() . "Core Database connection failed: " . $exception->getMessage());
             $this->getServer()->shutdown();
         }
         TimingsHandler::setEnabled();
