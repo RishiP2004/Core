@@ -266,8 +266,8 @@ class Stats implements Statistics {
         }
         return null;
     }
-	
-    public function getCoreUser(string $string, callable $callback) : ?CoreUser {
+
+    public function getCoreUser(string $string, callable $callback) : void {
 		if(!empty($this->getCoreUsers())) {
 			foreach($this->getCoreUsers() as $coreUser) {
 				if($coreUser instanceof CoreUser) {
@@ -279,10 +279,11 @@ class Stats implements Statistics {
 				}
 			}
 		}
-		return $this->getDirectUser($string, $callback);
+
+		$this->getDirectUser($string, $callback);
     }
-	
-	public function getDirectUser(string $string, callable $callback) : ?CoreUser {
+
+	public function getDirectUser(string $string, callable $callback) : void {
 		$this->core->getDatabase()->executeSelect("stats.get", ['key' => $string], function(array $rows) use($callback) {
 			foreach($rows as [
 				"xuid" => $xuid,
@@ -290,16 +291,14 @@ class Stats implements Statistics {
 			]) {
 				$coreUser = new CoreUser($xuid);
 				$users[$xuid] = $coreUser;
-							
+
 				$coreUser->load($rows);
 				$callback($coreUser);
 			}
 		});
-		$callback(null);
-		return null;
 	}
-	
-	public function getAllCoreUsers(callable $callback) : array {
+
+	public function getAllCoreUsers(callable $callback) : void {
 		$this->core->getDatabase()->executeSelect("stats.getAll", [], function(array $rows) use($callback) {
 			$users = [];
 			
