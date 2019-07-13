@@ -409,7 +409,7 @@ class CoreListener implements Listener {
     public function onPlayerExhaust(PlayerExhaustEvent $event) {
         $player = $event->getPlayer();
 
-        if($player instanceof CorePlayer) {
+        if($player instanceof CorePlayer and $player->isInitialized()) {
             $area = $player->getArea();
 
             if(!is_null($area)) {
@@ -514,6 +514,10 @@ class CoreListener implements Listener {
 
         if($player instanceof CorePlayer) {
             $player->rotateNPCs();
+
+			if(!$player->isInitialized()){
+				return;
+			}
 
             if(!$event->getFrom()->equals($event->getTo())) {
                 if($player->updateArea()) {

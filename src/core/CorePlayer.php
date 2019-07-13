@@ -101,14 +101,21 @@ class CorePlayer extends Player {
     }
 
     public function getCoreUser() : CoreUser {
-        return $this->core->getStats()->getCoreUser($this->getXuid(), function($user) {});
+		if(!$this->isInitialized()){
+			throw new \RuntimeException("Tried to get core user of uninitialized player");
+		}
+
+        return $this->coreUser;
     }
 
-    public function join() {
     public function join(CoreUser $coreUser) {
+		if($this->isInitialized()){
+			throw new RuntimeException('Tried to initialize player again');
+		}
 		$this->coreUser = $this->coreUser;
+
         $this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
-        $this->attach();
+		$this->attach();
         $this->updatePermissions();
 		$this->spawnNPCs();
         $this->spawnFloatingTexts();
@@ -135,6 +142,10 @@ class CorePlayer extends Player {
         $this->getCoreUser()->setServer(null);
         $this->getCoreUser()->save();
     }
+
+	public function isInitialized(): bool{
+		return $this->coreUser instanceof CoreUser;
+	}
 
     public function broadcast(string $broadcast) : string {
         $format = $this->core->getBroadcast()->getFormats("broadcast");
