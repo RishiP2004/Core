@@ -461,7 +461,7 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
 
-			$this->core->getStats()->getCoreUser($player->getXuid(), function($user) use($player, $event) {
+			$this->core->getStats()->getCoreUser($player->getXuid(), function(CoreUser $user) use($player, $event) {
 				$message = "";
 				
 				if(is_null($user)) {
@@ -495,7 +495,7 @@ class CoreListener implements Listener {
 								], $this->core->getBroadcast()->getJoins("normal"));
 							}
 						}
-						$player->join();
+						$player->join($user);
 					}
 				}
 				$event->setJoinMessage($message);

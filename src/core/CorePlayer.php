@@ -72,6 +72,7 @@ class CorePlayer extends Player {
      * @var \core\Core
      */
     private $core;
+	private $coreUser;
 
     private $interacts = [], $attachments = [];
 
@@ -104,6 +105,8 @@ class CorePlayer extends Player {
     }
 
     public function join() {
+    public function join(CoreUser $coreUser) {
+		$this->coreUser = $this->coreUser;
         $this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
         $this->attach();
         $this->updatePermissions();
