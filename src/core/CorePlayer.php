@@ -669,7 +669,9 @@ class CorePlayer extends Player {
     }
 
     public function getArea() : ?Area {
-        return $this->core->getWorld()->getArea($this->core->getWorld()->players[$this->getName()]) ?? null;
+		$areaName = $this->core->getWorld()->players[$this->getName()] ?? null;
+
+        return $areaName !== null ? $this->core->getWorld()->getArea($areaName) : null;
     }
 
     public function updateArea() : bool {
