@@ -273,8 +273,7 @@ class Stats implements Statistics {
 				if($coreUser instanceof CoreUser) {
 					if($coreUser->getXuid() === $string or $coreUser->getName() === $string) {
 						$callback($coreUser);
-					} else {
-						$this->getDirectUser($string, $callback);
+						return;
 					}
 				}
 			}
