@@ -112,7 +112,7 @@ class CorePlayer extends Player {
 		if($this->isInitialized()){
 			throw new RuntimeException('Tried to initialize player again');
 		}
-		$this->coreUser = $this->coreUser;
+		$this->coreUser = $coreUser;
 
         $this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
 		$this->attach();
