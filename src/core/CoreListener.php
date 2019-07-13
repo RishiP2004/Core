@@ -463,11 +463,11 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
 
-			$this->core->getStats()->getCoreUser($player->getXuid(), function(CoreUser $user) use($player, $event) {
+			$this->core->getStats()->getCoreUser($player->getXuid(), function(?CoreUser $user) use($player, $event) {
 				$message = "";
-				
-				if(is_null($user)) {
-					$this->core->getStats()->registerCoreUser($player);		
+
+				if($user === null) {
+					$this->core->getStats()->registerCoreUser($player);
 
 					if(!$player->hasPlayedBefore()) {
 						if(!empty(Broadcasts::JOINS["first"])) {
