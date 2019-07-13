@@ -363,10 +363,7 @@ class CorePlayer extends Player {
     }
 
     public function addToInteract() {
-		$this->interacts[] = "time";
-		$this->interacts[] = "amount";
-
-        if($this->interacts["time"] === time()) {
+        if(($this->interacts["time"] ?? 0) === time()) {
             $this->interacts["amount"]++;
             return;
         }

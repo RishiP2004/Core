@@ -426,7 +426,9 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
-            $this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER)->onRun();
+			$antiAutoClicker = $this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER);
+			$antiAutoClicker->set($player);
+            $antiAutoClicker->onRun();
 
             $area = $player->getArea();
 
