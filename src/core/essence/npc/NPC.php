@@ -22,7 +22,7 @@ use pocketmine\network\mcpe\protocol\{
     AddPlayerPacket,
     MobArmorEquipmentPacket,
     PlayerSkinPacket,
-    RemoveEntityPacket,
+    RemoveActorPacket,
     MovePlayerPacket,
     MoveEntityAbsolutePacket
 };
@@ -175,7 +175,7 @@ abstract class NPC {
     public function despawnFrom(CorePlayer $player) {
         unset($this->spawnedTo[$player->getName()]);
 
-        $packet = new RemoveEntityPacket();
+        $packet = new RemoveActorPacket();
         $packet->entityUniqueId = $this->getEID();
 
         $player->sendDataPacket($packet);
