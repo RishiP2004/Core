@@ -344,7 +344,7 @@ class Stats implements Statistics {
 		$coreUser->setLoaded();
 		
 		if($coreUser->loaded()) {
-			$player->join();
+			$player->join($coreUser);
 		}
     }
 
