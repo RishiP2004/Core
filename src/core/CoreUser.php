@@ -36,37 +36,28 @@ class CoreUser {
     }
 
     public function load(array $data) {
-    	foreach($data as [
-    		"registerDate" => $registerDate,
-			"username" => $name,
-			"ip" => $ip,
-			"locale" => $locale,
-			"coins" => $coins,
-			"balance" => $balance,
-			"rank" => $rank,
-			"permissions" => $permissions,
-			"cheatHistory" => $cheatHistory,
-			"server" => $server
-    	]) {
-			$this->registerDate = $registerDate;
-			$this->name = $name;
-			$this->ip = $ip;
-			$this->locale = $locale;
-			$this->coins = $coins;
-			$this->balance = $balance;
-			$this->rank = Core::getInstance()->getStats()->getRank($rank);
-			$this->permissions = [];
-			$this->cheatHistory = [];
-			$this->server = null;
-			
-			if(!is_null($permissions) && !is_null($cheatHistory)) {
-				$this->permissions = unserialize($permissions);
-				$this->cheatHistory = unserialize($cheatHistory);
-			}
-			Core::getInstance()->getStats()->coreUsers[$this->getXuid()] = $this;
-			
-			$this->setLoaded();
+		foreach($data as $field => $value){
+			$$field = $value; // quick hack. It's fragile, looks like magic and should be replaced
 		}
+
+		$this->registerDate = $registerDate;
+		$this->name = $username;
+		$this->ip = $ip;
+		$this->locale = $locale;
+		$this->coins = $coins;
+		$this->balance = $balance;
+		$this->rank = Core::getInstance()->getStats()->getRank($rank);
+		$this->permissions = [];
+		$this->cheatHistory = [];
+		$this->server = null;
+
+		if(!is_null($permissions) && !is_null($cheatHistory)) {
+			$this->permissions = unserialize($permissions);
+			$this->cheatHistory = unserialize($cheatHistory);
+		}
+		Core::getInstance()->getStats()->coreUsers[$this->getXuid()] = $this;
+
+		$this->setLoaded();
     }
 
 	public function loaded() : bool {
