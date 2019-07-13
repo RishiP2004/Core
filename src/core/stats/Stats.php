@@ -284,16 +284,18 @@ class Stats implements Statistics {
 
 	public function getDirectUser(string $string, callable $callback) : void {
 		$this->core->getDatabase()->executeSelect("stats.get", ['key' => $string], function(array $rows) use($callback) {
-			foreach($rows as [
-				"xuid" => $xuid,
-				"username" => $name
-			]) {
-				$coreUser = new CoreUser($xuid);
-				$users[$xuid] = $coreUser;
-
-				$coreUser->load($rows);
-				$callback($coreUser);
+			if(count($rows) === 0){ // player not found
+				$callback(null);
+				return;
 			}
+
+			$data = $rows[0];
+			$xuid = $data['xuid'];
+
+			$coreUser = new CoreUser($xuid);
+
+			$coreUser->load($data);
+			$callback($coreUser);
 		});
 	}
 
