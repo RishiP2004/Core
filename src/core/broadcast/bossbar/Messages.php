@@ -7,7 +7,6 @@ namespace core\broadcast\bossbar;
 use pocketmine\utils\TextFormat;
 
 interface Messages {
-    const ENTITY = 37;
     const MODE = 0;
 
     const HEAD_MESSAGE = "{PREFIX}";

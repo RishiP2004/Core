@@ -23,6 +23,8 @@ use core\mcpe\entity\vehicle\Minecart;
 use core\mcpe\block\SlimeBlock;
 use core\mcpe\event\ServerSettingsRequestEvent;
 
+use core\stats\rank\Rank;
+
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
 	PlayerBedEnterEvent,
@@ -472,6 +474,11 @@ class CoreListener implements Listener {
 
 					if(!$player->hasPlayedBefore()) {
 						if(!empty(Broadcasts::JOINS["first"])) {
+							foreach(Core::getInstance()->getStats()->getRanks() as $r) {
+								if($r->getValue() === Rank::DEFAULT) {
+									$rank = $r;
+								}
+							}
 							$message = str_replace([
 								"{PLAYER}",
 								"{TIME}",
@@ -479,7 +486,7 @@ class CoreListener implements Listener {
 							], [
 								$player->getName(),
 								date($this->core->getBroadcast()->getFormats("date_time")),
-								str_replace("{DISPLAY_NAME}", $player->getName(), $user->getRank()->getNameTagFormat())
+								str_replace("{DISPLAY_NAME}", $rank)
 							], $this->core->getBroadcast()->getJoins("first"));
 						}
 					}					
@@ -737,7 +744,7 @@ class CoreListener implements Listener {
             if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
                 $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$entity], str_replace("{PREFIX}", $this->core->getPrefix(), $this->core->getBroadcast()->getBossBar()->getNotRegisteredMessage()));
             } else {
-                $entity->sendBossBar($this->core->getBroadcast()->getBossBar()->entityRuntimeId, $entity->getBossBarText());
+                $entity->sendBossBar();
             }
             $origin = $event->getOrigin();
             $target = $event->getTarget();

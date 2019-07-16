@@ -40,13 +40,13 @@ use core\stats\task\{
 
 use core\world\area\Area;
 
+use xenialdan\apibossbar\BossBar;
+
 use pocketmine\Player;
 
 use pocketmine\network\SourceInterface;
 
 use pocketmine\network\mcpe\protocol\{
-	AddEntityPacket,
-	BossEventPacket,
 	ActorEventPacket,
 	SetPlayerGameTypePacket,
 	InteractPacket,
@@ -155,88 +155,43 @@ class CorePlayer extends Player {
         return $format;
     }
 
-    public function sendBossBar(int $eid, string $title) {
-        $this->core->getBroadcast()->getBossBar()->remove([$this], $eid);
+    public function sendBossBar() {
+    	$bossBar = new BossBar();
 
-        $pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $eid;
-        $pk->type = $this->core->getBroadcast()->getBossBar()->getEntity();
-        $pk->position = $this->getPosition()->asVector3()->subtract(0, 28);
-        $pk->metadata = [
-            Entity::DATA_LEAD_HOLDER_EID => [
-                Entity::DATA_TYPE_LONG, -1
-            ],
-            Entity::DATA_FLAGS => [
-                Entity::DATA_TYPE_LONG, 0 ^ 1 << Entity::DATA_FLAG_SILENT ^ 1 << Entity::DATA_FLAG_INVISIBLE ^ 1 << Entity::DATA_FLAG_NO_AI
-            ],
-            Entity::DATA_SCALE => [
-                Entity::DATA_TYPE_FLOAT, 0
-            ],
-            Entity::DATA_NAMETAG => [
-                Entity::DATA_TYPE_STRING, $title
-            ],
-            Entity::DATA_BOUNDING_BOX_WIDTH => [
-                Entity::DATA_TYPE_FLOAT, 0
-            ],
-            Entity::DATA_BOUNDING_BOX_HEIGHT => [
-                Entity::DATA_TYPE_FLOAT, 0
-            ]
-        ];
-
-        $this->sendDataPacket($pk);
-
-        $bpk = new BossEventPacket();
-        $bpk->bossEid = $eid;
-        $bpk->eventType = BossEventPacket::TYPE_SHOW;
-        $bpk->title = $title;
-        $bpk->healthPercent = 1;
-        $bpk->unknownShort = 0;
-        $bpk->color = 0;
-        $bpk->overlay = 0;
-        $bpk->playerEid = 0;
-
-        $this->sendDataPacket($bpk);
-    }
-
-    public function getBossBarText() : string {
-        $text = "";
-        $bossBar = $this->core->getBroadcast()->getBossBar();
-
-        if(!empty($bossBar->getHeadMessage())) {
-            $text .= $this->formatBossBar($bossBar->getHeadMessage()) . "\n" . "\n" . TextFormat::RESET;
-        }
-        $currentMSG = $this->core->getBroadcast()->getBossBar()->getChanging("messages")[$bossBar->int % count($bossBar->getChanging("messages"))];
+		if(!empty($this->core->getBroadcast()->getBossBar()->getHeadMessage())) {
+			$bossBar->setTitle($this->formatBossBar($this->core->getBroadcast()->getBossBar()->getHeadMessage()) . TextFormat::RESET);
+		}
+        $currentMSG = $this->core->getBroadcast()->getBossBar()->getChanging("messages")[$this->core->getBroadcast()->getBossBar()->int % count($bossBar->getChanging("messages"))];
 
         if(strpos($currentMSG, '%') > -1) {
             $percentage = substr($currentMSG, 1, strpos($currentMSG, '%') - 1);
 
             if(is_numeric($percentage)) {
-                $bossBar->setPercentage(intval($percentage) + 0.5, $bossBar->entityRuntimeId);
+                $bossBar->setPercentage(intval($percentage) + 0.5);
             }
-            $currentMSG = substr($currentMSG, strpos($currentMSG, '%') + 2);
+            $bossBar->setSubTitle(substr($currentMSG, strpos($currentMSG, '%') + 2));
         }
-        $text .= $this->formatBossBar((string) $currentMSG);
-        return mb_convert_encoding($text, "UTF-8");
+        $bossBar->addPlayer($this);
     }
 
-    public function formatBossBar(string $text) : string {
-        $text = str_replace([
-            "{PREFIX}",
-            "{NAME}",
-            "{DISPLAY_NAME}",
-            "{MAX_PLAYERS}",
-            "{ONLINE_PLAYERS}",
-            "{TIME}"
-        ], [
-            $this->core->getPrefix(),
-            $this->getName(),
-            $this->getDisplayName(),
-            $this->core->getServer()->getMaxPlayers(),
-            count($this->creationTime->getServer()->getOnlinePlayers()),
-            date($this->core->getBroadcast()->getFormats("date_time"))
-        ], $text);
-        return $text;
-    }
+	public function formatBossBar(string $text) : string {
+		$text = str_replace([
+			"{PREFIX}",
+			"{NAME}",
+			"{DISPLAY_NAME}",
+			"{MAX_PLAYERS}",
+			"{ONLINE_PLAYERS}",
+			"{TIME}"
+		], [
+			$this->core->getPrefix(),
+			$this->getName(),
+			$this->getDisplayName(),
+			$this->core->getServer()->getMaxPlayers(),
+			count($this->creationTime->getServer()->getOnlinePlayers()),
+			date($this->core->getBroadcast()->getFormats("date_time"))
+		], $text);
+		return $text;
+	}
 
     public function checkFloatingTextsLevelChange(Level $level) {
         foreach($this->core->getEssence()->getFloatingTexts() as $floatingText) {
