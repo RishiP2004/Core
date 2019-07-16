@@ -45,11 +45,11 @@ use pocketmine\Player;
 use pocketmine\network\SourceInterface;
 
 use pocketmine\network\mcpe\protocol\{
-    AddEntityPacket,
-    BossEventPacket,
-	EntityEventPacket,
-    SetPlayerGameTypePacket,
-    InteractPacket,
+	AddEntityPacket,
+	BossEventPacket,
+	ActorEventPacket,
+	SetPlayerGameTypePacket,
+	InteractPacket,
 	ActorPickRequestPacket,
 	PlayerInputPacket,
 	InventoryTransactionPacket,
