@@ -739,10 +739,7 @@ class CoreListener implements Listener {
 
         if($entity instanceof CorePlayer) {
             if(!in_array($event->getTarget(), $this->core->getBroadcast()->getBossBar()->getWorlds())) {
-                $this->core->getBroadcast()->getBossBar()->remove([$entity], $this->core->getBroadcast()->getBossBar()->entityRuntimeId);
-            }
-            if($this->core->getBroadcast()->getBossBar()->entityRuntimeId === null) {
-                $this->core->getBroadcast()->getBossBar()->entityRuntimeId = $this->core->getBroadcast()->getBossBar()->add([$entity], str_replace("{PREFIX}", $this->core->getPrefix(), $this->core->getBroadcast()->getBossBar()->getNotRegisteredMessage()));
+                $entity->removeBossBar();
             } else {
                 $entity->sendBossBar();
             }

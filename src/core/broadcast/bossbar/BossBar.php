@@ -12,12 +12,15 @@ use pocketmine\level\Level;
 class BossBar implements Messages {
     private $core;
 
+    public $bossBar;
+
     private $run = 0;
 
     public $int = 0;
 
     public function __construct(Core $core) {
         $this->core = $core;
+        $this->bossBar = new \xenialdan\apibossbar\BossBar();
     }
 
     public function getMode() : int {
@@ -40,6 +43,10 @@ class BossBar implements Messages {
         return self::WORLDS;
     }
 
+    public function get() {
+    	return $this->bossBar;
+	}
+
     public function tick() {
     	$this->run++;
 
@@ -51,7 +58,7 @@ class BossBar implements Messages {
 					if($world instanceof Level) {
 						foreach($world->getPlayers() as $player) {
 							if($player instanceof CorePlayer) {
-								$player->sendBossBar();
+								$player->setText();
 								$this->int++;
 							}
 						}

@@ -40,8 +40,6 @@ use core\stats\task\{
 
 use core\world\area\Area;
 
-use xenialdan\apibossbar\BossBar;
-
 use pocketmine\Player;
 
 use pocketmine\network\SourceInterface;
@@ -118,6 +116,7 @@ class CorePlayer extends Player {
         $this->updatePermissions();
 		$this->spawnNPCs();
         $this->spawnFloatingTexts();
+        $this->sendBossBar();
 
 		$this->core->getWorld()->players[$this->getName()] = "";
 
@@ -138,6 +137,7 @@ class CorePlayer extends Player {
     public function leave() {
 		$this->despawnNPCs();
         $this->detach();
+        $this->removeBossBar();
         $this->getCoreUser()->setServer(null);
         $this->getCoreUser()->save();
     }
@@ -156,23 +156,31 @@ class CorePlayer extends Player {
     }
 
     public function sendBossBar() {
-    	$bossBar = new BossBar();
+		$this->core->getBroadcast()->getBossBar()->get()->addPlayer($this);
+		$this->setText();
+    }
+
+    public function removeBossBar() {
+		$this->core->getBroadcast()->getBossBar()->get()->removePlayer($this);
+	}
+
+	public function setText() {
+    	$bossBar = $this->core->getBroadcast()->getBossBar()->get();
 
 		if(!empty($this->core->getBroadcast()->getBossBar()->getHeadMessage())) {
 			$bossBar->setTitle($this->formatBossBar($this->core->getBroadcast()->getBossBar()->getHeadMessage()) . TextFormat::RESET);
 		}
-        $currentMSG = $this->core->getBroadcast()->getBossBar()->getChanging("messages")[$this->core->getBroadcast()->getBossBar()->int % count($bossBar->getChanging("messages"))];
+		$currentMSG = $this->core->getBroadcast()->getBossBar()->getChanging("messages")[$this->core->getBroadcast()->getBossBar()->int % count($this->core->getBroadcast()->getBossBar()->getChanging("messages"))];
 
-        if(strpos($currentMSG, '%') > -1) {
-            $percentage = substr($currentMSG, 1, strpos($currentMSG, '%') - 1);
+		if(strpos($currentMSG, '%') > -1) {
+			$percentage = substr($currentMSG, 1, strpos($currentMSG, '%') - 1);
 
-            if(is_numeric($percentage)) {
-                $bossBar->setPercentage(intval($percentage) + 0.5);
-            }
-            $bossBar->setSubTitle(substr($currentMSG, strpos($currentMSG, '%') + 2));
-        }
-        $bossBar->addPlayer($this);
-    }
+			if(is_numeric($percentage)) {
+				$bossBar->setPercentage($percentage / 100);
+			}
+			$bossBar->setSubTitle(substr($currentMSG, strpos($currentMSG, '%') + 2));
+		}
+	}
 
 	public function formatBossBar(string $text) : string {
 		$text = str_replace([
