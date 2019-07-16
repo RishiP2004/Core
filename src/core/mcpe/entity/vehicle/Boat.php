@@ -50,8 +50,8 @@ class Boat extends Entity implements Interactable, Linkable, Lookable, Collidabl
 	}
 
 	public function onCollideWithBlock(Block $block) : void {
-		// TODO: Break boat if with speed
-		// TODO: Implement onCollideWithBlock() method.
+		//TODO: Break boat if with speed
+		//TODO: Implement onCollideWithBlock() method.
 	}
 
 	public function push(AxisAlignedBB $source) : void {

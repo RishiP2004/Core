@@ -36,10 +36,9 @@ class CoreUser {
     }
 
     public function load(array $data) {
-		foreach($data as $field => $value){
-			$$field = $value; // quick hack. It's fragile, looks like magic and should be replaced
+		foreach($data as $field => $value) {
+			$$field = $value;
 		}
-
 		$this->registerDate = $registerDate;
 		$this->name = $username;
 		$this->ip = $ip;

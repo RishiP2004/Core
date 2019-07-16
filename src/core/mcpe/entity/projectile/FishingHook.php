@@ -15,7 +15,7 @@ use pocketmine\block\{
     StillWater
 };
 
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 
 use pocketmine\entity\Entity;
 
@@ -65,9 +65,9 @@ class FishingHook extends Projectile {
             foreach($this->getBlocksAround() as $block) {
                 if($block instanceof Water or $block instanceof StillWater) {
                     $this->touchedWater = true;
-                    $pk = new EntityEventPacket();
+                    $pk = new ActorEventPacket();
                     $pk->entityRuntimeId = $this->getId();
-                    $pk->event = EntityEventPacket::FISH_HOOK_POSITION;
+                    $pk->event = ActorEventPacket::FISH_HOOK_POSITION;
 
                     Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
                     break;
@@ -100,9 +100,9 @@ class FishingHook extends Projectile {
         $owningEntity = $this->getOwningEntity();
 
         if($owningEntity instanceof CorePlayer) {
-            $pk = new EntityEventPacket();
+            $pk = new ActorEventPacket();
             $pk->entityRuntimeId = $this->getId();
-            $pk->event = EntityEventPacket::FISH_HOOK_BUBBLE;
+            $pk->event = ActorEventPacket::FISH_HOOK_BUBBLE;
 
             Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
         }
@@ -112,9 +112,9 @@ class FishingHook extends Projectile {
         $owningEntity = $this->getOwningEntity();
 
         if($owningEntity instanceof CorePlayer) {
-            $pk = new EntityEventPacket();
+            $pk = new ActorEventPacket();
             $pk->entityRuntimeId = $this->getId();
-            $pk->event = EntityEventPacket::FISH_HOOK_HOOK;
+            $pk->event = ActorEventPacket::FISH_HOOK_HOOK;
 
             Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
         }

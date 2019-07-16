@@ -36,10 +36,9 @@ use pocketmine\event\entity\{
     EntityDamageEvent,
     EntityDamageByEntityEvent
 };
-
 use pocketmine\network\mcpe\protocol\{
-    EntityEventPacket,
-    TakeItemEntityPacket,
+	ActorEventPacket,
+	TakeItemActorPacket,
 	LevelSoundEventPacket
 };
 
@@ -167,33 +166,6 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 		parent::attack($source);
 	}
 
-    public function onCollideWithPlayer(Player $player) : void {
-        if($this->target === $player and $this->attackDelay > 10) {
-            $this->attackDelay = 0;
-            $damage = 2;
-
-            switch($this->getLevel()->getDifficulty()) {
-                case Level::DIFFICULTY_EASY:
-                    $damage = 2;
-                break;
-                case Level::DIFFICULTY_NORMAL:
-                    $damage = 3;
-                break;
-                case Level::DIFFICULTY_HARD:
-                    $damage = 4;
-            }
-            if($this->mainHand !== null) {
-                $damage = $this->mainHand->getAttackPoints();
-            }
-            $packet = new EntityEventPacket();
-            $packet->entityRuntimeId = $this->id;
-            $packet->event = EntityEventPacket::ARM_SWING;
-
-            $this->server->broadcastPacket($this->hasSpawned, $packet);
-            $player->attack(new EntityDamageByEntityEvent($this, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
-        }
-    }
-
     public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
         $nbt = self::createBaseNBT($spawnPos);
 
@@ -219,60 +191,88 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
         }
     }
 
-    public function onCollideWithEntity(Entity $entity) : void {
-        if($this->target === $entity and $this->attackDelay > 10) {
-            $this->attackDelay = 0;
-            $damage = 2;
 
-            switch($this->getLevel()->getDifficulty()) {
-                case Level::DIFFICULTY_EASY:
-                    $damage = 2;
-                break;
-                case Level::DIFFICULTY_NORMAL:
-                    $damage = 3;
-                break;
-                case Level::DIFFICULTY_HARD:
-                    $damage = 4;
-            }
-            if($this->mainHand !== null) {
-                $damage = $this->mainHand->getAttackPoints();
-            }
-            $packet = new EntityEventPacket();
-            $packet->entityRuntimeId = $this->id;
-            $packet->event = EntityEventPacket::ARM_SWING;
+	public function onCollideWithPlayer(Player $player) : void {
+		if($this->target === $player and $this->attackDelay > 10) {
+			$this->attackDelay = 0;
+			$damage = 2;
 
-            $this->server->broadcastPacket($this->hasSpawned, $packet);
-            $entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
-        }
-        if($entity instanceof \core\mcpe\entity\object\ItemEntity) {
-            if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
-                return;
-            }
-            $chance = \core\utils\Level::getRegionalDifficulty($this->level, $this->chunk);
+			switch($this->getLevel()->getDifficulty()) {
+				case Level::DIFFICULTY_EASY:
+					$damage = 2;
+					break;
+				case Level::DIFFICULTY_NORMAL:
+					$damage = 3;
+					break;
+				case Level::DIFFICULTY_HARD:
+					$damage = 4;
+			}
+			if($this->mainHand !== null) {
+				$damage = $this->mainHand->getAttackPoints();
+			}
+			$packet = new ActorEventPacket();
+			$packet->entityRuntimeId = $this->id;
+			$packet->event = ActorEventPacket::ARM_SWING;
 
-            if($chance < 50) {
-                return;
-            }
-            $item = $entity->getItem();
+			$this->server->broadcastPacket($this->hasSpawned, $packet);
+			$player->attack(new EntityDamageByEntityEvent($this, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
+		}
+	}
 
-            if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item)) {
-                return;
-            }
-            $packet = new TakeItemEntityPacket();
-            $packet->eid = $this->getId();
-            $packet->target = $entity->getId();
+	public function onCollideWithEntity(Entity $entity) : void {
+		if($this->target === $entity and $this->attackDelay > 10) {
+			$this->attackDelay = 0;
+			$damage = 2;
 
-            $this->server->broadcastPacket($this->getViewers(), $packet);
-            $this->setDropAll();
-            $this->setPersistence(true);
+			switch($this->getLevel()->getDifficulty()) {
+				case Level::DIFFICULTY_EASY:
+					$damage = 2;
+					break;
+				case Level::DIFFICULTY_NORMAL:
+					$damage = 3;
+					break;
+				case Level::DIFFICULTY_HARD:
+					$damage = 4;
+			}
+			if($this->mainHand !== null) {
+				$damage = $this->mainHand->getAttackPoints();
+			}
+			$packet = new ActorEventPacket();
+			$packet->entityRuntimeId = $this->id;
+			$packet->event = ActorEventPacket::ARM_SWING;
 
-            if($this->checkItemValueToMainHand($item)) {
-                $this->mainHand = clone $item;
-            } else if($this->checkItemValueToOffHand($item)) {
-                $this->offHand = clone $item;
-            }
-        }
-    }
+			$this->server->broadcastPacket($this->hasSpawned, $packet);
+			$entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
+		}
+		if($entity instanceof \core\mcpe\entity\object\ItemEntity) {
+			if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
+				return;
+			}
+			$chance = \core\utils\Level::getRegionalDifficulty($this->level, $this->chunk);
+
+			if($chance < 50) {
+				return;
+			}
+			$item = $entity->getItem();
+
+			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item)) {
+				return;
+			}
+			$packet = new TakeItemActorPacket();
+			$packet->eid = $this->getId();
+			$packet->target = $entity->getId();
+
+			$this->server->broadcastPacket($this->getViewers(), $packet);
+			$this->setDropAll();
+			$this->setPersistence(true);
+
+			if($this->checkItemValueToMainHand($item)) {
+				$this->mainHand = clone $item;
+			} else if($this->checkItemValueToOffHand($item)) {
+				$this->offHand = clone $item;
+			}
+		}
+	}
 
     public function checkItemValueToMainHand(Item $item) : bool {
         return true;

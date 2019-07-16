@@ -427,6 +427,7 @@ class CoreListener implements Listener {
 
         if($player instanceof CorePlayer) {
 			$antiAutoClicker = $this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER);
+
 			$antiAutoClicker->set($player);
             $antiAutoClicker->onRun();
 
@@ -517,10 +518,9 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $player->rotateNPCs();
 
-			if(!$player->isInitialized()){
+			if(!$player->isInitialized()) {
 				return;
 			}
-
             if(!$event->getFrom()->equals($event->getTo())) {
                 if($player->updateArea()) {
                     $player->setMotion($event->getFrom()->subtract($player->getLocation()->normalize()->multiply(4)));

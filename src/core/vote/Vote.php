@@ -43,7 +43,6 @@ class Vote implements VoteData {
 	}
 
 	public function getTopVoters(int $display = 5) {
-		$this->core->getServer()->getAsyncPool()->submitTask(new TopVotersTask($this->getAPIKey(), $display));
-		return []; // This needs some serious reworking. Nothing can be returned in this case
+		return $this->core->getServer()->getAsyncPool()->submitTask(new TopVotersTask($this->getAPIKey(), $display));
 	}
 }

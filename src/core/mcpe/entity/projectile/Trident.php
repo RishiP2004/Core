@@ -13,7 +13,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 
 use pocketmine\network\mcpe\protocol\{
-	TakeItemEntityPacket,
+	TakeItemActorPacket,
 	PlaySoundPacket
 };
 
@@ -51,7 +51,7 @@ class Trident extends Projectile {
 		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
 			return;
 		}
-		$pk = new TakeItemEntityPacket();
+		$pk = new TakeItemActorPacket();
 		$pk->eid = $player->getId();
 		$pk->target = $this->getId();
 		$this->server->broadcastPacket($this->getViewers(), $pk);

@@ -43,17 +43,17 @@ use core\world\area\Area;
 use pocketmine\Player;
 
 use pocketmine\network\SourceInterface;
+
 use pocketmine\network\mcpe\protocol\{
     AddEntityPacket,
     BossEventPacket,
 	EntityEventPacket,
     SetPlayerGameTypePacket,
-    EntityPickRequestPacket,
     InteractPacket,
+	ActorPickRequestPacket,
 	PlayerInputPacket,
-    InventoryTransactionPacket,
-    ServerSettingsResponsePacket
-};
+	InventoryTransactionPacket,
+	ServerSettingsResponsePacket};
 
 use pocketmine\entity\Entity;
 
@@ -101,16 +101,15 @@ class CorePlayer extends Player {
     }
 
     public function getCoreUser() : CoreUser {
-		if(!$this->isInitialized()){
+		if(!$this->isInitialized()) {
 			throw new \RuntimeException("Tried to get core user of uninitialized player");
 		}
-
         return $this->coreUser;
     }
 
     public function join(CoreUser $coreUser) {
-		if($this->isInitialized()){
-			throw new RuntimeException('Tried to initialize player again');
+		if($this->isInitialized()) {
+			throw new \RuntimeException('Tried to initialize player again');
 		}
 		$this->coreUser = $coreUser;
 
@@ -143,7 +142,7 @@ class CorePlayer extends Player {
         $this->getCoreUser()->save();
     }
 
-	public function isInitialized(): bool{
+	public function isInitialized() : bool {
 		return $this->coreUser instanceof CoreUser;
 	}
 
@@ -385,7 +384,7 @@ class CorePlayer extends Player {
 
         if(!$fishing) {
 			if($this->fishingHook instanceof FishingHook) {
-				$this->fishingHook->broadcastEntityEvent(EntityEventPacket::FISH_HOOK_TEASE, null, $this->fishingHook->getViewers());
+				$this->fishingHook->broadcastEntityEvent(ActorEventPacket::FISH_HOOK_TEASE, null, $this->fishingHook->getViewers());
 
 				if(!$this->fishingHook->isFlaggedForDespawn()) {
 					$this->fishingHook->flagForDespawn();
@@ -847,7 +846,7 @@ class CorePlayer extends Player {
 		return false; // TODO
 	}
 
-    public function handleEntityPickRequest(EntityPickRequestPacket $pk) : bool {
+    public function handleEntityPickRequest(ActorPickRequestPacket $pk) : bool {
         $target = $this->level->getEntity($pk->entityUniqueId);
 
         if($target === null) {

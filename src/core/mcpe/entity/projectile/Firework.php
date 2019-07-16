@@ -19,7 +19,7 @@ use pocketmine\utils\Random;
 
 use pocketmine\network\mcpe\protocol\{
 	LevelSoundEventPacket,
-	EntityEventPacket
+	ActorEventPacket
 };
 
 use pocketmine\math\RayTraceResult;
@@ -75,7 +75,7 @@ class Firework extends Projectile {
 	}
 
 	public function despawnFromAll() : void {
-		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES);
+		$this->broadcastEntityEvent(ActorEventPacket::FIREWORK_PARTICLES);
 		parent::despawnFromAll();
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BLAST);
 	}

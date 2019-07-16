@@ -55,10 +55,9 @@ use pocketmine\level\particle\{
     WaterDripParticle,
     WaterParticle
 };
-
 use pocketmine\network\mcpe\protocol\{
-	AddEntityPacket,
-	EntityEventPacket
+	ActorEventPacket,
+	AddActorPacket
 };
 
 use pocketmine\utils\Color;
@@ -247,7 +246,7 @@ class Entity extends \pocketmine\entity\Entity {
         $level = $entity->getLevel();
         $chunkX = $entity->x >> 4;
         $chunkZ = $entity->z >> 4;
-        $pk = new AddEntityPacket();
+        $pk = new AddActorPacket();
         $pk->type = $entity::NETWORK_ID;
         $pk->position = $entity->asVector3();
         $pk->entityRuntimeId = $entityId = Entity::$entityCount++;
@@ -256,9 +255,9 @@ class Entity extends \pocketmine\entity\Entity {
         $pk->metadata[Entity::DATA_BOUNDING_BOX_HEIGHT] = [Entity::DATA_TYPE_FLOAT, 0];
         $level->addChunkPacket($chunkX, $chunkZ, $pk);
 
-        $pk2 = new EntityEventPacket();
+        $pk2 = new ActorEventPacket();
         $pk2->entityRuntimeId = $entityId;
-        $pk2->event = EntityEventPacket::DEATH_ANIMATION;
+        $pk2->event = ActorEventPacket::DEATH_ANIMATION;
 
         $level->addChunkPacket($chunkX, $chunkZ, $pk2);
     }
