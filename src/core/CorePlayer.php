@@ -792,7 +792,7 @@ class CorePlayer extends Player {
             $message = $reason;
 
             if($isAdmin) {
-                if(!$this->isBanned()) {
+                if(!$this->core->getEssentials()->getNameBans()->isBanned($this->getName()) or $this->core->getEssentials()->getIpBans()->isBanned($this->getName())) {
                     $message = $this->core->getPrefix() . "You have been Kicked\n" . TextFormat::GRAY . ($reason !== "" ? " Reason: " . $reason : "");
                 }
             } else {
