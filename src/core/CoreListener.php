@@ -1133,7 +1133,7 @@ class CoreListener implements Listener {
 			$players[] = $onlinePlayer;
 		}
 		foreach($this->core->getNetwork()->getServers() as $server) {
-			//$server->query();
+			$server->query();
 		}
 		$event->setPlayerList($players);
 	}
