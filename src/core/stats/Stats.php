@@ -236,16 +236,21 @@ class Stats implements Statistics {
     }
 
 	public function sendTopEconomy(string $unit, CommandSender $sender, int $page, array $ops, array $banned) {
-		$allEconomy = [];
-
-		foreach($this->getCoreUsers() as $user) {
-			if($unit === "coins") {
-				$allEconomy[$user->getName()] = $user->getCoins();
-			} else if($unit === "balance") {
-				$allEconomy[$user->getName()] = $user->getBalance();
+		$this->core->getStats()->getAllCoreUsers(function($users) use($unit, $sender, $page, $ops, $banned) {
+			if(count($users) === 0) {
+				return;
 			}
-		}
-		$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, $ops, $banned));
+			$allEconomy = [];
+			
+			foreach($users as $user) {
+				if($unit === "coins") {
+					$allEconomy[$user->getName()] = $user->getCoins();
+				} else if($unit === "balance") {
+					$allEconomy[$user->getName()] = $user->getBalance();
+				}
+			}
+			$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, $ops, $banned));
+		});
 	}
 
     public function initRank(Rank $rank) {
@@ -302,12 +307,16 @@ class Stats implements Statistics {
 			
 			foreach($rows as [
                 "xuid" => $xuid,
-				"username" => $name
+				"username" => $name,
+				"coins" => $coins,
+				"balance" => $balance
             ]) {
 				$coreUser = new CoreUser($xuid);
 				$users[$xuid] = $coreUser;
 				
 				$coreUser->setName($name);
+				$coreUser->setCoins($coins);
+				$coreUser->setBalance($balance);
 			}
 			$callback($users);
         });
