@@ -54,7 +54,12 @@ class BanIp extends PluginCommand {
 				$expires = Math::expirationStringToTimer($args[2]);
 			}
 			$expire = $expires ?? "Not provided";
-			$reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
+			
+			if(isset($args[1])) {
+				$reason = implode(" ", $args[1]);
+			} else {
+				$reason = "Not provided";
+			}
 			$banList = $this->core->getEssentials()->getIpBans();
 
 			if($banList->isBanned($ip)) {

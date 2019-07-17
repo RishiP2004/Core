@@ -226,7 +226,7 @@ class Essentials {
     }
 
     public function getIpMutes() : \core\essentials\permission\MuteList {
-        $muteList = new \core\essentials\permission\MuteList(self::NAME);
+        $muteList = new \core\essentials\permission\MuteList(self::IP);
 
         $muteList->load();
         return $muteList;

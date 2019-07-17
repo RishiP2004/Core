@@ -69,19 +69,20 @@ class MuteList extends \pocketmine\permission\BanList {
         $entry->setExpires($expires);
         $entry->setSource($source !== null ? $source : $entry->getSource());
 
-        $player = Core::getInstance()->getServer()->getPlayer($target);
         $this->list[$entry->getName()] = $entry;
 
-        Core::getInstance()->getDatabase()->executeInsert("sentences.register", [
-            "xuid" => $player->getXuid(),
-            "registerDate" => date("m:d:y h:A"),
-            "listType" => "mute",
-            "type" => $this->type,
-            "username" => $player->getName(),
-            "sentencer" => $source,
-            "reason" => $reason,
-            "expires" => $expires
-        ]);
+        Core::getInstance()->getStats()->getCoreUser($target, function($user) use($source, $reason, $expires) {
+			Core::getInstance()->getDatabase()->executeInsert("sentences.register", [
+				"xuid" => $user->getXuid(),
+				"registerDate" => date("m:d:y h:A"),
+				"listType" => "mute",
+				"type" => $this->type,
+				"username" => $user->getName(),
+				"sentencer" => $source,
+				"reason" => $reason,
+				"expires" => $expires
+			]);
+		});
         return $entry;
     }
 

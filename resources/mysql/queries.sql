@@ -74,29 +74,32 @@ DELETE FROM stats WHERE xuid = :xuid;
 CREATE TABLE IF NOT EXISTS sentences (
     xuid VARCHAR(16) PRIMARY KEY,
     registerDate VARCHAR(11),
+	listType VARCHAR(5),
     type INT(1),
     username VARCHAR(16),
     sentencer VARCHAR(16),
     reason TEXT,
-    expires TIME
+    expires VARCHAR(18) DEFAULT NULL
 )
 -- # }
 
 -- # { get
-SELECT xuid, registerDate, type, username, sentencer, reason, expires FROM sentences;
+SELECT xuid, registerDate, listType, type, username, sentencer, reason, expires FROM sentences;
 -- # }
 
 -- # { register
 -- #    :xuid string
 -- #    :registerDate string
+-- #    :listType string
 -- #    :type int
 -- #    :username string
 -- #    :sentencer string
 -- #    :reason string
--- #    :expires int
+-- #    :expires string | null
 INSERT INTO sentences (
     xuid,
     registerDate,
+	listType,
     type,
     username,
     sentencer,
@@ -105,6 +108,7 @@ INSERT INTO sentences (
 ) VALUES (
     :xuid,
     :registerDate,
+	:listType,
     :type,
     :username,
     :sentencer,

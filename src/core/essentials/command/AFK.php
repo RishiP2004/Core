@@ -63,9 +63,11 @@ class AFK extends PluginCommand {
 				} else {
 					$AFK = $player->isAFK() === false ? true : false;
 				}
+				$str = ($AFK) ? 'True' : 'False';
+				
 				$player->setAFK($AFK);
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your AFK to " . strtoupper($AFK));
-				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s AFK mode to " . strtoupper($AFK));
+				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your AFK to " . $str);
+				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s AFK mode to " . $str);
 				return true;
             }
         }
@@ -78,8 +80,10 @@ class AFK extends PluginCommand {
 			} else {
 				$AFK = $sender->isAFK() === false ? true : false;
 			}
+			$str = ($AFK) ? 'True' : 'False';
+			
 			$sender->setAFK($AFK);
-			$sender->sendMessage($this->core->getPrefix() . "Set your AFK mode to " . strtoupper($AFK));
+			$sender->sendMessage($this->core->getPrefix() . "Set your AFK mode to " . $str);
 			return true;
         }
     }

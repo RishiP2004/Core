@@ -36,7 +36,7 @@ class Lists extends PluginCommand {
 
             foreach($this->core->getStats()->getRanks() as $rank) {
                 if($rank instanceof Rank) {
-                    $ranks[0] = $rank;
+                    $ranks[] = $rank->getFormat();
                 }
             }
             if(isset($args[0])) {
@@ -44,69 +44,71 @@ class Lists extends PluginCommand {
 					case "lobby":
 						$sender->sendMessage($this->core->getPrefix() . "Online Players in Lobby:");
 						
-						if(!empty($this->core->getNetwork()->getServer("Lobby")->getOnlinePlayers())) {
-							foreach($this->core->getNetwork()->getServer("Lobby")->getOnlinePlayers() as $onlinePlayer) {
-								$this->core->getStats()->getCoreUser($onlinePlayer, function($onlineUser) use ($sender, $ranks) {
+						$lobby = $this->core->getNetwork()->getServer("Lobby");
+						$slots = $lobby->getMaxSlots();
+						
+						if(!empty($lobby->getOnlinePlayers())) {
+							foreach($lobby->getOnlinePlayers() as $onlinePlayer) {								
+								$this->core->getStats()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {          
 									$rank = $onlineUser->getRank();
-                
-									if(in_array($rank, $ranks)) {
-										$ranks[1] = $onlineUser->getName();
-										$ranks[2]++;
-									}
+									$ranks[$rank->getFormat()] = $onlineUser->getName();
+									
 									foreach($ranks as $r) {
-										$sender->sendMessage($r->getFormat() . TextFormat::GRAY . " (" . $r[2] . ")" . ":" . "\n" . implode(", ", $r[1]));
+										$sender->sendMessage((string) $r[0] . TextFormat::GRAY . " (" . count((array) $r[1]) . "/" . $slots . ")" . ":" . "\n" . implode(", ", (array) $r[1]));
 									}
 								});
 							}
 						} else {
-							$sender->sendMessage("No one is currently Online!");
+							$sender->sendMessage(TextFormat::GRAY . "No one is currently Online (0/" . $slots . ")");
 						}
 					break;
 					case "factions":
 					    $sender->sendMessage($this->core->getPrefix() . "Online Players in Factions:");
 					    
-						if(!empty($this->core->getNetwork()->getServer("Factions")->getOnlinePlayers())) {
-							foreach($this->core->getNetwork()->getServer("Factions")->getOnlinePlayers() as $onlinePlayer) {
-								$this->core->getStats()->getCoreUser($onlinePlayer, function($onlineUser) use ($sender, $ranks) {
+						$factions = $this->core->getNetwork()->getServer("Factions");
+						$slots = $factions->getMaxSlots();
+						
+						if(!empty($factions->getOnlinePlayers())) {
+							foreach($factions->getOnlinePlayers() as $onlinePlayer) {
+								$this->core->getStats()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
 									$rank = $onlineUser->getRank();
-                
-									if(in_array($rank, $ranks)) {
-										$ranks[1] = $onlineUser->getName();
-										$ranks[2]++;
-									}
+									$ranks[$rank->getFormat()] = $onlineUser->getName();
+									
 									foreach($ranks as $r) {
-										$sender->sendMessage($r->getFormat() . TextFormat::GRAY . " (" . $r[2] . ")" . ":" . "\n" . implode(", ", $r[1]));
+										$sender->sendMessage((string) $r[0] . TextFormat::GRAY . " (" . count((array) $r[1]) . "/" . $slots . ")" . ":" . "\n" . implode(", ", (array) $r[1]));
 									}
 								});
 							}
 						} else {
-							$sender->sendMessage("No one is currently Online!");
+							$sender->sendMessage(TextFormat::GRAY . "No one is currently Online (0/" . $slots . ")!");
 						}
 					break;
 					default:
 						$sender->sendMessage($this->core->getErrorPrefix() . "No such Server in the Athena Network");
 					break;
 				}
-			}
-			$sender->sendMessage($this->core->getPrefix() . "All Online Players:");
-            if(!empty($this->core->getNetwork()->getTotalOnlinePlayers())) {
-				foreach($this->core->getNetwork()->getTotalOnlinePlayers() as $onlinePlayer) {
-					$this->core->getStats()->getCoreUser($onlinePlayer, function($onlineUser) use ($sender, $ranks) {
-						$rank = $onlineUser->getRank();
-                
-						if(in_array($rank, $ranks)) {
-							$ranks[1] = $onlineUser->getName();
-							$ranks[2]++;
-						}
-						foreach($ranks as $r) {
-							$sender->sendMessage($r->getFormat() . TextFormat::GRAY . " (" . $r[2] . ")" . ":" . "\n" . implode(", ", $r[1]));
-						}
-					});
-				}
 			} else {
-				$sender->sendMessage("No one is currently Online!");
+				$sender->sendMessage($this->core->getPrefix() . "All Online Players:");
+				
+				$slots = $this->core->getNetwork()->getTotalMaxSlots();
+			
+				if(!empty($this->core->getNetwork()->getTotalOnlinePlayers())) {
+					foreach($this->core->getNetwork()->getTotalOnlinePlayers() as $onlinePlayer) {
+						$this->core->getStats()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
+							$rank = $onlineUser->getRank();
+							$ranks[$rank->getFormat()] = $onlineUser->getName();
+									
+							foreach($ranks as $r) {
+								$sender->sendMessage((string) $r[0] . TextFormat::GRAY . " (" . count((array) $r[1]) . "/" . $slots . ")" . ":" . "\n" . implode(", ", (array) $r[1]));
+							}
+						});
+					}
+				} else {
+					$sender->sendMessage(TextFormat::GRAY . "No one is currently Online (0/" . $slots . ")!");
+				}
+				return true;
 			}
-			return true;
+			return false;
         }
     }
 }

@@ -55,8 +55,12 @@ class Ban extends PluginCommand {
 					$expires = Math::expirationStringToTimer($args[2]);
 				}
 				$expire = $expires ?? "Not provided";
-				$reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";
-
+				
+				if(isset($args[1])) {
+					$reason = implode(" ", $args[1]);
+				} else {
+					$reason = "Not provided";
+				}
 				$banList->addBan($user->getName(), $reason, null, $sender->getName());
 
 				$player = $this->core->getServer()->getPlayer($user->getName());

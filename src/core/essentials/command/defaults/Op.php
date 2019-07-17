@@ -16,7 +16,7 @@ class Op extends PluginCommand {
     private $core;
 
     public function __construct(Core $core) {
-        parent::__construct("deop", $core);
+        parent::__construct("op", $core);
 
         $this->core = $core;
 
@@ -55,5 +55,6 @@ class Op extends PluginCommand {
 				return true;
 			}
         });
+		return false;
     }
 }
