@@ -51,7 +51,8 @@ use pocketmine\network\mcpe\protocol\{
 	ActorPickRequestPacket,
 	PlayerInputPacket,
 	InventoryTransactionPacket,
-	ServerSettingsResponsePacket};
+	ServerSettingsResponsePacket
+};
 
 use pocketmine\entity\Entity;
 
@@ -195,7 +196,7 @@ class CorePlayer extends Player {
 			$this->getName(),
 			$this->getDisplayName(),
 			$this->core->getServer()->getMaxPlayers(),
-			count($this->creationTime->getServer()->getOnlinePlayers()),
+			count($this->getServer()->getOnlinePlayers()),
 			date($this->core->getBroadcast()->getFormats("date_time"))
 		], $text);
 		return $text;
