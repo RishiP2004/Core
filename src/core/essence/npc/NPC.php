@@ -21,11 +21,14 @@ use pocketmine\utils\UUID;
 use pocketmine\network\mcpe\protocol\{
     AddPlayerPacket,
     MobArmorEquipmentPacket,
+	PlayerListPacket,
     PlayerSkinPacket,
     RemoveActorPacket,
     MovePlayerPacket,
     MoveEntityAbsolutePacket
 };
+
+use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 
 use pocketmine\command\ConsoleCommandSender;
 
@@ -36,8 +39,13 @@ abstract class NPC {
 
     private $int = 0;
 
+	private $id;
+	private $uuid;
+
     public function __construct(string $name) {
         $this->name = $name;
+		$this->id = Entity::$entityCount++;
+		$this->uuid = UUID::fromRandom();
     }
 
     public final function getName() : string {
@@ -65,11 +73,11 @@ abstract class NPC {
     public abstract function getMessages() : array;
 
     public function getUUID() : UUID {
-        return UUID::fromRandom();
+        return $this->uuid;
     }
 
     public function getEID() : int {
-        return Entity::$entityCount++;
+        return $this->id;
     }
 
     public function isSpawnedTo(CorePlayer $player) {
@@ -77,6 +85,11 @@ abstract class NPC {
     }
 
     public function spawnTo(CorePlayer $player) {
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
+		$pk->entries = [PlayerListEntry::createAdditionEntry($this->getUUID(), $this->getEID(), $this->getName(), $this->getSkin())];
+		$player->dataPacket($pk);
+
         $this->spawnedTo[$player->getName()] = true;
         $packet = new AddPlayerPacket();
         $packet->uuid = $this->getUUID();
@@ -165,11 +178,15 @@ abstract class NPC {
 
         $player->sendDataPacket($maep);
 
-        $psp = new PlayerSkinPacket();
-        $psp->uuid = $this->getUUID();
-        $psp->skin = $this->getSkin();
+		$psp = new PlayerSkinPacket();
+		$psp->uuid = $this->getUUID();
+		$psp->skin = $this->getSkin();
+		$player->sendDataPacket($psp);
 
-        $player->sendDataPacket($psp);
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_REMOVE;
+		$pk->entries = [PlayerListEntry::createRemovalEntry($this->getUUID())];
+		$player->dataPacket($pk);
     }
 
     public function despawnFrom(CorePlayer $player) {
