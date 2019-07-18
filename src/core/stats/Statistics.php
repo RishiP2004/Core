@@ -17,9 +17,6 @@ interface Statistics {
 
     const ALLOWED_TRANSPARECNY_PERCENTAGE = 5;
 
-    const AFK_AUTO_SET = 300;
-    const AFK_AUTO_KICK = 300;
-
     const COIN_VALUE = 1000;
 
     const UNITS = [

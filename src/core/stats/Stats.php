@@ -98,7 +98,6 @@ class Stats implements Statistics {
         $this->initRank(new Staff());
         $this->initRank(new Universal());
         $this->initRank(new YouTuber());
-        $this->scheduleAFKSetter();
 		$this->core->getServer()->getCommandMap()->register(Accounts::class, new Accounts($this->core));
 		$this->core->getServer()->getCommandMap()->register(AddPlayerPermission::class, new AddPlayerPermission($this->core));
 		$this->core->getServer()->getCommandMap()->register(BuyRank::class, new BuyRank($this->core));
@@ -376,10 +375,4 @@ class Stats implements Statistics {
 			}
 		}
 	}
-
-    public function scheduleAFKSetter() {
-        if($this->getAFKAutoSet() > 0) {
-            $this->core->getScheduler()->scheduleDelayedTask(new AFKSetter($this->core), 600);
-        }
-    }
 }

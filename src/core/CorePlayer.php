@@ -136,6 +136,7 @@ class CorePlayer extends Player {
     }
 
     public function leave() {
+		$this->core->getMCPE()->getScoreboardManager()->removePotentialViewer($this->getName());
 		$this->despawnNPCs();
         $this->detach();
         $this->removeBossBar();
@@ -269,37 +270,6 @@ class CorePlayer extends Player {
                 $NPC->move($this);
             }
         }
-    }
-
-    public function isAFK() : bool {
-        return $this->AFK;
-    }
-
-    public function setAFK(bool $AFK) {
-        $time = $this->core->getStats()->getAFKAutoKick();
-
-        if(!$AFK && ($id = $this->getAFKKickTaskID()) !== null) {
-            $this->core->getScheduler()->cancelTask($id);
-            $this->setAFKKickTaskId(null);
-        } else if($AFK && (is_int($time) && $time > 0) && !$this->hasPermission("core.stats.afk.kick")) {
-            $task = $this->core->getScheduler()->scheduleDelayedTask(new AFKKick($this->core, $this), $time * 20);
-
-            $this->setAFKKickTaskID($task->getTaskId());
-        }
-        $this->AFK = $AFK;
-
-        $this->sendMessage($this->core->getPrefix() . "You are " . ($this->isAFK() ? "now" : "no longer") . " AFK");
-    }
-
-    public function getAFKKickTaskId() : ?int {
-        if(!$this->isAFK()) {
-            return null;
-        }
-        return $this->kickAFK;
-    }
-
-    public function setAFKKickTaskId(?int $id) {
-        $this->kickAFK = $id;
     }
 
     public function getLastMovement() : ?int {
@@ -516,15 +486,14 @@ class CorePlayer extends Player {
                 });
             break;
             case "global":
-                $server = "";
+                $server = "Offline";
 
-                if($user instanceof CoreUser) {
+                if(!is_null($user->getServer())) {
                     $server = $user->getServer()->getName();
                 }
                 $data = [
                     "Coins" => $user->getCoins(),
                     "Rank" => $user->getRank()->getName(),
-                    "Permissions" => implode(", ", $user->getPermissions()),
                     "Server" => $server
                 ];
                 $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
