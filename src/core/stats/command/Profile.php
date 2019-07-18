@@ -49,7 +49,7 @@ class Profile extends PluginCommand {
 						if(!is_null($user->getServer())) {
 							$server = $user->getServer()->getName();
 						}
-						$msg = $this->core->getPrefix() . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
+						$msg = $this->core->getPrefix() . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
 					} else {
 						switch(strtolower($args[1])) {
 							case "global":

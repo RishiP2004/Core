@@ -492,8 +492,9 @@ class CorePlayer extends Player {
                     $server = $user->getServer()->getName();
                 }
                 $data = [
+					"Rank" => $user->getRank()->getName(),
                     "Coins" => $user->getCoins(),
-                    "Rank" => $user->getRank()->getName(),
+					"Balance" => $user->getBalance(),
                     "Server" => $server
                 ];
                 $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
