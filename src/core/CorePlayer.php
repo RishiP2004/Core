@@ -75,9 +75,9 @@ class CorePlayer extends Player {
 
     private $interacts = [], $attachments = [];
 
-    private $chatTime = 0;
+    private $chatTime = 0, $lastHeldSlot = 0;
 
-    private $AFK = false, $fishing = false;
+    private $AFK = false, $fishing = false, $usingElytra = false;
     /** @var null|FishingHook */
     public $fishingHook = null;
 	/**

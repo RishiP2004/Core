@@ -35,6 +35,7 @@ use pocketmine\event\player\{
 	PlayerDeathEvent,
 	PlayerExhaustEvent,
 	PlayerInteractEvent,
+	PlayerItemHeldEvent,
 	PlayerJoinEvent,
 	PlayerLoginEvent,
 	PlayerMoveEvent,
@@ -53,7 +54,8 @@ use pocketmine\event\entity\{
 };
 use pocketmine\event\block\{
 	BlockBreakEvent,
-	BlockPlaceEvent};
+	BlockPlaceEvent
+};
 use pocketmine\event\server\{
 	DataPacketReceiveEvent,
 	DataPacketSendEvent,
@@ -459,6 +461,19 @@ class CoreListener implements Listener {
             }
         }
     }
+	
+	public function onPlayerItemHeld(PlayerItemHeldEvent $event) {
+		$player = $event->getPlayer();
+		
+		if($player instanceof CorePlayer) {
+			if($player->isFishing()) {
+				if($ev->getSlot() !== $player->lastHeldSlot) {
+					$player->setFishing(false);
+				}
+			}
+			$player->lastHeldSlot = $event->getSlot();
+		}
+	}
 
     public function onPlayerJoin(PlayerJoinEvent $event) {
         $player = $event->getPlayer();
@@ -657,9 +672,7 @@ class CoreListener implements Listener {
     public function onPlayerQuit(PlayerQuitEvent $event) {
         $player = $event->getPlayer();
 
-        if($player instanceof CorePlayer) {
-        	$this->core->getMCPE()->getScoreboardManager()->removePotentialViewer($player->getName());
-			
+        if($player instanceof CorePlayer) {	
             $message = "";
 
             if($player->hasPermission("core.stats.quit")) {
@@ -702,7 +715,7 @@ class CoreListener implements Listener {
                 }
 			}
 			if($event->getCause() === EntityDamageEvent::CAUSE_FALL) {
-				if($event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === SlimeBlock::class) {
+				if($entity->getArmorInventory()->getChestplate() instanceof Elytra or $event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === SlimeBlock::class) {
 					$event->setCancelled(true);
 				}
 			}
@@ -907,6 +920,18 @@ class CoreListener implements Listener {
 						case PlayerActionPacket::ACTION_DIMENSION_CHANGE_ACK:
 						case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
 							$pk->action = PlayerActionPacket::ACTION_RESPAWN;
+						break;
+						case PlayerActionPacket::ACTION_START_GLIDE:
+								$p->setGenericFlag(CorePlayer::DATA_FLAG_GLIDING, true);
+								
+								$session->usingElytra = $session->allowCheats = true;
+							break;
+						case PlayerActionPacket::ACTION_STOP_GLIDE:
+							$p->setGenericFlag(CorePlayer::DATA_FLAG_GLIDING, false);
+							
+							$session->usingElytra = $session->allowCheats = false;
+							
+							$session->damageElytra();					
 						break;
 						case PlayerActionPacket::ACTION_START_SWIMMING:
 							$player->setGenericFlag(CorePlayer::DATA_FLAG_SWIMMING, true);

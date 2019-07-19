@@ -43,6 +43,7 @@ use core\mcpe\entity\object\ItemEntity;
 use core\mcpe\item\{
 	ArmorStand,
 	Bucket,
+	Elytra,
 	EnchantedBook,
 	EndCrystal,
 	EyeOfEnder,
@@ -170,6 +171,7 @@ class MCPE implements Addon {
 		}
 		ItemFactory::registerItem(new ArmorStand(), true);
 		ItemFactory::registerItem(new Bucket(), true);
+		ItemFactory::registerItem(new Elytra(), true);
 		ItemFactory::registerItem(new EnchantedBook(), true);
 		ItemFactory::registerItem(new EndCrystal(), true);
 		ItemFactory::registerItem(new EyeOfEnder(), true);
