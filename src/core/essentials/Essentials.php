@@ -52,6 +52,7 @@ use core\essentials\command\defaults\{
     Stop,
     Summon,
     Teleport,
+    Tell,
     Time,
     Timings,
     Transfer,
@@ -176,6 +177,7 @@ class Essentials {
         $this->core->getServer()->getCommandMap()->register(Stop::class, new Stop($this->core));
         $this->core->getServer()->getCommandMap()->register(Summon::class, new Summon($this->core));
         $this->core->getServer()->getCommandMap()->register(Teleport::class, new Teleport($this->core));
+	$this->core->getServer()->getCommandMap()->register(Tell::class, new Tell($this->core));
         $this->core->getServer()->getCommandMap()->register(Time::class, new Time($this->core));
         $this->core->getServer()->getCommandMap()->register(Timings::class, new Timings($this->core));
         $this->core->getServer()->getCommandMap()->register(Transfer::class, new Transfer($this->core));

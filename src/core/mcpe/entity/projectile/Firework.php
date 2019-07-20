@@ -119,7 +119,7 @@ class Firework extends Projectile {
 	}
 
 	public function sendData($player, array $data = null) : void {
-		if(!is_array($player) {
+		if(!is_array($player)) {
 			$player = [$player];
 		}
 		$pk = new SetActorDataPacket();
