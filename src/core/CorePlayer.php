@@ -406,22 +406,24 @@ class CorePlayer extends Player {
             }
         }
         $this->sendForm(new MenuForm(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options,
-			function(CorePlayer $player, Button $button) : void {
-				$server = Core::getInstance()->getNetwork()->getServer($button->getId());
+			function(Player $player, Button $button) : void {
+				if($player instanceof CorePlayer) {
+					$server = Core::getInstance()->getNetwork()->getServer($button->getId());
 
-				if($server instanceof Server) {
-					if(!$player->hasPermission("core.network." . $server->getName())) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have Permission to use this Server");
-					}
-					if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . $server->getName() . " is Whitelisted");
-					} else {
-						$player->transfer($server->getIp() . $server->getPort());
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Transferring to the Server " . $server->getName());
+					if($server instanceof Server) {
+						if(!$player->hasPermission("core.network." . $server->getName())) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have Permission to use this Server");
+						}
+						if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . $server->getName() . " is Whitelisted");
+						} else {
+							$player->transfer($server->getIp() . $server->getPort());
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Transferring to the Server " . $server->getName());
+						}
 					}
 				}
 			},
-			function(CorePlayer $player) : void {
+			function(Player $player) : void {
 				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Servers Form");
         }));
     }
@@ -451,20 +453,22 @@ class CorePlayer extends Player {
                 $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
 
                 $this->sendForm(new MenuForm(TextFormat::GOLD . $profile, TextFormat::GRAY . "Select an Option", $options,
-					function(CorePlayer $player, Button $button) use ($user) : void {
-						switch($button->getId()) {
-							case 1:
-								$player->sendProfileForm("global", $user);
-							break;
-							case 2:
-								//$player->sendProfileForm("lobby", $this->user);
-							break;
-							case 3:
-								//$player->sendProfileForm("factions", $this->user);
-							break;
+					function(Player $player, Button $button) use ($user) : void {
+						if($player instanceof CorePlayer) {
+							switch($button->getId()) {
+								case 1:
+									$player->sendProfileForm("global", $user);
+								break;
+								case 2:
+									//$player->sendProfileForm("lobby", $this->user);
+								break;
+								case 3:
+									//$player->sendProfileForm("factions", $this->user);
+								break;
+							}
 						}
 					},
-					function(CorePlayer $player) : void {
+					function(Player $player) : void {
 						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
 					}
 				));
@@ -488,8 +492,8 @@ class CorePlayer extends Player {
                 ];
                 $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
 
-                $this->sendForm(new CustomForm(TextFormat::GOLD . $profile . TextFormat::BLUE . " (Global)", $data, function() : void {},
-					function(CorePlayer $player) : void {
+                $this->sendForm(new CustomForm(TextFormat::GOLD . $profile . TextFormat::BLUE . " (Global)", $data, function(Player $player) : void {},
+					function(Player $player) : void {
 						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
 					}
 				));
@@ -527,40 +531,42 @@ class CorePlayer extends Player {
 		];
 
 		$this->sendForm(new CustomForm(TextFormat::GOLD . "Currency Exchange", $elements,
-			function(CorePlayer $player, CustomFormResponse $data) : void {
-				$type = $data->getDropdown()->getSelectedOption();
-				$amount = $data->getInput()->getValue();
+			function(Player $player, CustomFormResponse $data) : void {
+				if($player instanceof CorePlayer) {
+					$type = $data->getDropdown()->getSelectedOption();
+					$amount = $data->getInput()->getValue();
 
-				if(!$type or !is_int($amount)) {
-					$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
-					return;
-				}
-				$user = $player->getCoreUser();
+					if(!$type or !is_int($amount)) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
+						return;
+					}
+					$user = $player->getCoreUser();
 
-				if($type === "Coins") {
-					if($amount > 1000) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
-						return;
+					if($type === "Coins") {
+						if($amount > 1000) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
+							return;
+						}
+						if($user->getCoins() < $amount) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
+							return;
+						}
+						$user->setCoins($amount / 1000);
+						$user->setBalance($user->getBalance() - $amount);
+						$player->sendMessage("Transferred " . $amount . " Balance to Coins");
 					}
-					if($user->getCoins() < $amount) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
-						return;
+					if($type === "Balance") {
+						if($user->getBalance() < $amount) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
+							return;
+						}
+						$user->setBalance($user->getBalance() * 1000);
+						$user->setCoins($user->getCoins() - $amount);
+						$player->sendMessage("Transferred " . $amount . " Coins to Balance");
 					}
-					$user->setCoins($amount / 1000);
-					$user->setBalance($user->getBalance() - $amount);
-					$player->sendMessage("Transferred " . $amount . " Balance to Coins");
-				}
-				if($type === "Balance") {
-					if($user->getBalance() < $amount) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
-						return;
-					}
-					$user->setBalance($user->getBalance() * 1000);
-					$user->setCoins($user->getCoins() - $amount);
-					$player->sendMessage("Transferred " . $amount . " Coins to Balance");
 				}
 			},
-			function(CorePlayer $player) : void {
+			function(Player $player) : void {
 				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Currency Change menu");
 			}
 		));
@@ -572,7 +578,7 @@ class CorePlayer extends Player {
 		];
 		$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
 		$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Settings", $elements, $image,
-			function(CorePlayer $player, CustomFormResponse $response) {
+			function(Player $player, CustomFormResponse $response) {
 
 			}
 		);
@@ -587,7 +593,7 @@ class CorePlayer extends Player {
 				];
 				$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
 				$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Factions Settings", $elements, $image,
-					function(CorePlayer $player, CustomFormResponse $response) {
+					function(Player $player, CustomFormResponse $response) {
 
 					}
 				);
