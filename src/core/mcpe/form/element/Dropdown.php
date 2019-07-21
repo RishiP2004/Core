@@ -4,11 +4,15 @@ declare(strict_types = 1);
 
 namespace core\mcpe\form\element;
 
+use pocketmine\form\FormValidationException;
+
 class Dropdown extends Element {
     /** @var string[] */
     protected $options;
-
-    protected $default = 0;
+	/**
+	 * @var int
+	 */
+    protected $default;
 
     public function __construct(string $text, array $options, int $default = 0) {
         parent::__construct($text);
@@ -39,4 +43,12 @@ class Dropdown extends Element {
             "default" => $this->default
         ];
     }
+
+	public function validate($value) : void {
+		parent::validate($value);
+
+		if(!isset($this->options[$value])) {
+			throw new FormValidationException("Option with index $value does not exist in dropdown");
+		}
+	}
 }

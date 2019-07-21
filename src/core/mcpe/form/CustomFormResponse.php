@@ -17,6 +17,9 @@ use core\mcpe\form\element\{
 use pocketmine\form\FormValidationException;
 
 class CustomFormResponse {
+	/**
+	 * @var Element[]
+	 */
     private $elements;
 
     public function __construct(array $elements) {
@@ -51,4 +54,16 @@ class CustomFormResponse {
     public function getToggle() : Toggle {
         return $this->tryGet(Toggle::class);
     }
+
+	public function getValues() : array {
+		$values = [];
+
+		foreach($this->elements as $element) {
+			if($element instanceof Label) {
+				continue;
+			}
+			$values[] = $element instanceof Dropdown ? $element->getSelectedOption() : $element->getValue();
+		}
+		return $values;
+	}
 }

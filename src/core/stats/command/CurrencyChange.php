@@ -39,6 +39,7 @@ class CurrencyChange extends PluginCommand {
 			return false;
 		} else {
 			$sender->sendCurrencyChangeForm();
+			$sender->sendMessage($this->core->getPrefix() . "Opened Currency Change menu");
 			return true;
 		}
 	}

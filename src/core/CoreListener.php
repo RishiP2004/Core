@@ -23,6 +23,8 @@ use core\mcpe\entity\vehicle\Minecart;
 use core\mcpe\block\SlimeBlock;
 use core\mcpe\event\ServerSettingsRequestEvent;
 
+use core\mcpe\item\Elytra;
+
 use core\stats\rank\Rank;
 
 use pocketmine\event\Listener;
@@ -922,16 +924,24 @@ class CoreListener implements Listener {
 							$pk->action = PlayerActionPacket::ACTION_RESPAWN;
 						break;
 						case PlayerActionPacket::ACTION_START_GLIDE:
-								$p->setGenericFlag(CorePlayer::DATA_FLAG_GLIDING, true);
+								$player->setGenericFlag(CorePlayer::DATA_FLAG_GLIDING, true);
 								
-								$session->usingElytra = $session->allowCheats = true;
+								$player->usingElytra = $player->allowCheats = true;
 							break;
 						case PlayerActionPacket::ACTION_STOP_GLIDE:
-							$p->setGenericFlag(CorePlayer::DATA_FLAG_GLIDING, false);
+							$player->setGenericFlag(CorePlayer::DATA_FLAG_GLIDING, false);
 							
-							$session->usingElytra = $session->allowCheats = false;
-							
-							$session->damageElytra();					
+							$player->usingElytra = $player->allowCheats = false;
+
+							if(!$player->isAlive() || !$player->isSurvival()) {
+								return;
+							}
+							$inv = $player->getArmorInventory();
+							$elytra = $inv->getChestplate();
+
+							if($elytra instanceof Elytra) {
+								$elytra->applyDamage(1);
+							}
 						break;
 						case PlayerActionPacket::ACTION_START_SWIMMING:
 							$player->setGenericFlag(CorePlayer::DATA_FLAG_SWIMMING, true);
@@ -962,6 +972,22 @@ class CoreListener implements Listener {
 			case $pk instanceof StartGamePacket:
 				$pk->dimension = Level::getDimension($player->getLevel());
 			break;
+		}
+	}
+
+	public function onServerSettingsRequest(ServerSettingsRequestEvent $event) {
+    	$player = $event->getPlayer();
+
+    	if($player instanceof CorePlayer) {
+    		switch($player->getCoreUser()->getServer()->getName()) {
+				case "Factions":
+					$event->setForm($player->getServerSettingsForm("factions"));
+				break;
+				case "Lobby":
+					$event->setForm($player->getServerSettingsForm("lobby"));
+				break;
+			}
+			$event->setForm($player->getServerSettingsForm());
 		}
 	}
 

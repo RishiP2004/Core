@@ -46,6 +46,11 @@ class SendPopup extends SubCommand {
         } else {
             if(isset($args[1])) {
                 $player = $this->core->getServer()->getPlayer($args[1]);
+
+                if(!$player instanceof CorePlayer) {
+                	$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
+                	return false;
+				}
             } else {
                 $player = null;
             }

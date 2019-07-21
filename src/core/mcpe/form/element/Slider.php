@@ -7,7 +7,10 @@ namespace core\mcpe\form\element;
 use pocketmine\form\FormValidationException;
 
 class Slider extends Element {
-    protected $min = 0.0, $max = 0.0, $step = 1.0, $default = 0.0;
+	/**
+	 * @var float
+	 */
+    protected $min, $max, $step = 1.0, $default;
 
     public function __construct(string $text, float $min, float $max, float $step = 1.0, ?float $default = null) {
         parent::__construct($text);
@@ -36,7 +39,7 @@ class Slider extends Element {
         return "slider";
     }
     /**
-     * @return float|int|null
+     * @return float|int
      */
     public function getValue() {
         return parent::getValue();

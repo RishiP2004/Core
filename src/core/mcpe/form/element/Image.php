@@ -7,8 +7,10 @@ namespace core\mcpe\form\element;
 class Image implements \JsonSerializable {
     public const TYPE_URL = "url";
     public const TYPE_PATH = "path";
-
-    private $data = "", $type = "";
+	/**
+	 * @var string
+	 */
+    private $data, $type;
 
     public function __construct(string $data, string $type = self::TYPE_URL) {
         $this->data = $data;

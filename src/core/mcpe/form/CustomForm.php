@@ -12,7 +12,7 @@ use pocketmine\utils\Utils;
 
 use pocketmine\form\FormValidationException;
 
-abstract class CustomForm extends Form {
+class CustomForm extends Form {
     /** @var Element[] */
     private $elements;
     /** @var \Closure */
@@ -41,14 +41,16 @@ abstract class CustomForm extends Form {
         return self::TYPE_CUSTOM_FORM;
     }
 
+	public function append(Element ...$elements) : self {
+		$this->elements = array_merge($this->elements, $elements);
+		return $this;
+	}
+
     protected function serializeFormData() : array {
         return [
             "content" => $this->elements
         ];
     }
-
-	public function onSubmit(Player $player, CustomFormResponse $data) : void {
-	}
 
 	final public function handleResponse(Player $player, $data) : void {
 		if($data === null) {
@@ -65,12 +67,9 @@ abstract class CustomForm extends Form {
 				$element->validate($value);
 				$element->setValue($value);
 			}
-			$this->onSubmit($player, new CustomFormResponse($this->elements));
+			($this->onSubmit)($player, new CustomFormResponse($this->elements));
 		} else {
 			throw new FormValidationException("Expected array or null, got " . gettype($data));
 		}
-	}
-
-	public function onClose(Player $player) : void {
 	}
 }

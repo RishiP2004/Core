@@ -35,6 +35,7 @@ class Servers extends PluginCommand {
             return false;
         } else {
             $sender->sendServerSelectorForm();
+            $sender->sendMessage($this->core->getPrefix() . "Opened Servers menu");
             return true;
         }
     }

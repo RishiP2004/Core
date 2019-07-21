@@ -74,6 +74,7 @@ class Profile extends PluginCommand {
 						return true;
 					}
 					$sender->sendProfileForm("profile", $user);
+					$sender->sendMessage($this->core->getPrefix() . "Opened " . $user->getName() . "'s Profile menu");
 					return true;
 				}
 			});
@@ -84,6 +85,7 @@ class Profile extends PluginCommand {
                 return false;
             } else {
                 $sender->sendProfileForm();
+				$sender->sendMessage($this->core->getPrefix() . "Opened Profile menu");
                 return true;
             }
         }

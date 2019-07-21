@@ -7,12 +7,12 @@ namespace core;
 use core\utils\Item;
 
 use core\essence\npc\NPC;
-
 use core\mcpe\form\{
 	CustomFormResponse,
 	Form,
 	MenuForm,
-	CustomForm
+	CustomForm,
+	ServerSettingsForm
 };
 use core\mcpe\form\element\{
 	Button,
@@ -74,15 +74,19 @@ class CorePlayer extends Player {
 
     private $interacts = [], $attachments = [];
 
-    private $chatTime = 0, $lastHeldSlot = 0;
+    private $chatTime = 0;
 
-    private $AFK = false, $fishing = false, $usingElytra = false;
+	public $lastHeldSlot = 0;
+
+    private $fishing = false;
+
+    public $usingElytra = false, $allowCheats = false;
     /** @var null|FishingHook */
     public $fishingHook = null;
 	/**
 	 * @var int|null
 	 */
-	protected $lastMovement = null, $kickAFK = null;
+	protected $lastMovement = null;
 
     public function __construct(SourceInterface $interface, string $ip, int $port) {
 		parent::__construct($interface, $ip, $port);
@@ -117,6 +121,7 @@ class CorePlayer extends Player {
 		$this->spawnNPCs();
         $this->spawnFloatingTexts();
         $this->sendBossBar();
+        //TODO: Hud and Scoreboard
 
 		$this->core->getWorld()->players[$this->getName()] = "";
 
@@ -400,33 +405,25 @@ class CorePlayer extends Player {
                 $options[] = $b2;
             }
         }
-        $this->sendForm(new class(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options) extends MenuForm {
-          	public function __construct(string $title, string $text, array $buttons = [], ?\Closure $onSubmit = null, ?\Closure $onClose = null) {
-				parent::__construct($title, $text, $buttons, $onSubmit, $onClose);
-			}
+        $this->sendForm(new MenuForm(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options,
+			function(CorePlayer $player, Button $button) : void {
+				$server = Core::getInstance()->getNetwork()->getServer($button->getId());
 
-			public function onSubmit(Player $player, Button $selectedOption) : void {;
-                if($player instanceof CorePlayer) {
-                    $server = Core::getInstance()->getNetwork()->getServer($selectedOption->getId());
-
-                    if($server instanceof Server) {
-                        if(!$player->hasPermission("core.network." . $server->getName())) {
-                            $player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have Permission to use this Server");
-                        }
-                        if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-                            $player->sendMessage(Core::getInstance()->getErrorPrefix() . $server->getName() . " is Whitelisted");
-                        } else {
-                            $player->transfer($server->getIp() . $server->getPort());
-                            $player->sendMessage(Core::getInstance()->getErrorPrefix() . "Transferring to the Server " . $server->getName());
-                        }
-                    }
-                }
-            }
-
-            public function onClose(Player $player) : void {
-                $player->sendMessage(Core::getInstance()->getPrefix() . "Closed Servers menu");
-            }
-        });
+				if($server instanceof Server) {
+					if(!$player->hasPermission("core.network." . $server->getName())) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have Permission to use this Server");
+					}
+					if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . $server->getName() . " is Whitelisted");
+					} else {
+						$player->transfer($server->getIp() . $server->getPort());
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Transferring to the Server " . $server->getName());
+					}
+				}
+			},
+			function(CorePlayer $player) : void {
+				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Servers Form");
+        }));
     }
 
     public function sendProfileForm(string $key = "profile", CoreUser $user = null) {
@@ -451,38 +448,26 @@ class CorePlayer extends Player {
 					$b2,
 					$b3
 				];
-                $this->sendForm(new class(TextFormat::GOLD . $user = null ? $user->getName() . "'s Profile" : "Your Profile", TextFormat::GRAY . "Select an Option", $options, $user) extends MenuForm {
-                    private $user;
+                $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
 
-                    public function __construct(string $title, string $text, array $buttons = [], ?\Closure $onSubmit = null, ?\Closure $onClose = null, $user) {
-						parent::__construct($title, $text, $buttons, $onSubmit, $onClose);
-
-						$this->user = $user;
+                $this->sendForm(new MenuForm(TextFormat::GOLD . $profile, TextFormat::GRAY . "Select an Option", $options,
+					function(CorePlayer $player, Button $button) use ($user) : void {
+						switch($button->getId()) {
+							case 1:
+								$player->sendProfileForm("global", $user);
+							break;
+							case 2:
+								//$player->sendProfileForm("lobby", $this->user);
+							break;
+							case 3:
+								//$player->sendProfileForm("factions", $this->user);
+							break;
+						}
+					},
+					function(CorePlayer $player) : void {
+						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
 					}
-
-					public function onSubmit(Player $player, Button $selectedOption) : void {
-                        if($player instanceof CorePlayer) {
-                            switch($selectedOption->getId()) {
-                                case 1:
-                                    $player->sendProfileForm("global", $this->user);
-                                break;
-                                case 2:
-                                    //$player->sendProfileForm("lobby", $this->user);
-                                break;
-                                case 3:
-                                    //$player->sendProfileForm("factions", $this->user);
-                                break;
-                                default:
-                                    $player->sendMessage(Core::getInstance()->getErrorPrefix() . "Must choose a Profile Option");
-                                break;
-                            }
-                        }
-                    }
-
-                    public function onClose(Player $player) : void {
-                        $player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
-                    }
-                });
+				));
             break;
             case "global":
                 $server = "Offline";
@@ -490,19 +475,24 @@ class CorePlayer extends Player {
                 if(!is_null($user->getServer())) {
                     $server = $user->getServer()->getName();
                 }
+                $l1 = new Label(TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat());
+                $l2 = new Label(TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $user->getCoins());
+                $l3 = new Label(TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $user->getBalance());
+                $l4 = new Label(TextFormat::GRAY . "Server: " . $server);
+
                 $data = [
-					"Rank" => $user->getRank()->getName(),
-                    "Coins" => $user->getCoins(),
-					"Balance" => $user->getBalance(),
-                    "Server" => $server
+                	$l1,
+					$l2,
+					$l3,
+					$l4
                 ];
                 $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
 
-                $this->sendForm(new class(TextFormat::GOLD . $profile . TextFormat::BLUE . "Global", $data, $user) extends CustomForm {
-					public function onClose(Player $player) : void {
-                        $player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
-                    }
-                });
+                $this->sendForm(new CustomForm(TextFormat::GOLD . $profile . TextFormat::BLUE . " (Global)", $data, function() : void {},
+					function(CorePlayer $player) : void {
+						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
+					}
+				));
             break;
         }
     }
@@ -536,51 +526,75 @@ class CorePlayer extends Player {
 			$e5
 		];
 
-		$this->sendForm(new class(TextFormat::GOLD . "Currency Exchange", $elements) extends CustomForm {
-			public function __construct(string $title, array $elements, \Closure $onSubmit, ?\Closure $onClose = null) {
-				parent::__construct($title, $elements, $onSubmit, $onClose);
-			}
-
-			public function onSubmit(Player $player, CustomFormResponse $data) : void {
+		$this->sendForm(new CustomForm(TextFormat::GOLD . "Currency Exchange", $elements,
+			function(CorePlayer $player, CustomFormResponse $data) : void {
 				$type = $data->getDropdown()->getSelectedOption();
 				$amount = $data->getInput()->getValue();
 
-				if($player instanceof CorePlayer) {
-					if(!$type or !is_int($amount)) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
+				if(!$type or !is_int($amount)) {
+					$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
+					return;
+				}
+				$user = $player->getCoreUser();
+
+				if($type === "Coins") {
+					if($amount > 1000) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
 						return;
 					}
-					$user = $player->getCoreUser();
-
-					if($type === "Coins") {
-						if($amount > 1000) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
-							return;
-						}
-						if($user->getCoins() < $amount) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
-							return;
-						}
-						$user->setCoins($amount / 1000);
-						$user->setBalance($user->getBalance() - $amount);
-						$player->sendMessage("Transferred " . $amount . " Balance to Coins");
+					if($user->getCoins() < $amount) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
+						return;
 					}
-					if($type === "Balance") {
-						if($user->getBalance() < $amount) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
-							return;
-						}
-						$user->setBalance($user->getBalance() * 1000);
-						$user->setCoins($user->getCoins() - $amount);
-						$player->sendMessage("Transferred " . $amount . " Coins to Balance");
-					}
+					$user->setCoins($amount / 1000);
+					$user->setBalance($user->getBalance() - $amount);
+					$player->sendMessage("Transferred " . $amount . " Balance to Coins");
 				}
-			}
-
-			public function onClose(Player $player) : void {
+				if($type === "Balance") {
+					if($user->getBalance() < $amount) {
+						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
+						return;
+					}
+					$user->setBalance($user->getBalance() * 1000);
+					$user->setCoins($user->getCoins() - $amount);
+					$player->sendMessage("Transferred " . $amount . " Coins to Balance");
+				}
+			},
+			function(CorePlayer $player) : void {
 				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Currency Change menu");
 			}
-		});
+		));
+	}
+
+	public function getServerSettingsForm(string $server = "lobby") : ServerSettingsForm {
+		$elements = [
+			new Label(TextFormat::GRAY . "Coming Soon!")
+		];
+		$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
+		$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Settings", $elements, $image,
+			function(CorePlayer $player, CustomFormResponse $response) {
+
+			}
+		);
+
+    	switch($server) {
+			case "lobby":
+				return $form;
+			break;
+			case "factions":
+				$elements = [
+					new Label(TextFormat::GRAY . "Coming Soon!")
+				];
+				$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
+				$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Factions Settings", $elements, $image,
+					function(CorePlayer $player, CustomFormResponse $response) {
+
+					}
+				);
+				return $form;
+			break;
+		}
+		return $form;
 	}
 
     public function claimVote() {
@@ -725,32 +739,30 @@ class CorePlayer extends Player {
     }
 
     public function sendSetting(Form $form) {
-        $reflection = new \ReflectionObject($this);
+		$reflection = new \ReflectionObject($this);
+		$idProperty = $reflection->getProperty("formIdCounter");
 
-        $idProperty = $reflection->getProperty("formIdCounter");
+		$idProperty->setAccessible(true);
 
-        $idProperty->setAccessible(true);
+		$id = $idProperty->getValue($this);
 
-        $idPropertyValue = $idProperty->getValue($this);
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        $id = $idPropertyValue++;
+		$idProperty->setValue($this, ++$id);
+		$id--;
 
-        $idProperty->setValue($this, $id);
+		$pk = new ServerSettingsResponsePacket();
+		$pk->formId = $id;
+		$pk->formData = json_encode($form);
 
-        $pk = new ServerSettingsResponsePacket();
-        $pk->formId = $id;
-        $pk->formData = json_encode($form);
+		if($this->sendDataPacket($pk)) {
+			$formsProperty = $reflection->getProperty("forms");
 
-        if($this->sendDataPacket($pk)) {
-            $formsProperty = $reflection->getProperty("forms");
+			$formsProperty->setAccessible(true);
 
-            $formsProperty->setAccessible(true);
+			$formsValue = $formsProperty->getValue($this);
+			$formsValue[$id] = $form;
 
-            $formsValue = $formsProperty->getValue($this);
-            $formsValue[$id] = $form;
-
-            $formsProperty->setValue($this, $formsValue);
-        }
+			$formsProperty->setValue($this, $formsValue);
+		}
     }
 
     public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool {

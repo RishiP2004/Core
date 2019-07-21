@@ -7,8 +7,10 @@ namespace core\mcpe\form\element;
 class Button extends Element {
     /** @var Image|null */
     protected $image;
-
-    protected $type = "";
+	/**
+	 * @var string
+	 */
+    protected $type;
 
     public function __construct(string $text, ?Image $image = null) {
         parent::__construct($text);
@@ -16,7 +18,16 @@ class Button extends Element {
         $this->image = $image;
     }
 
-    public function getType() : ?string {
+	public static function createFromList(string ...$texts) : array {
+		$buttons = [];
+
+		foreach($texts as $text) {
+			$buttons[] = new self($text);
+		}
+		return $buttons;
+	}
+
+	public function getType() : ?string {
         return null;
     }
 
