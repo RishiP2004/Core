@@ -34,8 +34,7 @@ use core\mcpe\block\Pumpkin;
 use core\network\server\Server;
 
 use core\stats\task\{
-    PlayerJoin,
-    AFKKick
+    PlayerJoin
 };
 
 use core\world\area\Area;
