@@ -11,12 +11,12 @@ use pocketmine\nbt\tag\{
     NamedTag
 };
 
+use pocketmine\utils\TextFormat;
+
 abstract class CustomItem extends Item {
-    const CUSTOM = "Custom";
-	
 	private $maxStackSize = 1;
 
-    public function __construct(int $id, string $name = "Custom", array $lore = [], int $maxStackSize = 1, array $enchants = [], array $tags = [], int $meta = 0) {
+    public function __construct(int $id, int $meta = 0, string $name = "Custom", string $customName = TextFormat::GRAY . "Custom", array $lore = [], int $maxStackSize = 64, array $enchants = [], array $tags = []) {
         parent::__construct($id, $meta);
 
         $this->setCustomName($name);
@@ -25,15 +25,8 @@ abstract class CustomItem extends Item {
         foreach($enchants as $enchant) {
             $this->addEnchantment($enchant);
         }
-        if(!empty($tags)) {
-            $this->setNamedTagEntry(new CompoundTag(self::CUSTOM));
-            /** @var CompoundTag $compoundTag */
-            $compoundTag = $this->getNamedTagEntry(self::CUSTOM);
-            /** @var NamedTag $tag */
-            foreach($tags as $tag) {
-                $compoundTag->setTag($tag);
-            }
-        }
+		$this->setNamedTagEntry(new CompoundTag($name));
+
 		$this->maxStackSize = $maxStackSize;
     }
 	

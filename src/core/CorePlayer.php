@@ -390,19 +390,16 @@ class CorePlayer extends Player {
                     $online = "Yes";
                 }
                 $name = TextFormat::GRAY . $server->getName() . "\n" . TextFormat::GRAY . "Online: " . $online . "\n" . TextFormat::GRAY . $onlinePlayers . $maxSlots;
+				$b = new Button($name, new Image($server->getIcon(), Image::TYPE_URL));
 
+				$b->setId($server->getName());
+				
                 if(empty($server->getIcon())) {
-                    $b1 = new Button($name);
+                    $b = new Button($name);
 
-                    $b1->setId($server->getName());
-
-                    $options[] = $b1;
-                }
-				$b2 = new Button($name, new Image($server->getIcon(), Image::TYPE_URL));
-
-				$b2->setId($server->getName());
-
-                $options[] = $b2;
+                    $b->setId($server->getName());
+				}	
+				$options[] = $b;
             }
         }
         $this->sendForm(new MenuForm(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options,
@@ -476,13 +473,27 @@ class CorePlayer extends Player {
             break;
             case "global":
                 $server = "Offline";
-
-                if(!is_null($user->getServer())) {
-                    $server = $user->getServer()->getName();
-                }
-                $l1 = new Label(TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat());
-                $l2 = new Label(TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $user->getCoins());
-                $l3 = new Label(TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $user->getBalance());
+				$profile = "Your Profile";
+				
+				if(!is_null($this->getCoreUser())->getServer()) {
+					$server = $this->getCoreUser()->getServer()->getName();
+				}
+				$rank = $this->getCoreUser()->getRank()->getFormat();
+				$coins = $this->getCoreUser()->getCoins();
+				$balance = $this->getCoreUser()->getBalance();
+				
+				if(!is_null($user)) {
+					if(!is_null($user->getServer())) {
+						$server = $user->getServer()->getName();
+					}
+					$rank = $user->getRank()->getFormat();
+					$coins = $user->getCoins();
+					$balance = $user->getBalance();
+					$profile = $user->getName() . "'s Profile";
+				}
+                $l1 = new Label(TextFormat::GRAY . "Rank: " . $rank);
+                $l2 = new Label(TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $coins);
+                $l3 = new Label(TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $balance);
                 $l4 = new Label(TextFormat::GRAY . "Server: " . $server);
 
                 $data = [
@@ -491,8 +502,7 @@ class CorePlayer extends Player {
 					$l3,
 					$l4
                 ];
-                $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
-
+				
                 $this->sendForm(new CustomForm(TextFormat::GOLD . $profile . TextFormat::BLUE . " (Global)", $data, function(Player $player) : void {},
 					function(Player $player) : void {
 						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
