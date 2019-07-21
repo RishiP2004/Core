@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace core\essence\floatingtext;
 
 use core\Core;
-
+use core\vote\VoteData;
 use lobby\Lobby;
 
 use pocketmine\Server;
@@ -26,7 +26,10 @@ class TopVoter extends FloatingText {
 	}
 
 	public function getText() : string {
-		$voters = Core::getInstance()->getVote()->getTopVoters(10);
+		if(!empty(VoteData::API_KEY)) {
+			return "";
+		}
+		$voters = Core::getInstance()->getVote()->getTopVoters();
 		$i = 1;
 
 		$text = Lobby::getInstance()->getPrefix() . "Top Voters this Month:";
@@ -36,5 +39,9 @@ class TopVoter extends FloatingText {
 			$i++;
 		}
 		return $text;
+	}
+
+	public function getUpdateTime() : ?int {
+		return VoteData::VOTE_UPDATE;
 	}
 }

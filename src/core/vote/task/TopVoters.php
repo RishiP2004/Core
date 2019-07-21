@@ -4,13 +4,16 @@ declare(strict_types = 1);
 
 namespace core\vote\task;
 
+use core\Core;
+use core\CorePlayer;
+
 use core\utils\Website;
 
 use pocketmine\scheduler\AsyncTask;
 
 use pocketmine\Server;
 
-class TopVotersTask extends AsyncTask {
+class TopVoters extends AsyncTask {
 	private $apiKey = "";
 
 	private $limit = 0;
@@ -30,8 +33,13 @@ class TopVotersTask extends AsyncTask {
 		if(explode(" ", $result)[0] === "Error:") {
 			return;
 		}
-		$votes = json_decode($result, true)["voters"];
+		$voters = json_decode($result, true)["voters"];
 
-		$this->setResult($votes);
+		foreach($voters as $index => $voteData) {
+			if(!CorePlayer::isValidUsername($voters['nickname'])) {
+				unset($voters[$index]);
+			}
+		}
+		Core::getInstance()->getVote()->setTopVoters($voters);
 	}
 }

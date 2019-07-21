@@ -153,6 +153,7 @@ class Core extends PluginBase {
 		if($this->stats !== null) {
 			$this->getStats()->unloadUsers();
 		}
+		$this->getScheduler()->cancelAllTasks();
         $this->getServer()->getLogger()->notice($this->getPrefix() . "Core Disabled");
     }
 }

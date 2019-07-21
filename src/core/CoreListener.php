@@ -513,7 +513,7 @@ class CoreListener implements Listener {
 							], [
 								$player->getName(),
 								date($this->core->getBroadcast()->getFormats("date_time")),
-								str_replace("{DISPLAY_NAME}", $rank)
+								str_replace("{DISPLAY_NAME}", $player->getName(), $rank)
 							], $this->core->getBroadcast()->getJoins("first"));
 						}
 					}					
@@ -788,7 +788,7 @@ class CoreListener implements Listener {
 
                 $this->core->getServer()->broadcastMessage($message);
             }
-            $entity->checkNPCLevelChange($event->getTarget());
+            $entity->checkNPCLevelChange();
             $entity->checkFloatingTextsLevelChange($event->getTarget());
         }
     }

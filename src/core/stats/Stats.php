@@ -26,7 +26,6 @@ use core\stats\rank\{
     YouTuber
 };
 use core\stats\task\{
-	AFKSetter,
 	TopEconomy
 };
 use core\stats\command\{
@@ -166,14 +165,6 @@ class Stats implements Statistics {
 
     public function allowedTransparencyPercentage() : int {
         return self::ALLOWED_TRANSPARECNY_PERCENTAGE;
-    }
-
-    public function getAFKAutoSet() : int {
-        return self::AFK_AUTO_SET;
-    }
-
-    public function getAFKAutoKick() : int {
-        return self::AFK_AUTO_KICK;
     }
 
     public function getFallbackSkinData() {

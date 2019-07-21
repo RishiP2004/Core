@@ -13,7 +13,7 @@ use pocketmine\scheduler\AsyncTask;
 
 use pocketmine\Server;
 
-class VoteTask extends AsyncTask {
+class Vote extends AsyncTask {
 	private $apiKey = "", $username = "";
 
 	public function __construct(string $apiKey, string $username) {

@@ -7,6 +7,8 @@ namespace core;
 use core\utils\Item;
 
 use core\essence\npc\NPC;
+use core\essence\floatingtext\FloatingText;
+
 use core\mcpe\form\{
 	CustomFormResponse,
 	Form,
@@ -223,6 +225,10 @@ class CorePlayer extends Player {
         }
     }
 
+    public function updateFloatingText(FloatingText $floatingText) {
+    	$floatingText->spawnTo($this);
+	}
+
     public function areNPCSSpawned() : bool {
         foreach($this->core->getEssence()->getNPCs() as $NPC) {
             return $NPC->isSpawnedTo($this);
@@ -230,10 +236,10 @@ class CorePlayer extends Player {
         return false;
     }
 
-    public function checkNPCLevelChange(Level $level) {
+    public function checkNPCLevelChange() {
         foreach($this->core->getEssence()->getNPCs() as $NPC) {
             if($NPC instanceof NPC) {
-                if($NPC->getPosition()->getLevel()->getName() === $level->getName()) {
+                if($NPC->getPosition()->getLevel()->getName() === $this->getLevel()->getName()) {
                     $NPC->spawnTo($this);
                 } else {
                     $NPC->despawnFrom($this);

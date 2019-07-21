@@ -26,6 +26,8 @@ class Essence implements EssenceData {
 
     private $NPCs = [], $floatingTexts = [];
 
+    private $runs = 0;
+
     public function __construct(Core $core) {
         $this->core = $core;
 
@@ -45,6 +47,18 @@ class Essence implements EssenceData {
     public function getDefaultSkin() : string {
         return self::DEFAULT_SKIN;
     }
+
+	public function tick() {
+		$this->runs++;
+
+		foreach($this->getFloatingTexts() as $floatingText) {
+			if(!is_null($floatingText->getUpdateTime())) {
+				if($this->runs * $floatingText->getUpdateTime() === 0) {
+					$floatingText->update();
+				}
+			}
+		}
+	}
 
     public function initFloatingText(FloatingText $floatingText) {
         $this->floatingTexts[$floatingText->getName()] = $floatingText;

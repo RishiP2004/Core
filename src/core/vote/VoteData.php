@@ -7,6 +7,10 @@ namespace core\vote;
 interface VoteData {
     const API_KEY = "";
 
+    const VOTE_UPDATE = 180;
+
+	const TOP_VOTERS_LIMIT = 50;
+
     const ITEMS = [
 		"57:0:5",
 		"264:0:32",

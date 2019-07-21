@@ -109,7 +109,7 @@ class AntiCheat implements Cheats {
                 $explosion->explodeA();
                 $explosion->explodeB();
             }
-        } else if($this->runs % mktime($this->core->getAntiCheat()->getLagClearTime("hours"), $this->core->getAntiCheat()->getLagClearTime("minutes")) === 0) {
+        } else if($this->runs % mktime($this->getLagClearTime("hours"), $this->getLagClearTime("minutes")) === 0) {
             foreach($this->core->getServer()->getLevels() as $level) {
                 foreach($level->getEntities() as $entity) {
                     if($entity instanceof Human) {
