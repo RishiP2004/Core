@@ -69,7 +69,7 @@ class Twitter extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
         } else {
             if(!$command->execute($sender, $args)) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /twitter" . " " . $command->getName() . " " . $command->getUsage());
+                $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /twitter " . $command->getName() . " " . $command->getUsage());
                 return false;
             } else {
                 return true;

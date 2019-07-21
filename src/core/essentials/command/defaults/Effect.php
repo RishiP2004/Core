@@ -33,7 +33,7 @@ class Effect extends PluginCommand {
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /effect" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /effect " . $this->getUsage());
             return false;
         }
         $player = $this->core->getServer()->getPlayer($args[1]);

@@ -34,7 +34,7 @@ class Tell extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /tell" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /tell " . $this->getUsage());
             return false;
         } else {
             $player = $this->core->getServer()->getPlayer($args[1]);

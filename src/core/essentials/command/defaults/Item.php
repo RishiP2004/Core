@@ -38,7 +38,7 @@ class Item extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /item" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /item " . $this->getUsage());
             return false;
         }
 		$item = ItemFactory::fromString($args[1]);

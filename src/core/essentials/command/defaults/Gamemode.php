@@ -33,7 +33,7 @@ class Gamemode extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /gamemode" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /gamemode " . $this->getUsage());
             return false;
         }
 		$gamemode = Server::getGamemodeFromString($args[0]);

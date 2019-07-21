@@ -32,7 +32,7 @@ class GiveBalance extends PluginCommand {
 			return false;
 		}
 		if(count($args) < 2) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /givebalance" . " " . $this->getUsage());
+			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /givebalance " .  $this->getUsage());
 			return false;
 		}
         if(!is_numeric($args[1])) {

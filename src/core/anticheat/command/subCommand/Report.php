@@ -44,22 +44,24 @@ class Report extends SubCommand {
 		if(count($args) < 2) {
 			return false;
 		}
-		$user = $this->core->getStats()->getCoreUser($args[0]);
+		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			if(is_null($user)) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				return false;
+			} else {
+				$cheat = $this->core->getAntiCheat()->getCheat(trim($args[1]));
 
-		if(!$user) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
-			return false;
-		}
-		$cheat = $this->core->getAntiCheat()->getCheat(trim($args[1]));
-
-		if(!$cheat instanceof \core\anticheat\cheat\Cheat) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Cheat");
-			return false;
-		} else {
-			$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "twitter dm GratonePix " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
-			$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "discord " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
-			$sender->sendMessage($this->core->getPrefix() . "Thanks for Reporting " . $user->getName() . " for " . $cheat->getName());
-			return true;
-		}
+				if(!$cheat instanceof \core\anticheat\cheat\Cheat) {
+					$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Cheat");
+					return false;
+				} else {
+					$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "twitter dm GratonePix " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "discord " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					$sender->sendMessage($this->core->getPrefix() . "Thanks for Reporting " . $user->getName() . " for " . $cheat->getName());
+					return true;
+				}
+			}
+		});
+		return false;
 	}
 }

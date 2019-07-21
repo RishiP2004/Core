@@ -35,7 +35,7 @@ class Teleport extends PluginCommand {
             return false;
         }
         if(count($args) < 4) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /teleport" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /teleport " . $this->getUsage());
             return false;
         }
         $target = null;

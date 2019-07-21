@@ -36,7 +36,7 @@ class Enchant extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /enchant" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /enchant " . $this->getUsage());
             return false;
         }
         if(!is_numeric($args[0])) {

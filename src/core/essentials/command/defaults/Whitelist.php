@@ -32,7 +32,7 @@ class Whitelist extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /whitelist" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /whitelist " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {

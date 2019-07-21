@@ -34,7 +34,7 @@ class Scoreboard extends PluginCommand {
 			return false;
 		}
 		if(count($args) < 1) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard" . " " . $this->getUsage());
+			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard " . $this->getUsage());
 			return false;
 		} else {
 			switch(strtolower($args[0])) {

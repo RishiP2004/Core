@@ -30,7 +30,7 @@ class Discord extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /discord" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /discord " . $this->getUsage());
             return false;
         } else {
             $chatFormat = str_replace(["{PLAYER}", "{MESSAGE}"], [$sender->getName(), implode(" ", $args)], $this->core->getSocial()->getDiscord()->getChatFormat());

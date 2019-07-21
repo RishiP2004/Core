@@ -31,7 +31,7 @@ class UnmuteIp extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unmute-ip" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unmute-ip " . $this->getUsage());
             return false;
         }
 		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {

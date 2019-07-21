@@ -33,7 +33,7 @@ class Difficulty extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /difficulty" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /difficulty " . $this->getUsage());
             return false;
         }
 		$difficulty = Level::getDifficultyFromString($args[0]);

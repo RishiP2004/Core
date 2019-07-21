@@ -38,7 +38,7 @@ class PluginPermissions extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /pluginpermissions" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /pluginpermissions " . $this->getUsage());
             return false;
         }
         $plugin = (strtolower($args[0]) === "pocketmine" or strtolower($args[0]) === "pmmp") ? "pocketmine" : $this->core->getServer()->getPluginManager()->getPlugin($args[0]);

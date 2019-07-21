@@ -36,7 +36,7 @@ class PayBalance extends PluginCommand {
 			return false;
 		}
 		if(count($args) < 2) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /paybalance" . " " . $this->getUsage());
+			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /paybalance " . $this->getUsage());
 			return false;
 		}
         if(!is_numeric($args[1])) {

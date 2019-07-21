@@ -33,7 +33,7 @@ class Kick extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /kick" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /kick " . $this->getUsage());
             return false;
         } else {
             $reason = implode(" ", $args[1]) !== "" ? $args[1] : "Not provided";

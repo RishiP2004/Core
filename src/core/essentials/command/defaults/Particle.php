@@ -42,7 +42,7 @@ class Particle extends PluginCommand {
             return false;
         }
         if(count($args) < 1 && !$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /particle" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /particle " . $this->getUsage());
             return false;
         }
         if($sender instanceof CorePlayer && count($args) < 1) {

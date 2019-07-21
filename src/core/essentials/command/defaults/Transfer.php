@@ -31,7 +31,7 @@ class Transfer extends PluginCommand {
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /transfer" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /transfer " . $this->getUsage());
             return false;
         }
         if(!is_int($args[0])) {

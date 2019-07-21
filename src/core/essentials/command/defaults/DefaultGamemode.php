@@ -32,7 +32,7 @@ class DefaultGamemode extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /defaultgamemode" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /defaultgamemode " . $this->getUsage());
             return false;
         }
         if(Server::getGamemodeFromString($args[0]) === -1) {

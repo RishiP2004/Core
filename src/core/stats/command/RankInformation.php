@@ -35,7 +35,7 @@ class RankInformation extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /rankinformation" . " " . $this->getUsage());
+			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /rankinformation " . $this->getUsage());
             return false;
         }
         $rank = $this->core->getStats()->getRank($args[0]);

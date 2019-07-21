@@ -33,7 +33,7 @@ class BlockIp extends PluginCommand {
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /block-ip" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /block-ip " . $this->getUsage());
             return false;
         }
 		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
