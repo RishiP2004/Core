@@ -212,7 +212,17 @@ class CoreListener implements Listener {
             if(!$player->canChat()) {
                 $event->setCancelled(true);
                 $player->sendMessage($this->core->getErrorPrefix() . "You are currently in Chat cool down. Upgrade your Rank to reduce this cool down!");
-            }
+            } else {
+				$format = str_replace([
+					"{DISPLAY_NAME}",
+					"{MESSAGE}"
+				], [
+					$player->getName(),
+					$message
+				], $player->getCoreUser()->getRank()->getChatFormat());
+				
+				$event->setChatFormat($format);
+			}
             $player->setChatTime();
         }
     }

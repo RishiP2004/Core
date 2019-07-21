@@ -450,7 +450,8 @@ class CorePlayer extends Player {
 					$b2,
 					$b3
 				];
-                $profile = $user = null ? $user->getName() . "'s Profile" : "Your Profile";
+				$per = $user;
+                $profile = $per = null ? $user->getName() . "'s Profile" : "Your Profile";
 
                 $this->sendForm(new MenuForm(TextFormat::GOLD . $profile, TextFormat::GRAY . "Select an Option", $options,
 					function(Player $player, Button $button) use ($user) : void {
@@ -510,7 +511,7 @@ class CorePlayer extends Player {
 
 		$e2->setValue(2);
 
-		$e3 = new Label(TextFormat::GRAY . Core::getInstance()->getStats()->getCoinValue() . "");
+		$e3 = new Label(TextFormat::GRAY . "Value of a Coin (Transferred): " . Core::getInstance()->getStats()->getCoinValue());
 
 		$e3->setValue(3);
 
@@ -518,13 +519,13 @@ class CorePlayer extends Player {
 
 		$e4->setValue(4);
 
-		$e5 = new Input(TextFormat::GRAY . "Amount to Exchange", "0");
+		$e5 = new Input(TextFormat::GRAY . "Amount to Exchange", "100");
 
 		$e5->setValue(5);
 
 		$elements = [
 			$e1,
-			//$e2,
+			$e2,
 			$e3,
 			$e4,
 			$e5
@@ -536,7 +537,7 @@ class CorePlayer extends Player {
 					$type = $data->getDropdown()->getSelectedOption();
 					$amount = $data->getInput()->getValue();
 
-					if(!$type or !is_int($amount)) {
+					if(!is_int((int) $amount)) {
 						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
 						return;
 					}

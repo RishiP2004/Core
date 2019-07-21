@@ -14,22 +14,22 @@ use pocketmine\form\FormValidationException;
 
 class MenuForm extends Form {
     /** @var Button[] */
-    protected $buttons;
+	protected $buttons = [];
 	/** @var string */
-    protected $text;
-    /** @var \Closure|null */
-    private $onSubmit, $onClose;
+	protected $text;
+	/** @var Closure|null */
+	private $onSubmit, $onClose;
 
-    public function __construct(string $title, string $text, array $buttons = [], ?\Closure $onSubmit = null, ?\Closure $onClose = null) {
+	public function __construct(string $title, string $text = "", array $buttons = [], ?\Closure $onSubmit = null, ?\Closure $onClose = null) {
 		parent::__construct($title);
 
 		$this->text = $text;
-
+		
 		$this->append(...$buttons);
 		$this->setOnSubmit($onSubmit);
 		$this->setOnClose($onClose);
-    }
-
+	}
+	
 	final public function getType() : string {
 		return self::TYPE_MENU;
 	}
@@ -58,6 +58,7 @@ class MenuForm extends Form {
 
 	public function setOnClose(?\Closure $onClose) : self {
 		if($onClose !== null) {
+
 			Utils::validateCallableSignature(function(Player $player) : void{}, $onClose);
 
 			$this->onClose = $onClose;
@@ -72,7 +73,7 @@ class MenuForm extends Form {
 		];
 	}
 
-	final public function handleResponse(Player $player, $data) : void {
+	final public function handleResponse(Player $player, $data) : void{
 		if($data === null) {
 			if($this->onClose !== null) {
 				($this->onClose)($player, $data);

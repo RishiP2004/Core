@@ -55,7 +55,7 @@ class CustomForm extends Form {
 	final public function handleResponse(Player $player, $data) : void {
 		if($data === null) {
 			if($this->onClose !== null) {
-				$this->onClose($player);
+				($this->onClose)($player);
 			}
 		} else if(is_array($data)) {
 			foreach($data as $index => $value) {
