@@ -69,14 +69,6 @@ class AntiCheat implements Cheats {
         return self::AUTO_CLICK_AMOUNT;
     }
 
-    public function getProxyURL() : string {
-        return self::PROXY_URL;
-    }
-
-    public function getProxyKey() : string {
-        return self::PROXY_KEY;
-    }
-
 	public function getLagClearTime(string $key) : int {
 		return self::LAG_CLEAR_TIME[$key];
 	}
