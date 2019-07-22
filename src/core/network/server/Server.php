@@ -20,12 +20,13 @@ abstract class Server {
 
     private $onlinePlayers = [];
 
-    private $online = false;
+    private $online = false, $whiteListed = true;
 
     public function __construct(string $name) {
         $this->name = $name;
-
-        $this->query();
+		$this->whitelisted = $this->isWhitelisted();
+        
+		$this->query();
     }
 
     public final function getName() : string {
@@ -58,6 +59,10 @@ abstract class Server {
     public abstract function getIcon() : string;
 
     public abstract function isWhitelisted() : bool;
+	
+	public function setWhitelisted(bool $whitelisted = true) {
+		$this->whitelisted = $whitelisted;
+	}
 
     public function getMaxSlots() : int {
         return $this->maxSlots;

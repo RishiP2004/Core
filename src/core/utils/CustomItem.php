@@ -19,7 +19,7 @@ abstract class CustomItem extends Item {
     public function __construct(int $id, int $meta = 0, string $name = "Custom", string $customName = TextFormat::GRAY . "Custom", array $lore = [], int $maxStackSize = 64, array $enchants = [], array $tags = []) {
         parent::__construct($id, $meta);
 
-        $this->setCustomName($name);
+        $this->setCustomName($customName);
         $this->setLore($lore);
 
         foreach($enchants as $enchant) {

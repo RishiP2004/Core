@@ -24,7 +24,7 @@ class Athie extends NPC {
     public function getPosition() : Position {
     	$level = Server::getInstance()->getLevelByName("Lobby");
 
-        return new Position(138.5, 15, 127.5, $level);
+        return new Position(126, 14, 115, $level);
     }
 
     public function getSize() : float {
@@ -60,9 +60,9 @@ class Athie extends NPC {
 
     public function getMovement() : array {
         return [
-            "103, 12, 85, LobbyGreetings",
-            "104, 15, 86, LobbyGreetings",
-            "104, 15, 87, LobbyGreetings"
+            "103, 12, 85, Lobby",
+            "104, 15, 86, Lobby",
+            "104, 15, 87, Lobby"
         ];
     }
 

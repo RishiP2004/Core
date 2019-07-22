@@ -138,7 +138,7 @@ class CoreUser {
         return $this->permissions;
     }
 
-    public function hasDatabasedPermission(string $permission) {
+    public function hasPermission(string $permission) {
         return in_array($permission, $this->getPermissions());
     }
 

@@ -41,14 +41,14 @@ class SendTitle extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        if(count($args) < 3) {
+        if(count($args) < 2) {
             return false;
         } else {
-            if(isset($args[0])) {
-                $player = $this->core->getServer()->getPlayer($args[2]);
+            if(isset($args[0]) && strtolower($args[0]) !== "all") {
+                $player = $this->core->getServer()->getPlayer($args[0]);
 
 				if(!$player instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
+					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 					return false;
 				}
             } else {

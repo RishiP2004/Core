@@ -38,8 +38,8 @@ class SetSpawn extends PluginCommand {
         } else {
             $sender->getLevel()->setSpawnLocation($sender);
             $sender->getServer()->setDefaultLevel($sender->getLevel());
-            $sender->sendMessage($this->core->getPrefix() . "Server's Spawn changed to Level: " . $sender->getLevel()->getName() . " at X: " . $sender->getX() . ", Y: " . $sender->getY() . ", Z: " . $sender->getZ());
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . "Server's Spawn changed to Level: " . $sender->getLevel()->getName() . " at X: " . $sender->getX() . ", Y: " . $sender->getY() . ", Z: " . $sender->getZ() . " by " . $sender->getName());
+            $sender->sendMessage($this->core->getPrefix() . "Server's Spawn changed to Level: " . $sender->getLevel()->getName() . " at X: " . (int) $sender->getX() . ", Y: " . (int) $sender->getY() . ", Z: " . (int) $sender->getZ());
+            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . "Server's Spawn changed to Level: " . $sender->getLevel()->getName() . " at X: " . (int) $sender->getX() . ", Y: " . (int) $sender->getY() . ", Z: " . (int) $sender->getZ() . " by " . $sender->getName());
             return true;
         }
     }

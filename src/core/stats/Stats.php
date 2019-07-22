@@ -299,7 +299,8 @@ class Stats implements Statistics {
                 "xuid" => $xuid,
 				"username" => $name,
 				"coins" => $coins,
-				"balance" => $balance
+				"balance" => $balance,
+				"permissions" => $permissions
             ]) {
 				$coreUser = new CoreUser($xuid);
 				$users[$xuid] = $coreUser;
@@ -307,6 +308,7 @@ class Stats implements Statistics {
 				$coreUser->setName($name);
 				$coreUser->setCoins($coins);
 				$coreUser->setBalance($balance);
+				$coreUser->setPermission(unserialize($permissions));
 			}
 			$callback($users);
         });

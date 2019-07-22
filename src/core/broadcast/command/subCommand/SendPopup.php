@@ -25,7 +25,7 @@ class SendPopup extends SubCommand {
     }
 
     public function getUsage() : string {
-        return "<popup> <player>";
+        return "<popup> <player : all>";
     }
 
     public function getName() : string {
@@ -41,10 +41,10 @@ class SendPopup extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        if(count($args) < 2) {
+        if(count($args) < 1) {
             return false;
         } else {
-            if(isset($args[1])) {
+            if(isset($args[1]) && strtolower($args[1]) !== "all") {
                 $player = $this->core->getServer()->getPlayer($args[1]);
 
                 if(!$player instanceof CorePlayer) {

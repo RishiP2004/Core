@@ -94,5 +94,6 @@ class History extends SubCommand {
 				return true;
 			}
 		});
+		return false;
 	}
 }

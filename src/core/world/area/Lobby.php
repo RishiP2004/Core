@@ -16,13 +16,13 @@ class Lobby extends Area {
     public function getPosition1() : Position {
 		$level = Server::getInstance()->getLevelByName("Lobby");
 
-        return new Position(0, 0, 0, $level);
+        return new Position(26, 148, 0, $level);
     }
 
     public function getPosition2() : Position {
 		$level = Server::getInstance()->getLevelByName("Lobby");
 
-        return new Position(0, 0, 0, $level);
+        return new Position(214, -2, 224, $level);
     }
 
     public function allowedEnter() : bool {
