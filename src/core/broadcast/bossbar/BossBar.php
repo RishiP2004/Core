@@ -20,7 +20,7 @@ class BossBar implements Messages {
 
     public function __construct(Core $core) {
         $this->core = $core;
-        $this->bossBar = new \xenialdan\apibossbar\BossBar();
+        $this->bossBar = new \bossbar\BossBar();
     }
 
     public function getMode() : int {

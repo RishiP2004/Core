@@ -43,7 +43,7 @@ abstract class FloatingText {
             count(Core::getInstance()->getNetwork()->getTotalOnlinePlayers()),
             Core::getInstance()->getNetwork()->getTotalMaxSlots()
         ], $this->getText());
-        $this->particle = new FloatingTextParticle(new FloatingTextParticle($this->getPosition()->asVector3()->add(0.5, 0, 0.5), "", $text));
+        $this->particle = new FloatingTextParticle($this->getPosition()->asVector3()->add(0.5, 0, 0.5), "", $text);
 
         $player->getLevel()->addParticle($this->getParticle());
     }
