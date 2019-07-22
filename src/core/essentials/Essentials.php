@@ -46,6 +46,7 @@ use core\essentials\command\defaults\{
     Plugins,
     Reload,
     Save,
+    Scoreboard,
     SetSpawn,
     Spawn,
     Status,
@@ -173,6 +174,7 @@ class Essentials {
         $this->core->getServer()->getCommandMap()->register(Save::class, new Save($this->core));
         $this->core->getServer()->getCommandMap()->register(SetSpawn::class, new SetSpawn($this->core));
         $this->core->getServer()->getCommandMap()->register(Spawn::class, new Spawn($this->core));
+	$this->core->getServer()->getCommandMap()->register(Scoreboard::class, new Scoreboard($this->core));
         $this->core->getServer()->getCommandMap()->register(Status::class, new Status($this->core));
         $this->core->getServer()->getCommandMap()->register(Stop::class, new Stop($this->core));
         $this->core->getServer()->getCommandMap()->register(Summon::class, new Summon($this->core));

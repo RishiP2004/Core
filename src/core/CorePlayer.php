@@ -9,20 +9,6 @@ use core\utils\Item;
 use core\essence\npc\NPC;
 use core\essence\floatingtext\FloatingText;
 
-use core\mcpe\form\{
-	CustomFormResponse,
-	Form,
-	MenuForm,
-	CustomForm,
-	ServerSettingsForm
-};
-use core\mcpe\form\element\{
-	Button,
-	Dropdown,
-	Image,
-	Input,
-	Label
-};
 use core\mcpe\network\PlayerNetworkSessionAdapter;
 use core\mcpe\entity\{
 	Linkable,
@@ -40,6 +26,21 @@ use core\stats\task\{
 };
 
 use core\world\area\Area;
+
+use form\{
+	CustomFormResponse,
+	Form,
+	MenuForm,
+	CustomForm,
+	ServerSettingsForm
+};
+use form\element\{
+	Button,
+	Dropdown,
+	Image,
+	Input,
+	Label
+};
 
 use pocketmine\Player;
 
@@ -142,7 +143,6 @@ class CorePlayer extends Player {
     }
 
     public function leave() {
-		$this->core->getMCPE()->getScoreboardManager()->removePotentialViewer($this->getName());
 		$this->despawnNPCs();
         $this->detach();
         $this->removeBossBar();
