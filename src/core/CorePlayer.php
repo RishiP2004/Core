@@ -477,13 +477,9 @@ class CorePlayer extends Player {
 					}
 				));
             break;
-            case "global":
-                $server = "Offline";
-				$profile = "Your Profile";
-				
-				if(!is_null($this->getCoreUser())->getServer()) {
-					$server = $this->getCoreUser()->getServer()->getName();
-				}
+            case "global":           
+				$profile = "Your Profile";				
+				$server = $this->getCoreUser()->getServer()->getName();
 				$rank = $this->getCoreUser()->getRank()->getFormat();
 				$coins = $this->getCoreUser()->getCoins();
 				$balance = $this->getCoreUser()->getBalance();
@@ -491,12 +487,14 @@ class CorePlayer extends Player {
 				if(!is_null($user)) {
 					if(!is_null($user->getServer())) {
 						$server = $user->getServer()->getName();
+					} else {
+						$server = "Offline";
 					}
 					$rank = $user->getRank()->getFormat();
 					$coins = $user->getCoins();
 					$balance = $user->getBalance();
 					$profile = $user->getName() . "'s Profile";
-				}
+				} 
                 $l1 = new Label(TextFormat::GRAY . "Rank: " . $rank);
                 $l2 = new Label(TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $coins);
                 $l3 = new Label(TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $balance);
