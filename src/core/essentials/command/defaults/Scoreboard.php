@@ -7,7 +7,10 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
-use core\mcpe\scoreboard\ScoreboardAction;
+use scoreboard\{
+	ScoreboardAction,
+	ScoreboardManager
+};
 
 use pocketmine\command\{
 	PluginCommand,
@@ -43,7 +46,7 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard create <title> <displaySlot (sidebar/list/belowname)> <sortOrder (0->ascending/1->descending)>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) !== null) {
+					if(ScoreboardManager::getId($args[1]) !== null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "This scoreboard named . " . $args[1]. " already exists");
 						return false;
 					}
@@ -51,7 +54,7 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "The sort order needs to be 0/1");
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[1], ScoreboardAction::CREATE);
+						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::CREATE);
 						$scoreboard->create($args[2], $args[3]);
 						$sender->sendMessage($this->core->getPrefix() . "Successfully Created Scoreboard " . $args[1]);
 						return true;
@@ -62,11 +65,11 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard delete <title>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[1]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
 						$scoreboard->delete();
 						$sender->sendMessage($this->core->getPrefix() . "Successfully Deleted Scoreboard " . $args[1] . ".");
 						return true;
@@ -77,11 +80,11 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard add <player / all> <title>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[2]) === null) {
+					if(ScoreboardManager::getId($args[2]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[2], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[2], ScoreboardAction::MODIFY);
 
 						if($args[1] === "all") {
 							foreach($this->core->getServer()->getOnlinePlayers() as $p) {
@@ -108,7 +111,7 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard setLine <title of the scoreboard> <line> <message>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[1]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					}
@@ -120,7 +123,7 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " should be between 1 and 9");
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[2], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[2], ScoreboardAction::MODIFY);
 						$scoreboard->setLine((int) $args[2], implode(" ", array_slice($args, 3)));
 						$sender->sendMessage($this->core->getPrefix() . "Set Line number " . $args[2] . " of Scoreboard " . $args[1]);
 						return true;
@@ -131,7 +134,7 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard removemLine <title of the scoreboard> <line>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[1]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					}
@@ -143,11 +146,11 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " should be between 1 and 9");
 						return false;
 					}
-					if(!$this->core->getMCPE()->getScoreboardManager()->entryExist((string) $this->core->getMCPE()->getScoreboardManager()->getId($args[1]), $args[2])) {
+					if(!ScoreboardManager::entryExist((string) ScoreboardManager::getId($args[1]), $args[2])) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Scoreboard " . $args[1] . "doesn't have line number " . $args[2]);
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
 						$scoreboard->removeLine($args[2]);
 						$sender->sendMessage($this->core->getPrefix() . "Removed the Line " . $args[2] . " of the Scoreboard " . $args[2]);
 						return true;
@@ -158,11 +161,11 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard remove <player / all> <title>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[1]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[2], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[2], ScoreboardAction::MODIFY);
 
 						if($args[1] === "all") {
 							foreach($this->core->getServer()->getOnlinePlayers() as $p) {
@@ -189,11 +192,11 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard rename <old name> <new name>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[1]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
 						$scoreboard->rename($args[1], $args[2]);
 						$sender->sendMessage($this->core->getPrefix() . "Renamed the Scoreboard with name " . $args[1] . " to " . $args[2] . " and re sent it to all viewers");
 						return true;
@@ -204,11 +207,11 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard clearLines <name>");
 						return false;
 					}
-					if($this->core->getMCPE()->getScoreboardManager()->getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[1]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					} else {
-						$scoreboard = new \core\mcpe\scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
+						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::MODIFY);
 						$scoreboard->removeLines();
 						$sender->sendMessage($this->core->getPrefix() . "Cleared the Lines of the Scoreboard with name " . $args[1]);
 						return true;
