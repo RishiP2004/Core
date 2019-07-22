@@ -9,10 +9,10 @@ use core\Core;
 use core\essentials\command\{
 	Chat,
     ClearInventory,
-    Compass,
     Fly,
     Hud,
     Jump,
+	Location,
     Ping,
     Sudo,
     World
@@ -87,10 +87,10 @@ class Essentials {
 
 		$this->core->getServer()->getCommandMap()->register(Chat::class, new Chat($this->core));
         $this->core->getServer()->getCommandMap()->register(ClearInventory::class, new ClearInventory($this->core));
-        $this->core->getServer()->getCommandMap()->register(Compass::class, new Compass($this->core));
         $this->core->getServer()->getCommandMap()->register(Fly::class, new Fly($this->core));
         $this->core->getServer()->getCommandMap()->register(Hud::class, new Hud($this->core));
         $this->core->getServer()->getCommandMap()->register(Jump::class, new Jump($this->core));
+		$this->core->getServer()->getCommandMap()->register(Location::class, new Location($this->core));
         $this->core->getServer()->getCommandMap()->register(Ping::class, new Ping($this->core));
         $this->core->getServer()->getCommandMap()->register(Sudo::class, new Sudo($this->core));
         $this->core->getServer()->getCommandMap()->register(World::class, new World($this->core));
@@ -99,6 +99,7 @@ class Essentials {
             "ban",
             "ban-ip",
             "banlist",
+			"checkperm",
             "defaultgamemode",
             "deop",
             "difficulty",
@@ -174,12 +175,12 @@ class Essentials {
         $this->core->getServer()->getCommandMap()->register(Save::class, new Save($this->core));
         $this->core->getServer()->getCommandMap()->register(SetSpawn::class, new SetSpawn($this->core));
         $this->core->getServer()->getCommandMap()->register(Spawn::class, new Spawn($this->core));
-	$this->core->getServer()->getCommandMap()->register(Scoreboard::class, new Scoreboard($this->core));
+		$this->core->getServer()->getCommandMap()->register(Scoreboard::class, new Scoreboard($this->core));
         $this->core->getServer()->getCommandMap()->register(Status::class, new Status($this->core));
         $this->core->getServer()->getCommandMap()->register(Stop::class, new Stop($this->core));
         $this->core->getServer()->getCommandMap()->register(Summon::class, new Summon($this->core));
         $this->core->getServer()->getCommandMap()->register(Teleport::class, new Teleport($this->core));
-	$this->core->getServer()->getCommandMap()->register(Tell::class, new Tell($this->core));
+		$this->core->getServer()->getCommandMap()->register(Tell::class, new Tell($this->core));
         $this->core->getServer()->getCommandMap()->register(Time::class, new Time($this->core));
         $this->core->getServer()->getCommandMap()->register(Timings::class, new Timings($this->core));
         $this->core->getServer()->getCommandMap()->register(Transfer::class, new Transfer($this->core));

@@ -34,14 +34,6 @@ class Transfer extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /transfer " . $this->getUsage());
             return false;
         }
-        if(!is_int($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " must be an Integer");
-            return false;
-        }
-        if(is_float($args[1])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " must be an Integer");
-            return false;
-        }
         if(isset($args[2])) {
 			if(!$sender->hasPermission($this->getPermission() . ".other")) {
 				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
@@ -53,8 +45,8 @@ class Transfer extends PluginCommand {
                 $sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not Online");
                 return false;
             } else {
-                $player->transfer($args[0], $args[1], $sender->getName() . " Transferred you to IP: " . $args[0] . " and Port: " . $args[1]);
-				$sender->sendMessage($this->core->getPrefix() . "Transferring " . $player->getName() . " to IP: " . $args[0] . " and Port: " . $args[1]);
+                $player->transfer($args[0], (int) ($args[1] ?? 19132), $sender->getName() . " Transferred you to IP: " . $args[0] . " and Port: " . (int) ($args[1] ?? 19132));
+				$sender->sendMessage($this->core->getPrefix() . "Transferring " . $player->getName() . " to IP: " . $args[0] . " and Port: " . (int) ($args[1] ?? 19132));
                 return true;
             }
         }
@@ -62,7 +54,7 @@ class Transfer extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
         } else {
-            $sender->transfer($args[0], $args[1], "Transferring to IP: " . $args[0] . " and Port: " . $args[1]);
+            $sender->transfer($args[0], (int) ($args[1] ?? 19132), "Transferring to IP: " . $args[0] . " and Port: " . (int) ($args[1] ?? 19132));
             return true;
         }
     }

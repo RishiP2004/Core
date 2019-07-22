@@ -40,7 +40,7 @@ class AddPlayerPermission extends PluginCommand {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;
 			}
-			if($user->hasDatabasedPermission($args[1])) {
+			if($user->hasPermission($args[1])) {
 				$sender->sendMessage($this->core->getPrefix() . $user->getName() . " already has the Permission " . $args[1]);
 				return false;
 			} else {

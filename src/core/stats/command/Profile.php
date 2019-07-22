@@ -23,7 +23,7 @@ class Profile extends PluginCommand {
         $this->core = $core;
        
         $this->setPermission("core.stats.command.profile");
-        $this->setUsage("[player] [global : factions : lobby]");
+        $this->setUsage("[player : simple or s] [global : factions : lobby]");
         $this->setDescription("Check your or a Player's Profile");
     }
     
@@ -33,6 +33,30 @@ class Profile extends PluginCommand {
             return false;
         }
         if(isset($args[0])) {
+			if(strtolower($args[0]) === "simple" or strtolower($args[0]) === "s") {
+				if(!isset($args[1])) {
+					$msg = $this->core->getPrefix() . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $sender->getCoreUser()->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
+				} else {
+					switch(strtolower($args[1])) {
+						case "global":
+						break;
+						case "factions":
+						case "faction":
+						case "fac":
+							$msg = $this->core->getPrefix() . "Your Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+						break;
+						case "lobby":
+						case "hub":
+							$msg = $this->core->getPrefix() . "Your Lobby Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+						break;
+						default:
+							$msg = $this->core->getErrorPrefix() . "Type does not exist";
+						break;	
+					}
+				}
+				$sender->sendMessage($msg);
+				return true;
+			}
 			$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
 				if(is_null($user)) {
 					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
@@ -53,7 +77,6 @@ class Profile extends PluginCommand {
 					} else {
 						switch(strtolower($args[1])) {
 							case "global":
-								$msg = $this->core->getPrefix() . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
 							break;
 							case "factions":
 							case "faction":
@@ -65,7 +88,7 @@ class Profile extends PluginCommand {
 								$msg = $this->core->getPrefix() . $user->getName() . "'s Lobby Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 							break;
 							default:
-								$msg = $this->core->getErrorPrefix() . "Type does not exist";
+								$msg = $this->core->getErrorPrefix() . "Profile Type does not exist";
 							break;	
 						}
 					}

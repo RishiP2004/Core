@@ -12,17 +12,18 @@ use pocketmine\command\{
     CommandSender
 };
 
-class Compass extends PluginCommand {
+class Location extends PluginCommand {
     private $core;
 
     public function __construct(Core $core) {
-        parent::__construct("compass", $core);
+        parent::__construct("location", $core);
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.compass.command");
+        $this->setPermission("core.essentials.location.command");
         $this->setUsage("[player]");
-        $this->setDescription("Check what Direction you or a Player is Facing");
+		$this->setAliases(["loc", "compass", "xyz"]);
+        $this->setDescription("Check your Location and Direction or a Players'");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
@@ -31,7 +32,7 @@ class Compass extends PluginCommand {
             return false;
         }
         if(isset($args[0])) {
-			if(!$sender->hasPermission($this->getPermission() . ".Other")) {
+			if(!$sender->hasPermission($this->getPermission() . ".other")) {
 				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
 				return false;
 			}
@@ -59,7 +60,7 @@ class Compass extends PluginCommand {
 						return false;
 					break;
 				}
-				$sender->sendMessage($this->core->getPrefix() . $player->getName() . " is Facing " . $direction);
+				$sender->sendMessage($this->core->getPrefix() . $player->getName() . " is at Coordinates: X: " . (int) $player->getX() . ", Y: " . (int) $player->getY() . ", Z: " . (int) $player->getZ() . " at the World: " . $player->getLevel()->getName() . " and is Facing " . $direction);
                 return true;
             }
         }
@@ -85,7 +86,7 @@ class Compass extends PluginCommand {
 					return false;
 				break;
 			}
-			$sender->sendMessage($this->core->getPrefix() . "You are Facing " . $direction);
+			$sender->sendMessage($this->core->getPrefix() . "You are at Coordinates: X: " . (int) $sender->getX() . ", Y: " . (int) $sender->getY() . ", Z: " . (int) $sender->getZ() . " at the World: " . $sender->getLevel()->getName() . " while Facing " . $direction);
             return true;
         }
     }

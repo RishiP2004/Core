@@ -638,7 +638,7 @@ class CoreListener implements Listener {
             if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
                 $server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
 
-                if(!$server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
+                if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
                     if(!empty($this->core->getBroadcast()->getKicks("whitelisted"))) {
                         $message = str_replace([
                             "{PLAYER}",
@@ -659,24 +659,26 @@ class CoreListener implements Listener {
                     }
                 }
             } else {
-                if(!empty($this->core->getBroadcast()->getKicks("full"))) {
-                    $message = str_replace([
-                        "{PLAYER}",
-                        "{TIME}",
-                        "{ONLINE_PLAYERS}",
-                        "{MAX_PLAYERS}",
-                        "{PREFIX}"
-                    ], [
-                        $player->getName(),
-                        date($this->core->getBroadcast()->getFormats("date_time")),
-                        count($this->core->getServer()->getOnlinePlayers()),
-                        $this->core->getServer()->getMaxPlayers(),
-                        $this->core->getPrefix()
-                    ], $this->core->getBroadcast()->getKicks("full"));
+				if(!$player->hasPermission("core.network." . $server->getName() . ".full")) {
+					if(!empty($this->core->getBroadcast()->getKicks("full"))) {
+						$message = str_replace([
+							"{PLAYER}",
+							"{TIME}",
+							"{ONLINE_PLAYERS}",
+							"{MAX_PLAYERS}",
+							"{PREFIX}"
+						], [
+							$player->getName(),
+							date($this->core->getBroadcast()->getFormats("date_time")),
+							count($this->core->getServer()->getOnlinePlayers()),
+							$this->core->getServer()->getMaxPlayers(),
+							$this->core->getPrefix()
+						], $this->core->getBroadcast()->getKicks("full"));
 
-                    $player->close($message);
-                    $event->setCancelled();
-                }
+						$player->close($message);
+						$event->setCancelled();
+					}
+				}
             }
         }
     }
@@ -1194,7 +1196,7 @@ class CoreListener implements Listener {
 			$players[] = $onlinePlayer;
 		}
 		foreach($this->core->getNetwork()->getServers() as $server) {
-			//$server->query();
+			$server->query();
 		}
 		$event->setPlayerList($players);
 	}

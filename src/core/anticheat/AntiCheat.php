@@ -4,12 +4,13 @@ declare(strict_types = 1);
 
 namespace core\anticheat;
 
-use core\anticheat\cheat\AutoClicker;
 use core\Core;
 
+use core\anticheat\cheat\{
+	Cheat,
+	AutoClicker
+};
 use core\anticheat\entity\PrimedTNT;
-
-use core\anticheat\cheat\Cheat;
 
 use core\mcpe\entity\{
 	AnimalBase,
@@ -59,6 +60,7 @@ class AntiCheat implements Cheats {
         $this->queue = new \SplQueue();
 
         $this->initCheat(new AutoClicker());
+		$core->getServer()->getCommandMap()->register(\core\anticheat\command\Cheat::class, new \core\anticheat\command\Cheat($core));
     }
 	
 	public function getMaxConcurrentExplosions() : int {

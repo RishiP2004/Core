@@ -126,7 +126,7 @@ class CorePlayer extends Player {
         $this->sendBossBar();
         //TODO: Hud and Scoreboard
 
-		$this->core->getWorld()->players[$this->getName()] = "";
+		$this->core->getWorld()->players[$this->getName()] = null;
 
         $this->updateArea();
 
@@ -636,13 +636,13 @@ class CorePlayer extends Player {
     }
 
     public function getArea() : ?Area {
-		$areaName = $this->core->getWorld()->players[$this->getName()] ?? null;
+		$area = $this->core->getWorld()->players[$this->getName()] ?? null;
 
-        return $areaName !== null ? $this->core->getWorld()->getArea($areaName) : null;
+        return $area !== null ? $this->core->getWorld()->getArea($area->getName()) : null;
     }
 
     public function updateArea() : bool {
-        $oldArea = $this->core->getWorld()->players[$this->getName()];
+        $oldArea = $this->getArea();
 		$newArea = $this->core->getWorld()->getAreaFromPosition($this->getPosition());
 		
 		if(!is_null($newArea)) {
@@ -655,9 +655,9 @@ class CorePlayer extends Player {
         return false;
     }
 
-    public function areaChange(Area $oldArea, Area $newArea) : bool {
-        if(is_null($oldArea)) {
-            if($oldArea->allowedLeave()) {
+    public function areaChange(?Area $oldArea, Area $newArea) : bool {
+        if(!is_null($oldArea)) {
+            if(!$oldArea->allowedLeave() && $this->hasPermission("core.world." . $oldArea->getName() . ".leave")) {
                 $this->sendMessage($this->core->getErrorPrefix() . "You cannot leave this area");
                 return false;
             }
@@ -672,7 +672,7 @@ class CorePlayer extends Player {
                     $this->removeEffect($effect->getId());
                 }
             }
-            if($oldArea->getFly() === Area::FLY_SUPERVISED) {
+            if($oldArea->getFly() === Area::FLY_SUPERVISED && $this->hasPermission("core.world." . $newArea->getName() . ".fly")) {
                 $this->setAllowFlight(false);
 
                 $pk = new SetPlayerGameTypePacket();
@@ -682,7 +682,7 @@ class CorePlayer extends Player {
                 $this->setFlying(false);
                 $this->sendSettings();
             }
-            if(!$this->hasPermission("core.world." . $oldArea->getName())) {
+            if(!$this->hasPermission("core.world." . $oldArea->getName() . ".whitelist")) {
                 if($oldArea->getGamemode() !== ($gamemode = $this->getServer()->getDefaultGamemode())) {
                     $this->setGamemode($gamemode);
 
@@ -699,27 +699,27 @@ class CorePlayer extends Player {
                 }
             }
         }
-        if(is_null($newArea)) {
-            if(!$newArea->allowedEnter()) {
-                $this->sendMessage($this->core->getErrorPrefix() . "You cannot enter this area");
+        if(!is_null($newArea)) {
+			if(!$newArea->allowedEnter() && $this->hasPermission("core.world." . $newArea->getName() . ".enter")) {
+				$this->sendMessage($this->core->getErrorPrefix() . "You cannot enter this area");
                 return false;
-            }
-            if($message = $oldArea->getEnterNotifications() !== "") {
+			}
+            if($message = $newArea->getEnterNotifications() !== "") {
                 $this->sendMessage($message);
             }
-            if(!$oldArea->receiveChat()) {
+            if(!$newArea->receiveChat()) {
                 $this->core->getWorld()->muted[$this->getName()] = $this;
             }
             $effects = $newArea->getAreaEffects();
 
-            if(!empty($effects)) {
+            if(!empty($effects) && $this->hasPermission("core.world." . $newArea->getName() . ".effects")) {
                 $this->removeAllEffects();
 
                 foreach($effects as $effect) {
                     $this->addEffect($effect);
                 }
             }
-            if(!$this->hasPermission("core.world." . $newArea->getName())) {
+            if(!$this->hasPermission("core.world." . $newArea->getName() . ".whitelist")) {
                 if(($gamemode = $newArea->getGamemode()) !== $this->getGamemode()) {
                     $this->setGamemode($gamemode);
 
@@ -735,7 +735,7 @@ class CorePlayer extends Player {
                     }
                 }
             }
-            if(($flight = $newArea->getFly()) !== $newArea::FLY_VANILLA) {
+            if(($flight = $newArea->getFly()) !== $newArea::FLY_VANILLA && $this->hasPermission("core.world." . $newArea->getName() . ".fly")) {
                 switch($flight) {
                     case $newArea::FLY_ENABLE:
                     case $newArea::FLY_SUPERVISED:
