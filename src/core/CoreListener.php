@@ -27,6 +27,8 @@ use core\mcpe\item\Elytra;
 
 use core\stats\rank\Rank;
 
+use core\world\area\Lobby;
+
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
 	PlayerBedEnterEvent,
@@ -337,8 +339,8 @@ class CoreListener implements Listener {
             $message = "";
             $cause = $player->getLastDamageCause();
 
-            switch($cause) {
-                case $cause::CAUSE_CONTACT:
+            switch($cause->getCause()) {
+                case EntityDamageEvent::CAUSE_CONTACT:
                     $stringCause = "contact";
 
                     if($cause instanceof EntityDamageByBlockEvent) {
@@ -347,7 +349,7 @@ class CoreListener implements Listener {
                     }
                     $replaces["{BLOCK}"] = "unknown";
                 break;
-                case $cause::CAUSE_ENTITY_ATTACK:
+                case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
                     $stringCause = "kill";
                     $killer = $cause->getEntity();
 
@@ -357,7 +359,7 @@ class CoreListener implements Listener {
                     }
                     $array["{KILLER}"] = "unknown";
                 break;
-                case $cause::CAUSE_PROJECTILE:
+                case EntityDamageEvent::CAUSE_PROJECTILE:
                     $stringCause = "projectile";
                     $killer = $cause->getEntity();
 
@@ -367,38 +369,38 @@ class CoreListener implements Listener {
                     }
                     $array["{KILLER}"] = "unknown";
                 break;
-                case $cause::CAUSE_SUFFOCATION:
+                case EntityDamageEvent::CAUSE_SUFFOCATION:
                     $stringCause = "suffocation";
                 break;
-                case $cause::CAUSE_STARVATION:
+                case EntityDamageEvent::CAUSE_STARVATION:
                     $stringCause = "starvation";
                 break;
-                case $cause::CAUSE_FALL:
+                case EntityDamageEvent::CAUSE_FALL:
                     $stringCause = "fall";
                 break;
-                case $cause::CAUSE_FIRE:
+                case EntityDamageEvent::CAUSE_FIRE:
                     $stringCause = "fire";
                 break;
-                case $cause::CAUSE_FIRE_TICK:
+                case EntityDamageEvent::CAUSE_FIRE_TICK:
                     $stringCause = "on-fire";
                 break;
-                case $cause::CAUSE_LAVA:
+                case EntityDamageEvent::CAUSE_LAVA:
                     $stringCause = "lava";
                 break;
-                case $cause::CAUSE_DROWNING:
+                case EntityDamageEvent::CAUSE_DROWNING:
                     $stringCause = "drowning";
                 break;
-                case $cause::CAUSE_ENTITY_EXPLOSION:
-                case $cause::CAUSE_BLOCK_EXPLOSION:
+                case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
+                case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
                     $stringCause = "explosion";
                 break;
-                case $cause::CAUSE_VOID:
+                case EntityDamageEvent::CAUSE_VOID:
                     $stringCause = "void";
                 break;
-                case $cause::CAUSE_SUICIDE:
+                case EntityDamageEvent::CAUSE_SUICIDE:
                     $stringCause = "suicide";
                 break;
-                case $cause::CAUSE_MAGIC:
+                case EntityDamageEvent::CAUSE_MAGIC:
                     $stringCause = "magic";
                 break;
                 default:
@@ -561,7 +563,7 @@ class CoreListener implements Listener {
                 }
             }
 			if(!is_null($area = $player->getArea())) {
-				if($area === "Lobby" && $event->getTo()->getFloorY() < 0) {
+				if($area instanceof Lobby && $event->getTo()->getFloorY() < 0) {
 					$player->teleport($player->getLevel()->getSafeSpawn());
 				}
 			}
