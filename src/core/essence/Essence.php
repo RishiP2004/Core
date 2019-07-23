@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace core\essence;
 
 use core\Core;
+use core\CorePlayer;
 
 use core\essence\floatingText\{
     FloatingText,
@@ -58,6 +59,15 @@ class Essence implements EssenceData {
 				}
 			}
 		}
+		foreach($this->getNPCs() as $npc) {	
+			foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+				if($onlinePlayer instanceof CorePlayer) {
+					if($npc->isSpawnedTo($onlinePlayer)) {
+						$npc->move($onlinePlayer);
+					}
+				}
+			}
+		}	
 	}
 
     public function initFloatingText(FloatingText $floatingText) {

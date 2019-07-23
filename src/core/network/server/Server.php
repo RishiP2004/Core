@@ -24,7 +24,6 @@ abstract class Server {
 
     public function __construct(string $name) {
         $this->name = $name;
-		$this->whitelisted = $this->isWhitelisted();
         
 		$this->query();
     }
@@ -58,7 +57,9 @@ abstract class Server {
 
     public abstract function getIcon() : string;
 
-    public abstract function isWhitelisted() : bool;
+    public function isWhitelisted() : bool {
+		return $this->whitelisted;
+	}
 	
 	public function setWhitelisted(bool $whitelisted = true) {
 		$this->whitelisted = $whitelisted;

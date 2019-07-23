@@ -54,11 +54,7 @@ class History extends SubCommand {
 			}
 			$cheat = $this->core->getAntiCheat()->getCheat(trim($args[2]));
 
-			if(!$cheat instanceof \core\anticheat\cheat\Cheat and !$args[2] !== "all") {
-				$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Cheat");
-				return false;
-			}
-			if(!isset($args[3]) and strtolower($args[0]) !== "see") {
+			if(!$cheat instanceof \core\anticheat\cheat\Cheat and !strtolower($args[2]) !== "all" and strtolower($args[0]) !== "see") {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Cheat");
 				return false;
 			} else {

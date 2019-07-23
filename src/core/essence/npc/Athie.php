@@ -60,9 +60,9 @@ class Athie extends NPC {
 
     public function getMovement() : array {
         return [
-            "103, 12, 85, Lobby",
-            "104, 15, 86, Lobby",
-            "104, 15, 87, Lobby"
+            1 => "103, 12, 85, Lobby",
+            2 => "104, 15, 86, Lobby",
+            3 => "104, 15, 87, Lobby"
         ];
     }
 

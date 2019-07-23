@@ -25,7 +25,7 @@ use pocketmine\network\mcpe\protocol\{
     PlayerSkinPacket,
     RemoveActorPacket,
     MovePlayerPacket,
-    MoveEntityAbsolutePacket
+    MoveActorAbsolutePacket
 };
 
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -228,8 +228,9 @@ abstract class NPC {
 
     public function move(CorePlayer $player) {
         if(!empty($this->getMovement())) {
-            $packet = new MoveEntityAbsolutePacket();
-
+			$this->int++;
+			
+            $packet = new MoveActorAbsolutePacket();
             $packet->entityRuntimeId = $this->getEID();
             $array = explode(", ", $this->getMovement()[$this->int]);
             $position = new Position($array[0], $array[1], $array[2], Core::getInstance()->getServer()->getLevelByName($array[3]));
@@ -239,7 +240,6 @@ abstract class NPC {
             $packet->zRot = 0;
 
             $player->sendDataPacket($packet);
-            $this->int++;
 
             if(end($array)) {
                 $this->int = 0;

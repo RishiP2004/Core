@@ -36,6 +36,7 @@ use core\stats\command\{
 	DeleteAccount,
 	GiveBalance,
 	GiveCoins,
+	ListPlayerPermissions,
 	PayBalance,
 	PayCoins,
 	PluginPermissions,
@@ -104,6 +105,7 @@ class Stats implements Statistics {
 		$this->core->getServer()->getCommandMap()->register(DeleteAccount::class, new DeleteAccount($this->core));
 		$this->core->getServer()->getCommandMap()->register(GiveBalance::class, new GiveBalance($this->core));
 		$this->core->getServer()->getCommandMap()->register(GiveCoins::class, new GiveCoins($this->core));
+		$this->core->getServer()->getCommandMap()->register(ListPlayerPermissions::class, new ListPlayerPermissions($this->core));
 		$this->core->getServer()->getCommandMap()->register(PayBalance::class, new PayBalance($this->core));
 		$this->core->getServer()->getCommandMap()->register(PayCoins::class, new PayCoins($this->core));
 		$this->core->getServer()->getCommandMap()->register(PluginPermissions::class, new PluginPermissions($this->core));
@@ -236,6 +238,7 @@ class Stats implements Statistics {
 	public function sendTopEconomy(string $unit, CommandSender $sender, int $page, array $ops, array $banned) {
 		$this->core->getStats()->getAllCoreUsers(function($users) use($unit, $sender, $page, $ops, $banned) {
 			if(count($users) === 0) {
+				$sender->sendMessage($this->core->getErrorPrefix() . "No Accounts registered");
 				return;
 			}
 			$allEconomy = [];
@@ -355,7 +358,7 @@ class Stats implements Statistics {
     }
 
     public function unregisterCoreUser(CoreUser $user) {
-        $this->core->getDatabase()->executeChange("stats.unregister", [
+        $this->core->getDatabase()->executeChange("stats.delete", [
             "xuid" => $user->getXuid()
         ]);
         unset($this->coreUsers[$user->getXuid()]);

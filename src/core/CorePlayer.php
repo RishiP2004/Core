@@ -69,13 +69,11 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\event\player\PlayerKickEvent;
 
 class CorePlayer extends Player {
-    /**
-     * @var \core\Core
-     */
+    /** @var \core\Core*/
     private $core;
 	private $coreUser;
 
-    private $interacts = [], $attachments = [];
+    private $interacts = [];
 
     private $chatTime = 0;
 
@@ -84,12 +82,18 @@ class CorePlayer extends Player {
     private $fishing = false;
 
     public $usingElytra = false, $allowCheats = false;
-    /** @var null|FishingHook */
+    /** 
+	 * @var null|FishingHook 
+	 */
     public $fishingHook = null;
-	/**
+	/** 
 	 * @var int|null
 	 */
 	protected $lastMovement = null;
+	/** 
+	 * @var PermissionAttachment 
+	 */
+	public $attachment;
 
     public function __construct(SourceInterface $interface, string $ip, int $port) {
 		parent::__construct($interface, $ip, $port);
@@ -117,37 +121,47 @@ class CorePlayer extends Player {
 			throw new \RuntimeException('Tried to initialize player again');
 		}
 		$this->coreUser = $coreUser;
-
-        $this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
-		$this->attach();
-        $this->updatePermissions();
-		$this->spawnNPCs();
-        $this->spawnFloatingTexts();
-        $this->sendBossBar();
-        //TODO: Hud and Scoreboard
-
-		$this->core->getWorld()->players[$this->getName()] = null;
-
-        $this->updateArea();
-
-		foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
-			$cheat->set($this);
-		}
-        $this->core->getScheduler()->scheduleDelayedTask(new PlayerJoin($this->core, $this), 20);
 		
-		if($this->getCoreUser()->getName() !== $this->getName()) {
-			$this->getCoreUser()->setName($this->getName());
+		if($this->isOnline()) {
+			$this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
+		
+			$this->attachment = $this->addAttachment($this->core);
+		
+			$this->updatePermissions();
+			$this->spawnNPCs();
+			$this->spawnFloatingTexts();
+			$this->sendBossBar();
+			//TODO: Hud and Scoreboard
+
+			$this->core->getWorld()->players[$this->getName()] = null;
+
+			$this->updateArea();
+
+			foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
+				$cheat->set($this);
+			}
+			$this->core->getScheduler()->scheduleDelayedTask(new PlayerJoin($this->core, $this), 20);
+			
+			if($this->getCoreUser()->getName() !== $this->getName()) {
+				$this->getCoreUser()->setName($this->getName());
+			}
+			$this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->getServer()->getIp()));
+			$this->getCoreUser()->save();
 		}
-		$this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp()));
-		$this->getCoreUser()->save();
     }
 
     public function leave() {
 		$this->despawnNPCs();
-        $this->detach();
+		
+		if(!is_null($this->getAttachment())) {
+			$this->removeAttachment($this->getAttachment());
+		}
         $this->removeBossBar();
-        $this->getCoreUser()->setServer(null);
-        $this->getCoreUser()->save();
+		
+		if($this->isInitialized()) {
+			$this->getCoreUser()->setServer(null);
+			$this->getCoreUser()->save();
+		}
     }
 
 	public function isInitialized() : bool {
@@ -338,36 +352,22 @@ class CorePlayer extends Player {
 		}
     }
 
-    public function getAttachment() : PermissionAttachment {
-        return $this->attachments[$this->getName()];
-    }
-
-    public function attach() {
-        $attachment = $this->addAttachment($this->core);
-        $this->attachments[$this->getName()] = $attachment;
-    }
-
-    public function detach() {
-        $this->removeAttachment($this->attachments[$this->getName()]);
-        unset($this->attachments);
+    public function getAttachment() : ?PermissionAttachment {
+        return $this->attachment;
     }
 
     public function updatePermissions() {
         $permissions = [];
-
-        foreach($this->getCoreUser()->getAllPermissions() as $permission) {
+		
+		if(!$this->isInitialized()) {
+			return;
+		}
+        foreach($this->getCoreUser()->getPermissions() as $permission) {
             if($permission === "*") {
                 foreach($this->getServer()->getPluginManager()->getPermissions() as $temp) {
                     $permissions[$temp->getName()] = true;
                 }
-            } else {
-                $isNegative = substr($permission, 0, 1) === "-";
-
-                if($isNegative) {
-                    $permission = substr($permission, 1);
-                }
-                $permissions[$permission] = !$isNegative;
-            }
+            } 
         }
         $attachment = $this->getAttachment();
 

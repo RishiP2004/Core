@@ -129,21 +129,27 @@ class CoreUser {
 	public function setRank(Rank $rank) {
 		$this->rank = $rank;
 	}
-	
-    public function getAllPermissions() : array {
-        return array_merge($this->getRank()->getPermissions(), $this->getPermissions());
-    }
 
     public function getPermissions() : array {
-        return $this->permissions;
+        return array_merge($this->getRank()->getPermissions(), [$this->permissions]);
     }
 
-    public function hasPermission(string $permission) {
+    public function hasPermission(string $permission) : bool {
+		$player = Core::getInstance()->getServer()->getOfflinePlayer($this->getName());
+		
+		if($player->isOp()) {
+			return true;
+		}
         return in_array($permission, $this->getPermissions());
     }
 
     public function setPermission(array $permissions) {
-        $this->permissions = $permissions;
+        $this->permissions = krsort($permissions);
+		$player = Core::getInstance()->getServer()->getPlayer($this->getName());
+
+		if($player instanceof CorePlayer) {
+			$player->updatePermissions();
+		}
     }
 
     public function addPermission(string $permission) {
@@ -154,9 +160,8 @@ class CoreUser {
     }
 
     public function removePermission(string $permission) {
-        $permissions = $this->getPermissions();
-
-        unset($permissions[$permission]);
+        $permissions = array_diff($this->getPermissions(), [$permission]);
+		
         $this->setPermission($permissions);
     }
 

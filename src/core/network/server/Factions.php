@@ -7,6 +7,8 @@ namespace core\network\server;
 class Factions extends Server {
     public function __construct() {
         parent::__construct("Factions");
+		
+		$this->setWhitelisted();
     }
 
     public function getIp() : string {
@@ -19,9 +21,5 @@ class Factions extends Server {
 
     public function getIcon() : string {
        return "";
-    }
-
-    public function isWhitelisted() : bool {
-        return true;
     }
 }

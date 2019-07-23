@@ -28,6 +28,9 @@ class PlayerJoin extends Task {
     }
     
     public function onRun(int $currentTick) {
+		if(!$this->player->isOnline()) {
+			return;
+		}
 		$this->player->getLevel()->broadcastLevelEvent($this->player->asPosition(), LevelEventPacket::EVENT_GUARDIAN_CURSE);
 				
 		switch($this->core->getNetwork()->getServerFromIp($this->player->getServer()->getIp())->getName()) {
