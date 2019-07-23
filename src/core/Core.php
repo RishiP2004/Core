@@ -15,8 +15,12 @@ use core\stats\Stats;
 use core\vote\Vote;
 use core\world\World;
 
-use poggit\libasynql\libasynql;
-use poggit\libasynql\DataConnector;
+use poggit\libasynql\{
+	libasynql,
+	DataConnector
+};
+use invmenu\InvMenuHandler;
+use scoreboard\ScoreboardHandler;
 
 use pocketmine\plugin\PluginBase;
 
@@ -70,8 +74,12 @@ class Core extends PluginBase {
             $this->getServer()->getLogger()->error($this->getErrorPrefix() . "Core Database connection failed: " . $exception->getMessage());
             $this->getServer()->shutdown();
         }
-        TimingsHandler::setEnabled();
-
+		if(!InvMenuHandler::isRegistered()) {
+			InvMenuHandler::register($this);
+		}
+		if(!ScoreboardHandler::isRegistered()) {
+			ScoreboardHandler::register($this);
+		}
         $this->anticheat = new AntiCheat($this);
         $this->broadcast = new Broadcast($this);
         $this->essence = new Essence($this);
