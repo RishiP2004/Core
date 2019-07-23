@@ -22,7 +22,7 @@ class Block extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.block.command");
+        $this->setPermission("core.essentials.defaults.command.block");
         $this->setUsage("<player> [reason] [timeFormat]");
         $this->setDescription("Block a Player");
     }

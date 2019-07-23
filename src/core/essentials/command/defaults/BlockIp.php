@@ -22,7 +22,7 @@ class BlockIp extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.block-ip.command");
+        $this->setPermission("core.essentials.defaults.command.block-ip");
         $this->setUsage("<player : ip> [reason] [timeFormat]");
         $this->setDescription("Block an Ip or Player");
     }

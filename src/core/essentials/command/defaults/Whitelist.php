@@ -23,7 +23,7 @@ class Whitelist extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.information.command");
+        $this->setPermission("core.essentials.defaults.command.whitelist");
         $this->setUsage("<on : off : list : add : remove>");
         $this->setDescription("Whitelist Command");
     }

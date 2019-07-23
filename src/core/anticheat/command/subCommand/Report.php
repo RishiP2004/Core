@@ -21,7 +21,7 @@ class Report extends SubCommand {
 	}
 
 	public function canUse(CommandSender $sender) : bool {
-		return $sender->hasPermission("core.anticheat.subcommand.report");
+		return $sender->hasPermission("core.cheat.subcommand.report");
 	}
 
 	public function getUsage() : string {

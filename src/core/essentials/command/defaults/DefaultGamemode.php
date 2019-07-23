@@ -21,7 +21,7 @@ class DefaultGamemode extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.defaultgamemode.command");
+        $this->setPermission("core.essentials.defaults.command.defaultgamemode");
         $this->setUsage("<gamemode>");
         $this->setDescription("Set the Default Gamemode");
     }

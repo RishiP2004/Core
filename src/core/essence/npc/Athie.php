@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace core\essence\npc;
 
+use core\Core;
+
 use core\utils\Entity;
 
 use pocketmine\Server;
@@ -63,6 +65,10 @@ class Athie extends NPC {
             3 => "104, 15, 87, Lobby"
         ];
     }
+	
+	public function getMoveTime() : int {
+		return 1;
+	}
 
     public function getCommands() : array {
         return [];

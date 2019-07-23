@@ -12,6 +12,8 @@ use core\stats\rank\Rank;
 
 use core\vote\task\Vote;
 
+use pocketmine\permission\Permission;
+
 class CoreUser {
 	public $loaded = false;
 
@@ -50,7 +52,7 @@ class CoreUser {
 		$this->cheatHistory = [];
 		$this->server = null;
 
-		if(!is_null($permissions) && !is_null($cheatHistory)) {
+		if(!is_null($permissions) && !is_null($cheatHistory)) {	
 			$this->permissions = unserialize($permissions);
 			$this->cheatHistory = unserialize($cheatHistory);
 		}
@@ -130,23 +132,28 @@ class CoreUser {
 		$this->rank = $rank;
 	}
 
-    public function getPermissions() {
-        return array_merge($this->getRank()->getPermissions(), [$this->permissions]);
+	public function getAllPermissions() : array {
+		return array_merge($this->getRank()->getPermissions(), $this->permissions);
+	}
+	
+    public function getPermissions() : array {
+        return $this->permissions;
     }
 
     public function hasPermission(string $permission) : bool {
+		if($permission instanceof Permission) {
+			$permission = $permission->getName();
+		}	
 		$player = Core::getInstance()->getServer()->getOfflinePlayer($this->getName());
 		
-		if($player->isOp() or $player->hasPermission("*")) {
+		if($player->isOp()) {
 			return true;
-		} else {
-			return in_array($permission, $this->getPermissions());
 		}
-		return false;
+		return in_array($permission, $this->getAllPermissions());
     }
 
-    public function setPermission(array $permissions) {
-        $this->permissions = krsort($permissions);
+    public function setPermissions(array $permissions) {
+        $this->permissions = $permissions;
 		$player = Core::getInstance()->getServer()->getPlayer($this->getName());
 
 		if($player instanceof CorePlayer) {
@@ -154,17 +161,17 @@ class CoreUser {
 		}
     }
 
-    public function addPermission(string $permission) {
-        $permissions = $this->getPermissions();
-        $permissions = array_merge($permissions, [$permission]);
+    public function addPermission(Permission $permission) {
+        $permissions = array_merge($this->getPermissions(), [$permission->getName()]);
 
-        $this->setPermission($permissions);
+        $this->setPermissions($permissions);
     }
 
-    public function removePermission(string $permission) {
-        $permissions = array_diff($this->getPermissions(), [$permission]);
+    public function removePermission(Permission $permission) {
+		$perm = [$permission->getName()];
+		$perms = array_diff($this->permissions, $perm);
 		
-        $this->setPermission($permissions);
+        $this->setPermissions($perms);
     }
 
     public function getCheatHistory() : array {

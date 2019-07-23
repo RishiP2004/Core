@@ -27,7 +27,7 @@ class Item extends PluginCommand {
         $this->core = $core;
 
 		$this->setAliases(["give"]);
-        $this->setPermission("core.essentials.defaults.item.command");
+        $this->setPermission("core.essentials.defaults.command.item");
         $this->setUsage("<item [:damage]> [amount] [tags] [player]");
         $this->setDescription("Add an Item to yours or another Player's Inventory");
     }

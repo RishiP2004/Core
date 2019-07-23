@@ -23,7 +23,7 @@ class MuteList extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.mutelist.command");
+        $this->setPermission("core.essentials.defaults.command.mutelist");
         $this->setUsage("<players : ips>");
         $this->setDescription("Lists all the Players/IP Addresses Muted from the Network");
     }

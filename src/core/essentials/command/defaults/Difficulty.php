@@ -22,7 +22,7 @@ class Difficulty extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.difficulty.command");
+        $this->setPermission("core.essentials.defaults.command.difficulty");
         $this->setUsage("<difficulty>");
         $this->setDescription("Set the Server's Difficulty");
     }

@@ -68,6 +68,8 @@ abstract class NPC {
 
     public abstract function getMovement() : array;
 
+	public abstract function getMoveTime() : int;
+	
     public abstract function getCommands() : array;
 
     public abstract function getMessages() : array;

@@ -20,7 +20,7 @@ class Unblock extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.unban.command");
+        $this->setPermission("core.essentials.defaults.command.unblock");
         $this->setUsage("<player>");
         $this->setDescription("Unblock a Player");
     }

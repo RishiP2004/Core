@@ -22,7 +22,7 @@ class Kill extends PluginCommand {
        
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.kill.command");
+        $this->setPermission("core.essentials.defaults.command.kill");
         $this->setUsage("[player]");
         $this->setDescription("Kill yourself or Kill a Player");
     }

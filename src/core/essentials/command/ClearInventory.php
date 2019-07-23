@@ -21,7 +21,7 @@ class ClearInventory extends PluginCommand {
         $this->core = $core;
 
 		$this->setAliases(["ci"]);
-        $this->setPermission("core.essentials.clearinventory.command");
+        $this->setPermission("core.essentials.command.clearinventory");
         $this->setUsage("[player]");
         $this->setDescription("Clear your or a Player's Inventory");
     }

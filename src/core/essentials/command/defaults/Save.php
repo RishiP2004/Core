@@ -19,7 +19,7 @@ class Save extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.save.command");
+        $this->setPermission("core.essentials.defaults.command.save");
         $this->setUsage("[on : off]");
         $this->setDescription("Save Command");
     }

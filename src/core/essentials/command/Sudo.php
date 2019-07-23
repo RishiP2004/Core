@@ -22,7 +22,7 @@ class Sudo extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.sudo.command");
+        $this->setPermission("core.essentials.command.sudo");
         $this->setUsage("<player> <command line : chat; chat message>");
         $this->setDescription("Run something as another Player");
     }

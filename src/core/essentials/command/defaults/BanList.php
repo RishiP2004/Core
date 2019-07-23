@@ -23,9 +23,9 @@ class BanList extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.banlist.command");
+        $this->setPermission("core.essentials.defaults.command.banlist");
         $this->setUsage("<players : ips>");
-        $this->setDescription("Lists all the Players/IP Addresses Banned from the Network");
+        $this->setDescription("Lists all the Players/Ip Addresses Banned from the Network");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {

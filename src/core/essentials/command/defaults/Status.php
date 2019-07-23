@@ -24,7 +24,7 @@ class Status extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.status.command");
+        $this->setPermission("core.essentials.defaults.command.status");
         $this->setDescription("Check the Server's Status");
     }
 

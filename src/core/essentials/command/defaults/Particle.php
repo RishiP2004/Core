@@ -31,7 +31,7 @@ class Particle extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.particle.command");
+        $this->setPermission("core.essentials.defaults.command.particle");
         $this->setUsage("<name> [x] [y] [z] [xd] [yd] [zd] [count] [data]");
         $this->setDescription("Add a Particle");
     }

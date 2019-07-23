@@ -26,7 +26,7 @@ class Timings extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.reload.command");
+        $this->setPermission("core.essentials.defaults.command.timings");
         $this->setUsage("<reload : on : off : paste>");
         $this->setDescription("Timings Command");
     }

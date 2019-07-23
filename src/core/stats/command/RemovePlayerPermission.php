@@ -12,6 +12,8 @@ use pocketmine\command\{
     CommandSender
 };
 
+use pocketmine\permission\Permission;
+
 class RemovePlayerPermission extends PluginCommand {
     private $core;
 
@@ -22,7 +24,7 @@ class RemovePlayerPermission extends PluginCommand {
 
         $this->setAliases(["removepperm"]);
         $this->setPermission("core.stats.command.removeplayerpermissions");
-        $this->setUsage("<player> <permission>");
+        $this->setUsage("<player> <permission : all>");
         $this->setDescription("Remove a Permission from a Player");
     }
 
@@ -44,14 +46,19 @@ class RemovePlayerPermission extends PluginCommand {
 				$sender->sendMessage($this->core->getPrefix() . $user->getName() . " doesn't have the Permission " . $args[1]);
 				return false;
 			} else {
-				$user->removePermission($args[1]);
+				if(strtolower($args[1]) === "all") {
+					$user->setPermissions([]);
+				}
+				$perm = new Permission($args[1]);
+				
+				$user->removePermission($perm);
 
 				$player = $this->core->getServer()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Removed the Permission " . $args[1] . " from you");
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Removed the Permission " . $perm->getName() . " from you");
 				}
-				$sender->sendMessage($this->core->getPrefix() . "Removed the Permission " . $args[1] . " from " . $user->getName());
+				$sender->sendMessage($this->core->getPrefix() . "Removed the Permission " . $perm->getName() . " from " . $user->getName());
 				return true;
 			}
         });

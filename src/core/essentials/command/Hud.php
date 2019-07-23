@@ -19,7 +19,7 @@ class Hud extends PluginCommand {
 
 		$this->core = $core;
 
-		$this->setPermission("core.essentials.hud.command");
+		$this->setPermission("core.essentials.command.hud");
 		$this->setUsage("<type> <value>");
 		$this->setDescription("Set a Hud Type on or Off");
 	}

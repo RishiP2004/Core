@@ -24,7 +24,7 @@ class Time extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.teleport.command");
+        $this->setPermission("core.essentials.defaults.command.teleport");
         $this->setUsage("<add <amount> : set <day : night> : start : stop : query>");
         $this->setDescription("Lists all the Players/IP Addresses Banned from the Network");
     }

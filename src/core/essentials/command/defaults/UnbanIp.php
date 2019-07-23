@@ -20,7 +20,7 @@ class UnbanIp extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.unban-ip.command");
+        $this->setPermission("core.essentials.defaults.command.unban-ip");
         $this->setUsage("<player : ip>");
         $this->setDescription("Un-Ip Ban a Player");
     }

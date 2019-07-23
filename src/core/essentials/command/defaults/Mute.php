@@ -22,7 +22,7 @@ class Mute extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.ban.command");
+        $this->setPermission("core.essentials.defaults.command.mute");
         $this->setUsage("<player> [reason] [timeFormat]");
         $this->setDescription("Mute a Player");
     }

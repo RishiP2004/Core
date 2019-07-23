@@ -20,7 +20,7 @@ class Fly extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.fly.command");
+        $this->setPermission("core.essentials.command.fly");
         $this->setUsage("[value] [player]");
         $this->setDescription("Set yours or a Player's Fly mode");
     }

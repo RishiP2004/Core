@@ -12,6 +12,8 @@ use pocketmine\command\{
     CommandSender
 };
 
+use pocketmine\permission\Permission;
+
 class AddPlayerPermission extends PluginCommand {
     private $core;
 
@@ -44,14 +46,15 @@ class AddPlayerPermission extends PluginCommand {
 				$sender->sendMessage($this->core->getPrefix() . $user->getName() . " already has the Permission " . $args[1]);
 				return false;
 			} else {
-				$user->addPermission($args[1]);
+				$perm = new Permission($args[1]);
+				$user->addPermission($perm);
 
 				$player = $this->core->getServer()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " gave you the Permission " . $args[1]);
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " gave you the Permission " . $perm->getName());
 				}
-				$sender->sendMessage($this->core->getPrefix() . "Added the Permission " . $args[1] . " to " . $user->getName());
+				$sender->sendMessage($this->core->getPrefix() . "Added the Permission " . $perm->getName() . " to " . $user->getName());
 				return true;
 			}
         });

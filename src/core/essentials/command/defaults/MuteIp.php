@@ -22,7 +22,7 @@ class MuteIp extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.mute-ip.command");
+        $this->setPermission("core.essentials.defaults.command.mute-ip");
         $this->setUsage("<player : ip> [reason] [timeFormat]");
         $this->setDescription("Mute an Ip or Player");
     }

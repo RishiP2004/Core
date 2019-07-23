@@ -47,7 +47,6 @@ use core\stats\command\{
 	Servers,
 	SetBalance,
 	SetCoins,
-	SetPlayerPermission,
 	SetRank,
 	TakeBalance,
 	TakeCoins,
@@ -115,8 +114,6 @@ class Stats implements Statistics {
 		$this->core->getServer()->getCommandMap()->register(RemovePlayerPermission::class, new RemovePlayerPermission($this->core));
 		$this->core->getServer()->getCommandMap()->register(Servers::class, new Servers($this->core));
 		$this->core->getServer()->getCommandMap()->register(SetBalance::class, new SetBalance($this->core));
-		$this->core->getServer()->getCommandMap()->register(SetCoins::class, new SetCoins($this->core));
-		$this->core->getServer()->getCommandMap()->register(SetPlayerPermission::class, new SetPlayerPermission($this->core));
 		$this->core->getServer()->getCommandMap()->register(SetRank::class, new SetRank($this->core));
 		$this->core->getServer()->getCommandMap()->register(TakeBalance::class, new TakeBalance($this->core));
 		$this->core->getServer()->getCommandMap()->register(TakeCoins::class, new TakeCoins($this->core));
@@ -319,7 +316,7 @@ class Stats implements Statistics {
 				$coreUser->setName($name);
 				$coreUser->setCoins($coins);
 				$coreUser->setBalance($balance);
-				$coreUser->setPermission(unserialize($permissions));
+				$coreUser->setPermissions(unserialize($permissions));
 			}
 			$callback($users);
         });

@@ -20,7 +20,7 @@ class Ping extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.ping.command");
+        $this->setPermission("core.essentials.command.ping");
         $this->setUsage("[player]");
         $this->setDescription("Check yours or a Player's Ping");
     }

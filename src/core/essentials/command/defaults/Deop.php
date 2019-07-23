@@ -20,7 +20,7 @@ class Deop extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.deop.command");
+        $this->setPermission("core.essentials.defaults.command.deop");
         $this->setUsage("<player>");
         $this->setDescription("Deop a Player");
     }

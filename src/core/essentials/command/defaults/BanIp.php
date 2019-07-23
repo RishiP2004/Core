@@ -22,7 +22,7 @@ class BanIp extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.ban-ip.command");
+        $this->setPermission("core.essentials.defaults.command.ban-ip");
         $this->setUsage("<player : ip> [reason] [timeFormat]");
         $this->setDescription("Ban an Ip or Player");
     }

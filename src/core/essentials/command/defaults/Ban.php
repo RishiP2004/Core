@@ -24,7 +24,7 @@ class Ban extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.ban.command");
+        $this->setPermission("core.essentials.defaults.command.ban");
         $this->setUsage("<player> [reason] [time]");
         $this->setDescription("Ban a Player");
     }

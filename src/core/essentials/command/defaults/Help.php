@@ -22,7 +22,7 @@ class Help extends PluginCommand {
        
         $this->core = $core;
        
-        $this->setPermission("core.essentials.defaults.help.command");
+        $this->setPermission("core.essentials.defaults.command.help");
         $this->setUsage("[page]");
         $this->setDescription("Check all the Commands on the Server");
     }

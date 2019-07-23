@@ -26,7 +26,7 @@ class Summon extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.summon.command");
+        $this->setPermission("core.essentials.defaults.command.summon");
         $this->setUsage("<entityType> [x] [y] [z] [level]");
         $this->setDescription("Summon an Entity");
     }

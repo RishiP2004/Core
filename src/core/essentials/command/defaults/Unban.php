@@ -20,7 +20,7 @@ class Unban extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.unban.command");
+        $this->setPermission("core.essentials.defaults.command.unban");
         $this->setUsage("<player>");
         $this->setDescription("Unban a Player");
     }

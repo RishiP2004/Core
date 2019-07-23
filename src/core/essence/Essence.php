@@ -63,7 +63,9 @@ class Essence implements EssenceData {
 			foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
 				if($onlinePlayer instanceof CorePlayer) {
 					if($npc->isSpawnedTo($onlinePlayer)) {
-						$npc->move($onlinePlayer);
+						if($npc->getMoveTime() !== 0) {
+							$npc->move($onlinePlayer);
+						}
 					}
 				}
 			}

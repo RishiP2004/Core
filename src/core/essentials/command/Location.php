@@ -20,7 +20,7 @@ class Location extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.location.command");
+        $this->setPermission("core.essentials.command.location");
         $this->setUsage("[player]");
 		$this->setAliases(["loc", "compass", "xyz"]);
         $this->setDescription("Check your Location and Direction or a Players'");

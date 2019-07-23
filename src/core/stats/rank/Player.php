@@ -24,7 +24,11 @@ class Player extends Rank {
 	}
 
     public function getPermissions() : array {
-    	return [];
+    	return [
+			"core.essentials.command.hud",
+			"core.essentials.command.ping",
+			"core.essentials.defaults.command.list"
+		];
     }
 
     public function getInheritance() : ?Rank {

@@ -24,7 +24,7 @@ class Teleport extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.teleport.command");
+        $this->setPermission("core.essentials.defaults.command.teleport");
         $this->setUsage("[target : all] <player : x> <y> <z> [<y-rot> <x-rot>]");
         $this->setDescription("Teleport Command");
     }

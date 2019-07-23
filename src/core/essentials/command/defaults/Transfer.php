@@ -20,7 +20,7 @@ class Transfer extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.transfer.command");
+        $this->setPermission("core.essentials.defaults.command.transfer");
         $this->setUsage("<ip> <port> [player]");
         $this->setDescription("Transfer yourself or a Player");
     }

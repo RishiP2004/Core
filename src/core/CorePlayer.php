@@ -362,17 +362,19 @@ class CorePlayer extends Player {
 		if(!$this->isInitialized()) {
 			return;
 		}
-        foreach($this->getCoreUser()->getPermissions() as $permission) {
+		$attachment = $this->getAttachment();
+
+        $attachment->clearPermissions();
+		
+        foreach($this->getCoreUser()->getAllPermissions() as $permission) {
             if($permission === "*") {
                 foreach($this->getServer()->getPluginManager()->getPermissions() as $temp) {
                     $permissions[$temp->getName()] = true;
                 }
-            } 
+            } else if(is_string($permission)) {
+				$attachment->setPermission($permission, true);
+			}
         }
-        $attachment = $this->getAttachment();
-
-        $attachment->clearPermissions();
-        $attachment->setPermissions($permissions);
     }
 
     public function sendServerSelectorForm() {

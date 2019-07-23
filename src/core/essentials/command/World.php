@@ -20,7 +20,7 @@ class World extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.world.command");
+        $this->setPermission("core.essentials.command.world");
         $this->setUsage("<world> [player]");
         $this->setDescription("Teleport yourself or a Player to a World");
     }

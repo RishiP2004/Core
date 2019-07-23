@@ -20,7 +20,7 @@ class Help extends SubCommand {
     }
 
     public function canUse(CommandSender $sender) : bool {
-        return $sender->hasPermission("core.anticheat.subcommand.help");
+        return $sender->hasPermission("core.cheat.subcommand.help");
     }
 
     public function getUsage() : string {

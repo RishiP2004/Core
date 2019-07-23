@@ -22,7 +22,7 @@ class Spawn extends PluginCommand {
        
         $this->core = $core;
        
-        $this->setPermission("core.essentials.defaults.spawn.command");
+        $this->setPermission("core.essentials.defaults.command.spawn");
         $this->setUsage("[player]");
         $this->setDescription("Go to Spawn or send a Player there");
     }

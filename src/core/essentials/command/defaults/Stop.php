@@ -19,7 +19,7 @@ class Stop extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.stop.command");
+        $this->setPermission("core.essentials.defaults.command.stop");
         $this->setDescription("Stop the Server");
     }
 

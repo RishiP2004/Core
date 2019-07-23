@@ -20,7 +20,7 @@ class Unmute extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.unblock-ip.command");
+        $this->setPermission("core.essentials.defaults.command.unmute");
         $this->setUsage("<player>");
         $this->setDescription("Unmute a Player");
     }

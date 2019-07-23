@@ -21,7 +21,7 @@ class Plugins extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.plugins.command");
+        $this->setPermission("core.essentials.defaults.command.plugins");
         $this->setDescription("See the Server's Plugins");
     }
 

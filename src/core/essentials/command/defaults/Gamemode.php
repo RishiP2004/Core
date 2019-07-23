@@ -22,7 +22,7 @@ class Gamemode extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.gamemode.command");
+        $this->setPermission("core.essentials.defaults.command.gamemode");
         $this->setUsage("<gamemode> [player]");
         $this->setDescription("Set yours or a Player's Gamemode");
     }

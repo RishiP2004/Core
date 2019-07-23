@@ -19,7 +19,7 @@ class Chat extends PluginCommand {
 
 		$this->core = $core;
 
-		$this->setPermission("core.essentials.chat.command");
+		$this->setPermission("core.essentials.command.chat");
 		$this->setUsage("<type> [player]");
 		$this->setDescription("Change Chat Type of a Player or yourself");
 	}

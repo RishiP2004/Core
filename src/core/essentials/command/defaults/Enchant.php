@@ -25,7 +25,7 @@ class Enchant extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.enchant.command");
+        $this->setPermission("core.essentials.defaults.command.enchant");
         $this->setUsage("<enchant> [level] [player]");
         $this->setDescription("Add an Enchantment to yours or another Player's Item");
     }

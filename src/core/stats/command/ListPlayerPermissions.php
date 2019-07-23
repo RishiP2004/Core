@@ -42,9 +42,15 @@ class ListPlayerPermissions extends PluginCommand {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;
 			} else {
-				$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s Permissions: \n" . TextFormat::GRAY . implode(", ", $user->getPermissions()));
+				$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s Permissions:");
+				
+				if(empty($user->getPermissions()) or !is_array($user->getPermissions())) {
+					$sender->sendMessage(TextFormat::GRAY . "None");
+					return true;
+				}
+				$sender->sendMessage(TextFormat::GRAY . implode(", ", (array) $user->getPermissions()));
 				return true;
-			}
+			}	
         });
 		return false;
     }

@@ -22,7 +22,7 @@ class Kick extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.kick.command");
+        $this->setPermission("core.essentials.defaults.command.kick");
         $this->setUsage("<all : player> [reason]");
         $this->setDescription("Kick a Player");
     }

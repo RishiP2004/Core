@@ -19,7 +19,7 @@ class History extends SubCommand {
 	}
 
 	public function canUse(CommandSender $sender) : bool {
-		return $sender->hasPermission("core.anticheat.subcommand.history");
+		return $sender->hasPermission("core.cheat.subcommand.history");
 	}
 
 	public function getUsage() : string {

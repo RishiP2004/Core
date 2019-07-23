@@ -7,8 +7,6 @@ namespace core\network\server;
 class Lobby extends Server {
     public function __construct() {
         parent::__construct("Lobby");
-		
-		$this->setWhitelisted();
     }
 
     public function getIp() : string {

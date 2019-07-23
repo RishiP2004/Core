@@ -27,7 +27,7 @@ class Information extends PluginCommand {
 
 		$this->setAliases(["info", "about"]);
 		$this->setUsage("[plugin]");
-        $this->setPermission("core.essentials.defaults.information.command");
+        $this->setPermission("core.essentials.defaults.command.information");
         $this->setDescription("Check the Information of the Server or a Plugin");
     }
 

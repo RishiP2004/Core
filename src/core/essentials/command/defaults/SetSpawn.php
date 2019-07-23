@@ -20,7 +20,7 @@ class SetSpawn extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.setspawn.command");
+        $this->setPermission("core.essentials.defaults.command.setspawn");
         $this->setUsage("[player]");
         $this->setDescription("Set the Spawn");
     }

@@ -20,7 +20,7 @@ class Op extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.op.command");
+        $this->setPermission("core.essentials.defaults.command.op");
         $this->setUsage("<player>");
         $this->setDescription("Op a Player");
     }

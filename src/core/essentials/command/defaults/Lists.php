@@ -22,7 +22,7 @@ class Lists extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.list.command");
+        $this->setPermission("core.essentials.defaults.command.list");
         $this->setUsage("[server]");
         $this->setDescription("See all Online Players of a Server or the Network");
     }

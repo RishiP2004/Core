@@ -22,7 +22,7 @@ class Jump extends PluginCommand {
        
         $this->core = $core;
        
-        $this->setPermission("GPCore.Essentials.Command.Jump");
+        $this->setPermission("core.essentials.command.jump");
         $this->setUsage("[player]");
         $this->setDescription("Jump yourself or a Player to the Block you are Facing");
     }
@@ -37,7 +37,7 @@ class Jump extends PluginCommand {
             return false;
         }	
         if(isset($args[0])) {
-			if(!$sender->hasPermission($this->getPermission() . ".Other")) {
+			if(!$sender->hasPermission($this->getPermission() . ".other")) {
 				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
 				return false;
 			}

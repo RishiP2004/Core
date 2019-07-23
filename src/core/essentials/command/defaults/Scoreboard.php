@@ -26,7 +26,7 @@ class Scoreboard extends PluginCommand {
 		$this->core = $core;
 
 		$this->setAliases(["sb"]);
-		$this->setPermission("core.essentials.defaults.scoreboard.command");
+		$this->setPermission("core.essentials.defaults.command.scoreboard");
 		$this->setUsage("<create : delete : add : remove : setLine : removeLine>");
 		$this->setDescription("Scoreboard Command");
 	}

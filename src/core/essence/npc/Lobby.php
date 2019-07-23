@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace core\essence\npc;
 
+use core\Core;
+
 use core\utils\Entity;
 
 use pocketmine\Server;
@@ -59,6 +61,10 @@ class Lobby extends NPC {
     public function getMovement() : array {
         return [];
     }
+
+	public function getMoveTime() : int {
+		return 1;
+	}
 
     public function getCommands() : array {
         return [

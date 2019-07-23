@@ -22,7 +22,7 @@ class Tell extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.tell.command");
+        $this->setPermission("core.essentials.defaults.command.tell");
         $this->setUsage("<player> [msg]");
 		$this->setAliases(["msg", "message", "whisper"]);
         $this->setDescription("Tell a Player something");

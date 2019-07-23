@@ -21,7 +21,7 @@ class DumpMemory extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.dumpmemory.command");
+        $this->setPermission("core.essentials.defaults.command.dumpmemory");
         $this->setUsage("<token> [path]");
         $this->setDescription("Dump the Server's Memory");
     }

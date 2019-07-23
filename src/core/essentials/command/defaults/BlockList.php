@@ -23,9 +23,9 @@ class BlockList extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.blocklist.command");
+        $this->setPermission("core.essentials.defaults.command.blocklist");
         $this->setUsage("<players : ips>");
-        $this->setDescription("Lists all the Players/IP Addresses Blocked from the Network");
+        $this->setDescription("Lists all the Players/Ip Addresses Blocked from the Network");
     }
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {

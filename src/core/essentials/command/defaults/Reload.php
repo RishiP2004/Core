@@ -19,7 +19,7 @@ class Reload extends PluginCommand {
 
         $this->core = $core;
 
-        $this->setPermission("core.essentials.defaults.reload.command");
+        $this->setPermission("core.essentials.defaults.command.reload");
         $this->setDescription("Reload the Server");
     }
 
