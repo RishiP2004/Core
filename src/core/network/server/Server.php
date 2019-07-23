@@ -26,7 +26,7 @@ abstract class Server {
         $this->name = $name;
 		$this->whitelisted = $this->isWhitelisted();
         
-		//$this->query();
+		$this->query();
     }
 
     public final function getName() : string {
