@@ -130,17 +130,19 @@ class CoreUser {
 		$this->rank = $rank;
 	}
 
-    public function getPermissions() : array {
+    public function getPermissions() {
         return array_merge($this->getRank()->getPermissions(), [$this->permissions]);
     }
 
     public function hasPermission(string $permission) : bool {
 		$player = Core::getInstance()->getServer()->getOfflinePlayer($this->getName());
 		
-		if($player->isOp()) {
+		if($player->isOp() or $player->hasPermission("*")) {
 			return true;
+		} else {
+			return in_array($permission, $this->getPermissions());
 		}
-        return in_array($permission, $this->getPermissions());
+		return false;
     }
 
     public function setPermission(array $permissions) {
