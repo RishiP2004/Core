@@ -25,6 +25,7 @@ use pocketmine\block\{
     BlockFactory
 };
 
+use pocketmine\level\Position;
 use pocketmine\level\particle\{
     AngryVillagerParticle,
     BlockForceFieldParticle,
@@ -326,93 +327,126 @@ class Entity extends \pocketmine\entity\Entity {
         ];
     }
 
-    public static function getParticle(string $name, ?int $data = null) : ?Particle {
-        switch($name){
+    public static function getParticle(string $name, Position $position, ?int $data = null) : ?Particle {
+		switch(strtolower($name)) {
             case "explode":
-                return new ExplodeParticle();
-            case "hugeexplosion":
-                return new HugeExplodeParticle();
-            case "hugeexplosionseed":
-                return new HugeExplodeSeedParticle();
+                return new ExplodeParticle($position);
+            case "huge explode":
+                return new HugeExplodeParticle($position);
             case "bubble":
-                return new BubbleParticle();
+                return new BubbleParticle($position);
             case "splash":
-                return new SplashParticle();
-            case "wake":
+                return new SplashParticle($position);
             case "water":
-                return new WaterParticle();
-            case "crit":
-                return new CriticalParticle();
-            case "smoke":
-                return new SmokeParticle($data ?? 0);
+                return new WaterParticle($position);
+            case "critical":
+                return new CriticalParticle($position);
             case "spell":
-                return new EnchantParticle();
-            case "instantspell":
-                return new InstantEnchantParticle();
-            case "dripwater":
-                return new WaterDripParticle();
-            case "driplava":
-                return new LavaDripParticle();
-            case "townaura":
+                return new EnchantParticle($position);
+            case "instant spell":
+                return new InstantEnchantParticle($position);
+            case "smoke":
+                return new SmokeParticle($position, ($data === null ? 0 : $data));
+            case "drip water":
+                return new WaterDripParticle($position);
+            case "drip lava":
+                return new LavaDripParticle($position);
             case "spore":
-                return new SporeParticle();
+                return new SporeParticle($position);
             case "portal":
-                return new PortalParticle();
+                return new PortalParticle($position);
+            case "entity flame":
+                return new EntityFlameParticle($position);
             case "flame":
-                return new FlameParticle();
+                return new FlameParticle($position);
             case "lava":
-                return new LavaParticle();
-            case "reddust":
-                return new RedstoneParticle($data ?? 1);
-            case "snowballpoof":
-                return new ItemBreakParticle(ItemFactory::get(Item::SNOWBALL));
+                return new LavaParticle($position);
+            case "redstone":
+                return new RedstoneParticle($position, ($data === null ? 1 : $data));
+            case "snowball":
+                return new ItemBreakParticle($position, Item::get(Item::SNOWBALL));
             case "slime":
-                return new ItemBreakParticle(ItemFactory::get(Item::SLIMEBALL));
-            case "itembreak":
-                if($data !== null and $data !== 0) {
-                    return new ItemBreakParticle(ItemFactory::get($data));
-                }
-                break;
-            case "terrain":
-                if($data !== null and $data !== 0) {
-                    return new TerrainParticle(BlockFactory::get($data));
-                }
-                break;
+                return new ItemBreakParticle($position, Item::get(Item::SLIMEBALL));
             case "heart":
-                return new HeartParticle($data ?? 0);
+                return new HeartParticle($position, ($data === null ? 0 : $data));
             case "ink":
-                return new InkParticle($data ?? 0);
-            case "droplet":
-                return new RainSplashParticle();
-            case "enchantmenttable":
-                return new EnchantmentTableParticle();
-            case "happyvillager":
-                return new HappyVillagerParticle();
-            case "angryvillager":
-                return new AngryVillagerParticle();
-            case "forcefield":
-                return new BlockForceFieldParticle($data ?? 0);
+                return new InkParticle($position, ($data === null ? 0 : $data));
+            case "enchantment table":
+                return new EnchantmentTableParticle($position);
+            case "happy villager":
+                return new HappyVillagerParticle($position);
+            case "angry villager":
+                return new AngryVillagerParticle($position);
+            case "rain":
+                return new RainSplashParticle($position);
+            case "colourful":
+            	return new DustParticle ($position, rand(0, 255), rand(0, 255), rand(0, 255));
         }
-        if(strpos($name, "iconcrack_") === 0) {
-            $d = explode("_", $name);
-
-            if(count($d) === 3) {
-                return new ItemBreakParticle(ItemFactory::get((int) $d[1], (int) $d[2]));
-            }
-        } else if(strpos($name, "blockcrack_") === 0) {
-            $d = explode("_", $name);
-
-            if(count($d) === 2) {
-                return new TerrainParticle(BlockFactory::get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
-            }
-        } else if(strpos($name, "blockdust_") === 0) {
-            $d = explode("_", $name);
-
-            if(count($d) >= 4) {
-                return new DustParticle(((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255);
-            }
+        if(substr($name, 0, 5) === "item_") {
+            $array = explode("_", $name);
+            return new ItemBreakParticle($position, new Item($array[1]));
         }
-        return null;
+        if(substr($name, 0, 6) === "block_") {
+            $array = explode("_", $name);
+            return new TerrainParticle($position, Block::get($array[1]));
+        }
+        if(substr($name, 0, 9) === "destroyblock_") {
+            $array = explode("_", $name);
+            return new DestroyBlockParticle($position, Block::get($array[1]));
+        }
+		if(substr($name, 0, 5 ) === "dust_") {
+			$arr = explode("_", $name);
+
+			if(strpos($arr[1], ",") !== false) {
+				$rgb = explode(",", $arr[1]);
+
+				if(is_numeric($rgb[0]) && is_numeric($rgb[1]) && is_numeric($rgb[2])) {
+					if($rgb[0] > -1 && $rgb[0] < 256 && $rgb[1] > -1 && $rgb[1] < 256 && $rgb[2] > -1 && $rgb[2] < 256) {
+						return new DustParticle($position, $rgb[0], $rgb[1], $rgb[2]);
+					}
+				}
+			}
+			switch($arr[1]) {
+				case "red":
+				case "4":
+				case "c":
+					return new DustParticle($position, 252, 8, 8);
+				case "orange" :
+				case "6" :
+					return new DustParticle($position, 252, 195, 8);
+				case "yellow" :
+				case "e" :
+					return new DustParticle($position, 252, 252, 8);
+				case "green":
+				case "a" :
+				case "2" :
+					return new DustParticle($position, 8, 252, 8);
+				case "aqua" :
+				case "b" :
+					return new DustParticle($position, 8, 252, 228);
+				case "blue" :
+				case "1" :
+					return new DustParticle($position, 8, 8, 252);
+				case "purple" :
+				case "d" :
+				case "5" :
+					return new DustParticle($position, 252, 8, 252);
+				case "pink" :
+					return new DustParticle($position, 252, 8, 150);
+				case "white" :
+				case "f" :
+					return new DustParticle($position, 255, 255, 255);
+				case "black" :
+				case "0" :
+					return new DustParticle($position, 0, 0, 0);
+				case "grey" :
+				case "gray" :
+					return new DustParticle($position, 138, 138, 138);
+				default :
+					return new DustParticle($position, 255, 255, 255);
+			}
+		}
+		return new TerrainParticle($position, Block::get(0));
     }
 
 	public static function getPotionColor(int $effectID) : Color {

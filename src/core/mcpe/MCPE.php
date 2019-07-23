@@ -6,6 +6,8 @@ namespace core\mcpe;
 
 use core\Core;
 
+use core\utils\Level;
+
 use core\mcpe\inventory\BrewingManager;
 use core\mcpe\block\{
 	Beacon as BeaconBlock,
@@ -87,10 +89,7 @@ use pocketmine\math\Vector3;
 
 use pocketmine\utils\Config;
 
-use pocketmine\level\{
-    Level,
-    Position
-};
+use pocketmine\level\Position;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\GeneratorManager;
 
@@ -460,10 +459,10 @@ class MCPE implements Addon {
 				if($level !== null and $chunk !== null) {
 					$hash = Level::chunkHash($chunk->getX(), $chunk->getZ());
 
-					if(!isset(\core\utils\Level::$chunkCounter[$hash])) {
-						\core\utils\Level::$chunkCounter[$hash . ":" . $level->getFolderName()] = 0;
+					if(!isset(Level::$chunkCounter[$hash])) {
+						Level::$chunkCounter[$hash . ":" . $level->getFolderName()] = 0;
 					}
-					\core\utils\Level::$chunkCounter[$hash . ":" . $level->getFolderName()] += 1;
+					Level::$chunkCounter[$hash . ":" . $level->getFolderName()] += 1;
 				}
             }
 		}
