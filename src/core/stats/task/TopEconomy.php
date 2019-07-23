@@ -23,22 +23,26 @@ class TopEconomy extends AsyncTask implements Statistics {
 	private $unit;
 
 	private $allEconomy, $ops, $banned;
+	
+	private $addOp = true, $addBanned = true;
 
 	private $page, $max = 0;
 
 	private $topList;
 
-	public function __construct(string $sender, string $unit, array $allEconomy, int $page, array $ops, array $banned) {
+	public function __construct(string $sender, string $unit, array $allEconomy, int $page, bool $addOp, array $ops, bool $addBanned, array $banned) {
 		$this->sender = $sender;
 		$this->unit = $unit;
 		$this->allEconomy = $allEconomy;
 		$this->page = $page;
+		$this->addOp = $addOp;
 		$this->ops = $ops;
+		$this->addBanned = $addBanned;
 		$this->banned = $banned;
 	}
 
 	public function onRun() : void {
-		$this->topList = serialize($this->getTopList());
+		$this->topList = serialize((array) $this->getTopList());
 	}
 
 	private function getTopList() {
@@ -51,19 +55,19 @@ class TopEconomy extends AsyncTask implements Statistics {
 		$array = [];
 		$place = 1;
 
-		$this->max = ceil((count($allEconomy) - count($banned) - (count($ops))) / Statistics::TOP_SHOWN_PER_PAGE[$this->unit]);
-		$this->page = min($this->max, max(1, $this->page));
+		$this->max = ceil((count($allEconomy) - ($this->addBanned ? 0 : count($banned)) - ($this->addOp ? 0 : count($ops))) / Statistics::TOP_SHOWN_PER_PAGE[$this->unit]);
+		$this->page = (int) min($this->max, max(1, $this->page));
 
-		foreach($this->allEconomy as $player => $coins) {
-			$player = strtolower($player);
+		foreach($allEconomy as $player => $coins) {
+			$p = strtolower($player);
 
-			if(isset($banned[$player])) {
+			if(isset($banned[$p]) and !$this->addBanned) {
 				continue;
 			}
-			if(isset($this->ops[$player])) {
+			if(isset($this->ops[$p]) and !$this->addOp) {
 				continue;
 			}
-			$current = ceil($place / self::TOP_SHOWN_PER_PAGE[$this->unit]);
+			$current = (int) ceil($place / self::TOP_SHOWN_PER_PAGE[$this->unit]);
 
 			if($current === $this->page) {
 				$array[$place] = [$player, $coins];
@@ -77,18 +81,19 @@ class TopEconomy extends AsyncTask implements Statistics {
 
 	public function onCompletion(Server $server) : void {
 		$core = Core::getInstance();
-		$unit = strtoupper($this->unit);
-		$output = $core->getPrefix() . "Top " . $unit . " (" . $this->page . "/" . $this->max . "):";
+		$unit = ucfirst($this->unit);
+		$output = $core->getPrefix() . "Top " . $unit . " (" . $this->page . "/" . $this->max . "):\n";
 
 		foreach(unserialize($this->topList) as $place => $list) {
 			$output .= TextFormat::GRAY . $place . ". " .  $list[0] . " - " . $core->getStats()->getEconomyUnit($this->unit) . $list[1];
 		}
 		$output = substr($output, 0, -1);
-
-		if($this->sender instanceof ConsoleCommandSender) {
-			$this->sender->sendMessage($output);
-		} else if($core->getServer()->getPlayer($this->sender) instanceof CorePlayer) {
-			$this->sender->sendMessage($output);
+		$player = $server->getPlayerExact($this->sender);
+		
+		if($this->sender === "CONSOLE") {
+			$core->getInstance()->getServer()->getLogger()->info($output);
+		} else {
+			$player->sendMessage($output);
 		}
 	}
 }

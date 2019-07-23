@@ -22,7 +22,7 @@ class TopVoter extends FloatingText {
 	public function getPosition() : Position {
 		$level = Server::getInstance()->getLevelByName("Lobby");
 		
-		return new Position(126, 13, 104, $level);
+		return new Position(126, 16, 104, $level);
 	}
 
 	public function getText() : string {

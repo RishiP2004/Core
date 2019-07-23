@@ -51,7 +51,7 @@ class TopCoins extends PluginCommand {
 					});
 				}
 			}
-            $this->core->getStats()->sendTopEconomy("coins", $sender, $page, $ops, $banned);
+            $this->core->getStats()->sendTopEconomy("coins", $sender, (int) $page, $ops, $banned);
             return true;
         }
     }

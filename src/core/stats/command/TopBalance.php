@@ -51,7 +51,7 @@ class TopBalance extends PluginCommand {
 					});
 				}
 			}
-			$this->core->getStats()->sendTopEconomy("balance", $sender, $page, $ops, $banned);
+			$this->core->getStats()->sendTopEconomy("balance", $sender, (int) $page, $ops, $banned);
 			return true;
 		}
 	}

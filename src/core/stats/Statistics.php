@@ -18,6 +18,9 @@ interface Statistics {
     const ALLOWED_TRANSPARECNY_PERCENTAGE = 5;
 
     const COIN_VALUE = 1000;
+	
+	const ADD_BANNED = false;
+	const ADD_OPS = true;
 
     const UNITS = [
        	"coins" => "©",

@@ -143,6 +143,14 @@ class Stats implements Statistics {
         return self::TOP_SHOWN_PER_PAGE[$type];
     }
 
+	public function addOps() : bool {
+		return self::ADD_OPS;
+	}
+	
+	public function addBanned() : bool {
+		return self::ADD_BANNED;
+	}
+	
     public function disableCustomSkins() : bool {
         return self::DISABLE_CUSTOM_SKINS;
     }
@@ -239,7 +247,7 @@ class Stats implements Statistics {
 					$allEconomy[$user->getName()] = $user->getBalance();
 				}
 			}
-			$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, $ops, $banned));
+			$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, $this->addOps(), $ops, $this->addBanned(), $banned));
 		});
 	}
 
