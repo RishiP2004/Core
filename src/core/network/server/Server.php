@@ -20,7 +20,7 @@ abstract class Server {
 
     private $onlinePlayers = [];
 
-    private $online = false, $whiteListed = true;
+    private $online = false, $whitelisted = false;
 
     public function __construct(string $name) {
         $this->name = $name;

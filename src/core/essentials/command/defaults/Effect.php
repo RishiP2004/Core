@@ -23,7 +23,7 @@ class Effect extends PluginCommand {
         $this->core = $core;
 
         $this->setPermission("core.essentials.defaults.command.effect");
-        $this->setUsage("<effect : clear> <player> [seconds] [amplifier] [hideParticles]");
+        $this->setUsage("<player> <effect : clear> [seconds] [amplifier] [hideParticles]");
         $this->setDescription("Add an Effect to you or another Player");
     }
 
@@ -36,14 +36,14 @@ class Effect extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /effect " . $this->getUsage());
             return false;
         }
-        $player = $this->core->getServer()->getPlayer($args[1]);
+        $player = $this->core->getServer()->getPlayer($args[0]);
 
         if(!$player instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Online");
+            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
             return false;
         }
-        if(isset($args[0]) === "clear") {
-            if(!$sender->hasPermission($this->getPermission() . ".Other")) {
+        if(isset($args[1]) === "clear") {
+            if(!$sender->hasPermission($this->getPermission() . ".other")) {
                 $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                 return false;
             } else {
@@ -54,42 +54,41 @@ class Effect extends PluginCommand {
                 }
                 return true;
             }
-        }
-        $effect = \pocketmine\entity\Effect::getEffectByName($args[0]);
+        } 
+        $effect = \pocketmine\entity\Effect::getEffectByName($args[1]);
 
         if($effect === null) {
-            $effect = \pocketmine\entity\Effect::getEffect($args[0]);
+            $effect = \pocketmine\entity\Effect::getEffect((int) $args[1]);
         }
         if($effect === null) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Effect");
+            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Effect");
             return false;
         }
         $amplification = 0;
 
-        if(isset($args[3])) {
-            $duration = ($args[2]) * 20;
-        } else {
-            $duration = $effect->getDefaultDuration();
-        }
-        if(isset($args[4])) {
-            $amplification = $args[3];
+		if(count($args) >= 3){
+			if(($d = $this->getBoundedInt($sender, $args[2], 0, (int) (INT32_MAX / 20))) === null) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is too Big of a Duration");
+				return false;
+			}
+			$duration = $d * 20; 
+		} else {
+			$duration = null;
+		}
+		if(count($args) >= 4) {
+			$amplification = $this->getBoundedInt($sender, $args[3], 0, 255);
 
-            if($amplification > 255) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is too Big of an Amplifier");
-                return false;
-            }
-            if($amplification < 0) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is too Big of an Amplifier");
-                return false;
-            }
-            return true;
-        }
+			if($amplification === null) {
+				$sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is too Big of an Amplifier");
+				return false;
+			}
+		}
         $visible = true;
 
         if(isset($args[5])) {
             $v = strtolower($args[5]);
 
-            if($v === "on" or $v === "true") {
+            if($v === "on" or $v === "true" or $v = 1) {
                 $visible = false;
             }
         }
@@ -104,9 +103,10 @@ class Effect extends PluginCommand {
             return true;
         } else {
             $effectInstance = new EffectInstance($effect, $duration, $amplification, $visible);
-
+			$str = $visible === false ? "True" : "False";
+			
             $player->addEffect($effectInstance);
-            $sender->sendMessage($this->core->getPrefix() . "Added the Effect " . $effect->getName() . " to " . $player->getName() . " for " . $duration . " Seconds, " . $amplification . " Amplifier and Hidden: " . $visible);
+            $sender->sendMessage($this->core->getPrefix() . "Added the Effect " . $effect->getName() . " to " . $player->getName() . " for " . $duration . " Seconds, " . $amplification . " Amplifier and Hidden: " . $str);
             $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Removed the Effect " . $effect->getName() . " from you");
             return true;
         }

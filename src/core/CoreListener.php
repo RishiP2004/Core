@@ -32,6 +32,7 @@ use core\world\area\Lobby;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
 	PlayerBedEnterEvent,
+	PlayerBucketEvent,
 	PlayerCreationEvent,
 	PlayerChatEvent,
 	PlayerCommandPreprocessEvent,
@@ -115,6 +116,9 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             $area = $player->getArea();
 
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
             if(!is_null($area)) {
                 if(!$player->hasPermission("core.world.area.playerbedenter")) {
                     if(!$area->sleep()) {
@@ -123,6 +127,16 @@ class CoreListener implements Listener {
                     }
                 }
             }
+        }
+    }
+	
+    public function onPlayerBucket(PlayerBucketEvent $event) {
+        $player = $event->getPlayer();
+
+        if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
         }
     }
 
@@ -137,6 +151,9 @@ class CoreListener implements Listener {
             $muteList = $this->core->getEssentials()->getNameMutes();
             $ipMuteList = $this->core->getEssentials()->getIpMutes();
 
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
             if($muteList->isBanned($player->getName())) {
                 $entries = $muteList->getEntries();
                 $entry = $entries[strtolower($player->getName())];
@@ -220,10 +237,10 @@ class CoreListener implements Listener {
 					"{MESSAGE}"
 				], [
 					$player->getName(),
-					$message
+					$event->getMessage()
 				], $player->getCoreUser()->getRank()->getChatFormat());
 				
-				$event->setChatFormat($format);
+				$event->setFormat($format);
 			}
             $player->setChatTime();
         }
@@ -233,6 +250,9 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
             $blockList = $this->core->getEssentials()->getNameBlocks();
             $ipBlockList = $this->core->getEssentials()->getIpBlocks();
             $str = str_split($event->getMessage());
@@ -444,6 +464,9 @@ class CoreListener implements Listener {
         $player = $event->getPlayer();
 
         if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
 			$antiAutoClicker = $this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER);
 
 			$antiAutoClicker->set($player);
@@ -480,6 +503,9 @@ class CoreListener implements Listener {
 		$player = $event->getPlayer();
 		
 		if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
 			if($player->isFishing()) {
 				if($ev->getSlot() !== $player->lastHeldSlot) {
 					$player->setFishing(false);
@@ -717,18 +743,27 @@ class CoreListener implements Listener {
 		}
         if($entity instanceof CorePlayer) {
         	$player = $entity;
-
+			
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
             if($event instanceof EntityDamageByEntityEvent) {
                 $area = $player->getArea();
-
-                if(!is_null($area)) {
-                    if(!$player->hasPermission("core.world.area.entitydamage")) {
-                        if(!$area->pvp()) {
-                            $player->sendMessage($this->core->getErrorPrefix() . "You cannot PvP in the Area: " . $area->getName());
-                            $event->setCancelled();
-                        }
-                    }
-                }
+				$damager = $event->getDamager();
+				
+				if($damager instanceof CorePlayer) {
+					if(!$damager->isInitialized()) {
+						$event->setCancelled();
+					}
+					if(!is_null($area)) {
+						if(!$player->hasPermission("core.world.area.entitydamage")) {
+							if(!$area->pvp()) {
+								$damager->sendMessage($this->core->getErrorPrefix() . "You cannot PvP in the Area: " . $area->getName());
+								$event->setCancelled();
+							}
+						}
+					}
+				}
 			}
 			if($event->getCause() === EntityDamageEvent::CAUSE_FALL) {
 				if($entity->getArmorInventory()->getChestplate() instanceof Elytra or $event->getEntity()->getLevel()->getBlock($event->getEntity()->subtract(0, 1, 0))->getId() === SlimeBlock::class) {
@@ -864,6 +899,9 @@ class CoreListener implements Listener {
 		$player = $entity->shootingEntity;
 
 		if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
 			if($entity::NETWORK_ID !== 87) {
 				return;
 			}
@@ -1009,6 +1047,9 @@ class CoreListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
 			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
 
 			if(!is_null($area)) {
@@ -1026,6 +1067,9 @@ class CoreListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
+			if(!$player->isInitialized()) {
+				$event->setCancelled();
+			}
 			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
 
 			if(!is_null($area)) {
@@ -1043,6 +1087,9 @@ class CoreListener implements Listener {
 		$viewer = $event->getViewers();
 
 		if($viewer instanceof CorePlayer) {
+			if(!$viewer->isInitialized()) {
+				$event->setCancelled();
+			}
 			$area = $viewer->getArea();
 
 			if($area->getName() !== "") {
@@ -1060,6 +1107,9 @@ class CoreListener implements Listener {
 		$viewer = $event->getViewers();
 
 		if($viewer instanceof CorePlayer) {
+			if(!$viewer->isInitialized()) {
+				$event->setCancelled();
+			}
 			$area = $viewer->getArea();
 
 			if(!is_null($area)) {
@@ -1078,6 +1128,9 @@ class CoreListener implements Listener {
 		$source = $event->getTransaction()->getSource();
 
 		if($source instanceof CorePlayer) {
+			if(!$source->isInitialized()) {
+				$event->setCancelled();
+			}
 			$area = $source->getArea();
 
 			if(!is_null($area)) {

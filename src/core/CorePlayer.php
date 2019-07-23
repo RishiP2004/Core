@@ -81,7 +81,7 @@ class CorePlayer extends Player {
 
     private $fishing = false;
 
-    public $usingElytra = false, $allowCheats = false;
+    public $usingElytra = false, $allowCheats = false, $fly = true;
     /** 
 	 * @var null|FishingHook 
 	 */
@@ -351,6 +351,14 @@ class CorePlayer extends Player {
 			}
 		}
     }
+	
+	public function flying() : bool {
+		return $this->fly;
+	}
+	
+	public function setFly(bool $fly = true) {
+		$this->fly = $fly;
+	}
 
     public function getAttachment() : ?PermissionAttachment {
         return $this->attachment;
@@ -560,12 +568,12 @@ class CorePlayer extends Player {
 					$user = $player->getCoreUser();
 
 					if($type === "Coins") {
-						if($amount > 1000) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Balance");
+						if($amount < 1000) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Coins");
 							return;
 						}
-						if($user->getCoins() < $amount) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Coins");
+						if($user->getBalance() < $amount) {
+							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
 							return;
 						}
 						$user->setCoins($amount / 1000);
@@ -573,7 +581,7 @@ class CorePlayer extends Player {
 						$player->sendMessage("Transferred " . $amount . " Balance to Coins");
 					}
 					if($type === "Balance") {
-						if($user->getBalance() < $amount) {
+						if($user->getCoins() < $amount) {
 							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
 							return;
 						}
@@ -796,7 +804,7 @@ class CorePlayer extends Player {
             $message = $reason;
 
             if($isAdmin) {
-                if(!$this->core->getEssentials()->getNameBans()->isBanned($this->getName()) or $this->core->getEssentials()->getIpBans()->isBanned($this->getName())) {
+                if(!$this->core->getEssentials()->getNameBans()->isBanned($this->getName()) or !$this->core->getEssentials()->getIpBans()->isBanned($this->getName())) {
                     $message = $this->core->getPrefix() . "You have been Kicked\n" . TextFormat::GRAY . ($reason !== "" ? " Reason: " . $reason : "");
                 }
             } else {

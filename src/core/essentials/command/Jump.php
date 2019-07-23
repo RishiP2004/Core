@@ -75,7 +75,7 @@ class Jump extends PluginCommand {
                 return true;
             }
         }
-        if($sender instanceof CorePlayer) {
+        if(!$sender instanceof CorePlayer) {
             $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
             return false;
 		}

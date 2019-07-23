@@ -41,16 +41,16 @@ class Item extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /item " . $this->getUsage());
             return false;
         }
-		$item = ItemFactory::fromString($args[1]);
+		$item = ItemFactory::fromString($args[0]);
 
-		if(!isset($args[2])) {
+		if(!isset($args[1])) {
 			$item->setCount($item->getMaxStackSize());
 		} else {
-			$item->setCount($args[2]);
+			$item->setCount($args[1]);
 		}
-		if(isset($args[3])) {
+		if(isset($args[2])) {
 			$tags = $exception = \null;
-			$data = \implode(" ", \array_slice($args, 3));
+			$data = \implode(" ", \array_slice($args, 2));
 			
 			try {
 				$tags = JsonNBTParser::parseJSON($data);

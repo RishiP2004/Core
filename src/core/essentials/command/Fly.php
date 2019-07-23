@@ -63,10 +63,14 @@ class Fly extends PluginCommand {
 				} else {
 					$flying = $player->getAllowFlight() === false ? true : false;
 				}
+				$player->setFly($flying);
 				$player->setAllowFlight($flying);
 				$player->setFlying($flying);
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Fly mode to " . strtoupper($flying));
-				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s Fly mode to " . strtoupper($flying));
+				
+				$str = $player->getAllowFlight() === false ? "False" : "True";
+				
+				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Fly mode to " . $str);
+				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s Fly mode to " . $str);
 				return true;
             }
         }
@@ -79,9 +83,13 @@ class Fly extends PluginCommand {
 			} else {
 				$flying = $sender->getAllowFlight() === false ? true : false;
 			}
+			$sender->setFly($flying);
 			$sender->setAllowFlight($flying);
 			$sender->setFlying($flying);
-			$sender->sendMessage($this->core->getPrefix() . "Set your Fly mode to " . strtoupper($flying));
+			
+			$str = $sender->getAllowFlight() === false ? "False" : "True";
+			
+			$sender->sendMessage($this->core->getPrefix() . "Set your Fly mode to " . $str);
 			return true;
         }
     }

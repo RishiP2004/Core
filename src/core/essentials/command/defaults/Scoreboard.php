@@ -55,7 +55,7 @@ class Scoreboard extends PluginCommand {
 						return false;
 					} else {
 						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::CREATE);
-						$scoreboard->create($args[2], $args[3]);
+						$scoreboard->create($args[2], (int) $args[3]);
 						$sender->sendMessage($this->core->getPrefix() . "Successfully Created Scoreboard " . $args[1]);
 						return true;
 					}
@@ -92,7 +92,7 @@ class Scoreboard extends PluginCommand {
 									$scoreboard->addDisplay($p);
 								}
 							}
-							$sender->sendMessage($this->core->getPrefix() . "Sent Scoreboard" . $args[2] . " to all the online players");
+							$sender->sendMessage($this->core->getPrefix() . "Sent Scoreboard " . $args[2] . " to all the online players");
 							return true;
 						} else {
 							$p = $this->core->getServer()->getPlayer($args[1]);
@@ -106,7 +106,7 @@ class Scoreboard extends PluginCommand {
 						}
 					}
 				break;
-				case "setLine":
+				case "setline":
 					if(count($args) < 4) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard setLine <title of the scoreboard> <line> <message>");
 						return false;

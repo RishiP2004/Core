@@ -43,7 +43,7 @@ class Kick extends PluginCommand {
 			}      
             if(strtolower($args[0]) === "all") {
                 foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
-                    $onlinePlayer->kick($this->core->getPrefix() . "You have been Kicked!\n" . TextFormat::GRAY . "Kicked by: " . $sender->getName() . "\n" . TextFormat::GRAY . "Reason: " . $reason);
+                    $onlinePlayer->kick(TextFormat::GRAY . "Kicked by " . $sender->getName() . " for: " . $reason);
                     $sender->sendMessage($this->core->getPrefix() . "You have Kicked all Online Players for the Reason: " . $reason);
                 }
             } else {
@@ -53,7 +53,7 @@ class Kick extends PluginCommand {
 					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
 					return false;
 				} else {
-					$player->kick($this->core->getPrefix() . "You have been Kicked!\n" . TextFormat::GRAY . "Kicked by: " . $sender->getName() . "\n" . TextFormat::GRAY . "Reason: " . $reason);
+					$player->kick(TextFormat::GRAY . "Kicked by " . $sender->getName() . " for: " . $reason);
 					$sender->sendMessage($this->core->getPrefix() . "You have Kicked " . $player->getName(). " for the Reason: " . $reason);
 					$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $player->getName() . " has been Kicked by " . $sender->getName() . " for the Reason: " . $reason);
 				}

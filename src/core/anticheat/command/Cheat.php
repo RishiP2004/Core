@@ -31,7 +31,7 @@ class Cheat extends PluginCommand {
 
 		$this->setAliases(["hack"]);
 		$this->setPermission("core.chat.command");
-		$this->setDescription("Broadcast Command");
+		$this->setDescription("Cheat Command");
 		$this->loadSubCommand(new Help($core));
 		$this->loadSubCommand(new Report($core));
 		$this->loadSubCommand(new History($core));

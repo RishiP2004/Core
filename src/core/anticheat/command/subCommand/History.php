@@ -43,7 +43,7 @@ class History extends SubCommand {
 			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: " . $this->getUsage());
 			return false;
 		}
-		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+		$this->core->getStats()->getCoreUser($args[1], function($user) use ($sender, $args) {
 			if(is_null($user)) {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;

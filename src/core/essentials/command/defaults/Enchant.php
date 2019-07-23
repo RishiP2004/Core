@@ -49,14 +49,14 @@ class Enchant extends PluginCommand {
             return false;
 		}
         if(isset($args[2])) {
-			if(!$sender->hasPermission($this->getPermission() . ".Other")) {
+			if(!$sender->hasPermission($this->getPermission() . ".other")) {
 				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
 				return false;
 			}
-            $player = $this->core->getServer()->getPlayer($args[0]);
+            $player = $this->core->getServer()->getPlayer($args[2]);
 
             if(!$player instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
+                $sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not Online");
                 return false;
             }
             $item = $player->getInventory()->getItemInHand();
@@ -67,7 +67,7 @@ class Enchant extends PluginCommand {
             } else {
                 $item->addEnchantment(new EnchantmentInstance($enchantment, $args[1] ?? 1));
                 $player->getInventory()->setItemInHand($item);
-                $sender->sendMessage($this->core->getPrefix() . "Enchanted the Item in " . $args[2] . "'s hand with " . $enchantment->getName() . " and Level " . $args[1]);
+                $sender->sendMessage($this->core->getPrefix() . "Enchanted the Item in " . $player->getName() . "'s hand with " . $enchantment->getName() . " and Level " . $args[1]);
                 $player->sendMessage($this->core->getPrefix() . $sender->getName() . " Enchanted the Item in your hand with " . $enchantment->getName() . " and Level " . $args[1]);
                 return true;
             }
