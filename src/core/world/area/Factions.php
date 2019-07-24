@@ -49,7 +49,11 @@ class Factions extends Area {
         return false;
     }
 
-    public function usable() : bool {
+    public function entityDamage() : bool {
+		return true;
+	}
+
+	public function usable() : bool {
         return false;
     }
 
@@ -57,7 +61,7 @@ class Factions extends Area {
         return true;
     }
 
-    public function enderPearl() : bool {
+    public function projectile() : bool {
         return false;
     }
 

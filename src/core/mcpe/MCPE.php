@@ -205,22 +205,24 @@ class MCPE implements Addon {
         Tile::registerTile(MobSpawner::class);
         Tile::registerTile(ShulkerboxTile::class);
 
+        $core->getServer()->getPluginManager()->registerEvents(new MCPEListener($core), $core);
+
         if(!self::$loaded) {
         	self::$loaded = true;
 			GeneratorManager::addGenerator(Ender::class, "ender");
 		}
 
-        if(!$this->core->getServer()->loadLevel(self::$netherName)) {
-            $this->core->getServer()->generateLevel(self::$netherName, time(), GeneratorManager::getGenerator("nether"));
+        if(!$core->getServer()->loadLevel(self::$netherName)) {
+            $core->getServer()->generateLevel(self::$netherName, time(), GeneratorManager::getGenerator("nether"));
         }
-        self::$netherLevel = $this->core->getServer()->getLevelByName(self::$netherName);
+        self::$netherLevel = $core->getServer()->getLevelByName(self::$netherName);
 
-        if(!$this->core->getServer()->loadLevel(self::$endName)){
-            $this->core->getServer()->generateLevel(self::$endName, time(), GeneratorManager::getGenerator("ender"));
+        if(!$core->getServer()->loadLevel(self::$endName)){
+            $core->getServer()->generateLevel(self::$endName, time(), GeneratorManager::getGenerator("ender"));
         }
-        self::$endLevel = $this->core->getServer()->getLevelByName(self::$endName);
+        self::$endLevel = $core->getServer()->getLevelByName(self::$endName);
 
-		$properties = new Config($this->core->getServer()->getDataPath() . "server.properties", Config::PROPERTIES, [
+		$properties = new Config($core->getServer()->getDataPath() . "server.properties", Config::PROPERTIES, [
 			"motd" => \pocketmine\NAME . " Server",
 			"server-port" => 19132,
 			"white-list" => false,
@@ -240,7 +242,7 @@ class MCPE implements Addon {
 			"level-type" => "DEFAULT",
 			"enable-query" => true,
 			"enable-rcon" => false,
-			"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
+			"rcon.password" => substr(base64_encode(\random_bytes(20)), 3, 10),
 			"auto-save" => true,
 			"view-distance" => 8,
 			"xbox-auth" => true,

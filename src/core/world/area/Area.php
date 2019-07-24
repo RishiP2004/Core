@@ -38,11 +38,13 @@ abstract class Area {
 
     public abstract function PvP() : bool;
 
+    public abstract function entityDamage() : bool;
+
     public abstract function usable() : bool;
 
     public abstract function consume() : bool;
 
-    public abstract function enderPearl() : bool;
+    public abstract function projectile() : bool;
 
     public abstract function itemDrop() : bool;
 

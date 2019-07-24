@@ -67,7 +67,7 @@ class Athie extends NPC {
     }
 	
 	public function getMoveTime() : int {
-		return 1;
+		return 3;
 	}
 
     public function getCommands() : array {

@@ -28,6 +28,7 @@ class World {
         $this->initArea(new Lobby());
         $this->initArea(new Factions());
         $this->initArea(new FactionsWarzone());
+		$core->getServer()->getPluginManager()->registerEvents(new WorldListener($core), $core);
     }
 
     public function initArea(Area $area) {

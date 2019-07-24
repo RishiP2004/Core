@@ -39,6 +39,7 @@ class Network implements Networking {
         $this->initServer(new Lobby());
         $core->getServer()->getCommandMap()->register("backup", new Backup($core));
         $core->getServer()->getCommandMap()->register("restarter", new Restarter($core));
+        $core->getServer()->getPluginManager()->registerEvents(new NetworkListener($core), $core);
     }
 
     public function getTimer() : Timer {

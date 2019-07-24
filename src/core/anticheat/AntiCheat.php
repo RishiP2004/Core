@@ -61,6 +61,7 @@ class AntiCheat implements Cheats {
 
         $this->initCheat(new AutoClicker());
 		$core->getServer()->getCommandMap()->register(\core\anticheat\command\Cheat::class, new \core\anticheat\command\Cheat($core));
+		$core->getServer()->getPluginManager()->registerEvents(new AntiCheatListener($core), $core);
     }
 	
 	public function getMaxConcurrentExplosions() : int {

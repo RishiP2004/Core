@@ -49,7 +49,11 @@ class FactionsWarzone extends Area {
         return true;
     }
 
-    public function usable() : bool {
+    public function entityDamage() : bool {
+		return true;
+	}
+
+	public function usable() : bool {
         return true;
     }
 
@@ -57,7 +61,7 @@ class FactionsWarzone extends Area {
         return true;
     }
 
-    public function enderPearl() : bool {
+    public function projectile() : bool {
         return true;
     }
 
