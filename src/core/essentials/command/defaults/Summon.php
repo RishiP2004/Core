@@ -63,9 +63,17 @@ class Summon extends PluginCommand {
             $y = PocketMine::getRelativeDouble($sender->y, $sender, $args[++$pos], 0, $sender->getLevel()->getWorldHeight());
             $z = PocketMine::getRelativeDouble($sender->z, $sender, $args[++$pos]);
         } else {
-            $x = $sender->x;
-            $y = $sender->y;
-            $z = $sender->z;
+        	$player = $this->core->getServer()->getPlayer($args[1]);
+
+        	if($player instanceof  CorePlayer) {
+        		$x = $player->x;
+        		$y = $player->y;
+        		$z = $player->z;
+			} else {
+				$x = $args[1];
+				$y = $args[2];
+				$z = $args[3];
+			}
         }
         $entity = Entity::createEntity($entityId, $sender->getLevel(), Entity::createBaseNBT(new Vector3($x, $y, $z)));
 

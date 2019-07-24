@@ -31,7 +31,7 @@ class Ping extends PluginCommand {
             return false;
         }
         if(isset($args[0])) {
-            if(!$sender->hasPermission($this->getPermission() . ".Other")) {
+            if(!$sender->hasPermission($this->getPermission() . ".other")) {
                 $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                 return false;
             }

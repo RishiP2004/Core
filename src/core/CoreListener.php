@@ -239,7 +239,18 @@ class CoreListener implements Listener {
 					$player->getName(),
 					$event->getMessage()
 				], $player->getCoreUser()->getRank()->getChatFormat());
-				
+				$type = $player->getChatType();
+
+            	if($type !== CorePlayer::NORMAL) {
+            		foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+            			if($onlinePlayer instanceof CorePlayer) {
+            				if($onlinePlayer->getChatType() === $type) {
+            					$onlinePlayer->sendMessage($format);
+							}
+						}
+					}
+            		$event->setCancelled();
+				}
 				$event->setFormat($format);
 			}
             $player->setChatTime();
@@ -507,7 +518,7 @@ class CoreListener implements Listener {
 				$event->setCancelled();
 			}
 			if($player->isFishing()) {
-				if($ev->getSlot() !== $player->lastHeldSlot) {
+				if($event->getSlot() !== $player->lastHeldSlot) {
 					$player->setFishing(false);
 				}
 			}
@@ -663,10 +674,10 @@ class CoreListener implements Listener {
                 $event->setCancelled(true);
                 $player->sendMessage($banMessage);
             }
-            if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
-                $server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
+			$server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
 
-                if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
+            if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
+                if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist") && !$player->hasPermission("core.network.whitelist")) {
                     if(!empty($this->core->getBroadcast()->getKicks("whitelisted"))) {
                         $message = str_replace([
                             "{PLAYER}",

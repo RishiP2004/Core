@@ -48,7 +48,7 @@ class Fly extends PluginCommand {
 			}
 		}
         if(isset($args[1])) {
-            if(!$sender->hasPermission($this->getPermission() . ".Other")) {
+            if(!$sender->hasPermission($this->getPermission() . ".other")) {
                 $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
                 return false;
             }

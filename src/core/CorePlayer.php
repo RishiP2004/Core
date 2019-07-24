@@ -73,6 +73,10 @@ class CorePlayer extends Player {
     private $core;
 	private $coreUser;
 
+	const STAFF = "staff";
+	const NORMAL = "normal";
+	const VIP = "vip";
+
     private $interacts = [];
 
     private $chatTime = 0;
@@ -80,6 +84,8 @@ class CorePlayer extends Player {
 	public $lastHeldSlot = 0;
 
     private $fishing = false;
+
+    public $chatType = self::NORMAL;
 
     public $usingElytra = false, $allowCheats = false, $fly = true;
     /** 
@@ -318,6 +324,14 @@ class CorePlayer extends Player {
     public function setChatTime() {
         $this->chatTime = time();
     }
+
+    public function getChatType() : string {
+    	return $this->chatType;
+	}
+
+	public function setChatType(string $chatType) {
+    	$this->chatType = $chatType;
+	}
 
     public function addToInteract() {
         if(($this->interacts["time"] ?? 0) === time()) {

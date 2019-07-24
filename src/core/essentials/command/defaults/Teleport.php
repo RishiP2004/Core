@@ -50,6 +50,10 @@ class Teleport extends PluginCommand {
             }
             if(count($args) === 1) {
                 if($args[0] === "all") {
+					if(!$sender->hasPermission($this->getPermission() . ".all")) {
+						$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for Teleporting all");
+						return false;
+					}
                     foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
                         $target = $onlinePlayer;
                     }
@@ -73,6 +77,10 @@ class Teleport extends PluginCommand {
                 $origin = $target;
 
                 if($args[0] === "all") {
+					if(!$sender->hasPermission($this->getPermission() . ".all")) {
+						$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for Teleporting all");
+						return false;
+					}
                     foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
                         $target = $onlinePlayer;
                     }

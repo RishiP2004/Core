@@ -31,7 +31,7 @@ class World extends PluginCommand {
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /world" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /world " . $this->getUsage());
             return false;
         }
 		if(!$sender->getServer()->isLevelGenerated($args[0])){

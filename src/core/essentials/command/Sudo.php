@@ -33,7 +33,7 @@ class Sudo extends PluginCommand {
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /sudo" . " " . $this->getUsage());
+            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /sudo " .  $this->getUsage());
             return false;
         }
         $player = $this->core->getServer()->getPlayer($args[0]);

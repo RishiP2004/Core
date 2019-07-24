@@ -67,7 +67,6 @@ class Whitelist extends PluginCommand {
 							return true;
 						}
 					}
-					return false;
                 break;
                 case "off":
 					if(!isset($args[1])) {
@@ -98,7 +97,6 @@ class Whitelist extends PluginCommand {
 							return true;
 						}
 					}
-					return false;
                 break;
                 case "list":
 					if(!isset($args[1])) {
@@ -113,29 +111,32 @@ class Whitelist extends PluginCommand {
 					}
 					if(strtolower($args[1]) === "all") {
 						$users = [];
-						
-						foreach($this->core->getStats()->getAllCoreUsers() as $user) {
-							if($user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-								$users[] = $user->getName();
+
+						$this->core->getStats()->getAllCoreUsers(function($users) use ($sender) {
+							foreach($users as $user) {
+								if($user->hasPermission("core.network.whitelist")) {
+									$users[] = $user->getName();
+								}
 							}
-						}
-						$message = \implode($users, ", ");
-						$sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($users)  . ":");
-						$sender->sendMessage(TextFormat::GRAY . $message);
-						return true;
+							$message = \implode($users, ", ");
+							$sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($users)  . ":");
+							$sender->sendMessage(TextFormat::GRAY . $message);
+							return true;
+						});
 					} else {
 						$users = [];
-						
-						foreach($this->core->getStats()->getAllCoreUsers() as $user) {
-							if($user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-								$users[] = $user->getName();
-							}
-						}
-						$message = \implode($users, ", ");
 
-						$sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($users)  . ":");
-						$sender->sendMessage(TextFormat::GRAY . $message);
-						return true;
+						$this->core->getStats()->getAllCoreUsers(function($users) use ($sender, $server) {
+							foreach($users as $user) {
+								if($user->hasPermission("core.network. " . $server->getName() . " . whitelist")) {
+									$users[] = $user->getName();
+								}
+							}
+							$message = \implode($users, ", ");
+							$sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($users)  . ":");
+							$sender->sendMessage(TextFormat::GRAY . $message);
+							return true;
+						});
 					}
                 break;
                 case "add":
