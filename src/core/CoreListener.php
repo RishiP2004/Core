@@ -6,7 +6,7 @@ namespace core;
 
 use core\utils\Level;
 
-use core\mcpe\event\ServerSettingsRequestEvent;
+use form\event\ServerSettingsRequestEvent;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\{
