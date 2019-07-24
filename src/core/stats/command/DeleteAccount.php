@@ -41,11 +41,12 @@ class DeleteAccount extends PluginCommand {
 				return false;
 			} else {
 				$this->core->getStats()->unregisterCoreUser($user);
-
+				unlink($this->core->getServer()->getDataPath() . "players/" . strtolower($user->getName()) . ".dat");
+				
 				$player = $this->core->getServer()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->kick($this->core->getPrefix() . $sender->getName() . "Deleted your Account");
+					$player->kick($sender->getName() . " Deleted your Account");
 				}
 				$sender->sendMessage($this->core->getPrefix() . "Deleted " . $user->getName() . "'s Account");
 				return true;

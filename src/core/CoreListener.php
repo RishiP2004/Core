@@ -27,6 +27,8 @@ use core\mcpe\item\Elytra;
 
 use core\stats\rank\Rank;
 
+use core\stats\task\PlayerJoin;
+
 use core\world\area\Lobby;
 
 use pocketmine\event\Listener;
@@ -531,53 +533,48 @@ class CoreListener implements Listener {
 
         if($player instanceof CorePlayer) {
             $player->setCore($this->core);
-
-			$this->core->getStats()->getCoreUser($player->getXuid(), function(?CoreUser $user) use($player, $event) {
-				$message = "";
-
-				if($user === null) {
-					$this->core->getStats()->registerCoreUser($player);
-
-					if(!$player->hasPlayedBefore()) {
-						if(!empty(Broadcasts::JOINS["first"])) {
-							foreach(Core::getInstance()->getStats()->getRanks() as $r) {
-								if($r->getValue() === Rank::DEFAULT) {
-									$rank = $r;
-								}
-							}
-							$message = str_replace([
-								"{PLAYER}",
-								"{TIME}",
-								"{NAME_TAG_FORMAT}"
-							], [
-								$player->getName(),
-								date($this->core->getBroadcast()->getFormats("date_time")),
-								str_replace("{DISPLAY_NAME}", $player->getName(), $rank)
-							], $this->core->getBroadcast()->getJoins("first"));
+			
+			$user = $player->getCoreUser();
+			$message = "";
+			
+			$player->join($user);
+			
+			if(!$player->hasPlayedBefore()) {
+				if(!empty(Broadcasts::JOINS["first"])) {
+					foreach(Core::getInstance()->getStats()->getRanks() as $r) {
+						if($r->getValue() === Rank::DEFAULT) {
+							$rank = $r->getName();
 						}
-					}					
-				} else {
-					if($user->loaded()) {
-						if($player->hasPermission("core.stats.join")) {
-							if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
-								$message = str_replace([
-									"{PLAYER}",
-									"{TIME}",
-									"{NAME_TAG_FORMAT}"
-								], [
-									$player->getName(),
-									date($this->core->getBroadcast()->getFormats("date_time")),
-									str_replace("{DISPLAY_NAME}", $player->getName(), $user->getRank()->getNameTagFormat())
-								], $this->core->getBroadcast()->getJoins("normal"));
-							}
-						}
-						$player->join($user);
+					}
+					$message = str_replace([
+						"{PLAYER}",
+						"{TIME}",
+						"{NAME_TAG_FORMAT}"
+					], [
+						$player->getName(),
+						date($this->core->getBroadcast()->getFormats("date_time")),
+						str_replace("{DISPLAY_NAME}", $player->getName(), $rank)
+					], $this->core->getBroadcast()->getJoins("first"));
+				}
+			} else {
+				if($player->hasPermission("core.stats.join")) {
+					if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
+						$message = str_replace([
+							"{PLAYER}",
+							"{TIME}",
+							"{NAME_TAG_FORMAT}"
+						], [
+							$player->getName(),
+							date($this->core->getBroadcast()->getFormats("date_time")),
+							str_replace("{DISPLAY_NAME}", $player->getName(), $user->getRank()->getNameTagFormat())
+						], $this->core->getBroadcast()->getJoins("normal"));
 					}
 				}
-				$event->setJoinMessage($message);
-			});     
+			}
+			$event->setJoinMessage($message);
         }
-    }
+	}
+    
 
     public function onPlayerLogin(PlayerLoginEvent $event) {
         if($event->getPlayer() instanceof CorePlayer) {
@@ -674,32 +671,13 @@ class CoreListener implements Listener {
                 $event->setCancelled(true);
                 $player->sendMessage($banMessage);
             }
-			$server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
+			$this->core->getStats()->getCoreUser($player->getXuid(), function(?CoreUser $user) use($player, $event) {
+				$message = "";
 
-            if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
-                if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist") && !$player->hasPermission("core.network.whitelist")) {
-                    if(!empty($this->core->getBroadcast()->getKicks("whitelisted"))) {
-                        $message = str_replace([
-                            "{PLAYER}",
-                            "{TIME}",
-                            "{ONLINE_PLAYERS}",
-                            "{MAX_PLAYERS}",
-                            "{PREFIX}"
-                        ], [
-                            $player->getName(),
-                            date($this->core->getBroadcast()->getFormats("date_time")),
-                            count($this->core->getServer()->getOnlinePlayers()),
-                            $this->core->getServer()->getMaxPlayers(),
-                            $this->core->getPrefix()
-                        ], $this->core->getBroadcast()->getKicks("whitelisted"));
-
-                        $player->close($message);
-                        $event->setCancelled();
-                    }
-                }
-            } else {
-				if(!$player->hasPermission("core.network." . $server->getName() . ".full")) {
-					if(!empty($this->core->getBroadcast()->getKicks("full"))) {
+				$server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
+            
+				if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
+					if(!empty($this->core->getBroadcast()->getKicks("whitelisted"))) {
 						$message = str_replace([
 							"{PLAYER}",
 							"{TIME}",
@@ -712,13 +690,48 @@ class CoreListener implements Listener {
 							count($this->core->getServer()->getOnlinePlayers()),
 							$this->core->getServer()->getMaxPlayers(),
 							$this->core->getPrefix()
-						], $this->core->getBroadcast()->getKicks("full"));
+						], $this->core->getBroadcast()->getKicks("whitelisted"));
+					}
+					if($user === null) {
+						if($server->isWhitelisted()) {
+							$player->close(null, $message);
+							return;
+						} else {
+							$this->core->getStats()->registerCoreUser($player);
+						}						
+					} else {
+						if($server->isWhitelisted() && !$user->hasPermission("core.network." . $server->getName() . ".whitelist") && !$user->hasPermission("core.network.whitelist")) {
+							$player->close(null, $message);
+							return;
+						} 
+						$player->join($user);
+					}	
+				} else {
+					if($user->loaded()) {
+						if(!$user->hasPermission("core.network." . $server->getName() . ".full")) {
+							if(!empty($this->core->getBroadcast()->getKicks("full"))) {
+								$message = str_replace([
+									"{PLAYER}",
+									"{TIME}",
+									"{ONLINE_PLAYERS}",
+									"{MAX_PLAYERS}",
+									"{PREFIX}"
+								], [
+									$player->getName(),
+									date($this->core->getBroadcast()->getFormats("date_time")),
+									count($this->core->getServer()->getOnlinePlayers()),
+									$this->core->getServer()->getMaxPlayers(),
+									$this->core->getPrefix()
+								], $this->core->getBroadcast()->getKicks("full"));
 
-						$player->close($message);
-						$event->setCancelled();
+								$player->close(null, $message);
+								return;
+							}
+						}
+						$player->join($user);
 					}
 				}
-            }
+			}); 
         }
     }
 

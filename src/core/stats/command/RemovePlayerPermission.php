@@ -42,12 +42,14 @@ class RemovePlayerPermission extends PluginCommand {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;
 			}
-			if(!$user->hasPermission($args[1])) {
+			if(!$user->hasPermission($args[1]) && strtolower($args[1]) !== "all") {
 				$sender->sendMessage($this->core->getPrefix() . $user->getName() . " doesn't have the Permission " . $args[1]);
 				return false;
 			} else {
 				if(strtolower($args[1]) === "all") {
 					$user->setPermissions([]);
+					$sender->sendMessage($this->core->getPrefix() . "Removed all Permissions from " . $user->getName());
+					return true;
 				}
 				$perm = new Permission($args[1]);
 				

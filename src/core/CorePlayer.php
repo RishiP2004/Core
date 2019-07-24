@@ -87,7 +87,7 @@ class CorePlayer extends Player {
 
     public $chatType = self::NORMAL;
 
-    public $usingElytra = false, $allowCheats = false, $fly = true;
+    public $usingElytra = false, $allowCheats = false, $fly = false;
     /** 
 	 * @var null|FishingHook 
 	 */
@@ -123,11 +123,9 @@ class CorePlayer extends Player {
     }
 
     public function join(CoreUser $coreUser) {
-		if($this->isInitialized()) {
-			throw new \RuntimeException('Tried to initialize player again');
+		if(!$this->isInitialized()) {
+			$this->coreUser = $coreUser;
 		}
-		$this->coreUser = $coreUser;
-		
 		if($this->isOnline()) {
 			$this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
 		
