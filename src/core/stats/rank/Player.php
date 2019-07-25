@@ -12,7 +12,7 @@ class Player extends Rank {
     }
 
 	public function getFormat() : string {
-		return TextFormat::YELLOW;
+		return TextFormat::YELLOW . "[PLAYER]" . TextFormat::RESET;
 	}
 
 	public function getChatFormat() : string {

@@ -15,6 +15,8 @@ use pocketmine\command\{
 
 use pocketmine\utils\TextFormat;
 
+use pocketmine\permission\Permission;
+
 class Whitelist extends PluginCommand {
     private $core;
 
@@ -158,20 +160,23 @@ class Whitelist extends PluginCommand {
 						if(strtolower($args[2]) === "all") {
 							foreach($this->core->getNetwork()->getServers() as $server) {
 								if($server instanceof Server) {
-									$user->addPermission("core.network." . $server->getName() . ".whitelist");
+									$perm = new Permission("core.network." . $server->getName() . ".whitelist");
+									
+									$user->addPermission($perm);
 								}
 							}
 							$sender->sendMessage($this->core->getPrefix() . "Added " . $user->getName() . " to Whitelist for all Servers");
 							return true;
-						} else {						
+						} else {
 							if($user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-								$sender->sendMessage($this->core->getPrefix() . $user->getName() . " already is Whitelisted to " . $server->getName());
+								$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is already Whitelisted to the Server " . $server->getName());
 								return false;
-							} else {
-								$user->addPermission("core.network." . $server->getName() . ".whitelist");
-								$sender->sendMessage($this->core->getPrefix() . "Added " . $user->getName() . " to Whitelist for the Server " . $server->getName());
-								return true;
 							}
+							$perm = new Permission("core.network." . $server->getName() . ".whitelist");
+							
+							$user->addPermission($perm);
+							$sender->sendMessage($this->core->getPrefix() . "Added " . $user->getName() . " to the Whitelist for the Server " . $server->getName());
+							return true;
 						}
 					});
 					return false;
@@ -192,20 +197,24 @@ class Whitelist extends PluginCommand {
 							$sender->sendMessage($this->core->getPrefix() . $args[2] . " is not a valid Athena Server");
 							return false;
 						}
-						if(!$user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-							$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is already not Whitelisted to the Server " . $server->getName());
-							return false;
-						}
 						if(strtolower($args[2]) === "all") {
 							foreach($this->core->getNetwork()->getServers() as $server) {
 								if($server instanceof Server) {
-									$user->removePermission("core.network." . $server->getName() . ".whitelist");
+									$perm = new Permission("core.network." . $server->getName() . ".whitelist");
+									
+									$user->removePermission($perm);
 								}
 							}
 							$sender->sendMessage($this->core->getPrefix() . "Removed " . $user->getName() . " from Whitelist for all Servers");
 							return true;
 						} else {
-							$user->removePermission("core.network." . $server->getName() . ".whitelist");
+							if(!$user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
+								$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is already not Whitelisted to the Server " . $server->getName());
+								return false;
+							}
+							$perm = new Permission("core.network." . $server->getName() . ".whitelist");
+							
+							$user->removePermission($perm);
 							$sender->sendMessage($this->core->getPrefix() . "Removed " . $user->getName() . " from Whitelist for the Server " . $server->getName());
 							return true;
 						}

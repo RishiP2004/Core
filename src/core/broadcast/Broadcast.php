@@ -26,6 +26,7 @@ class Broadcast implements Broadcasts {
         $this->bossBar = new BossBar($core);
 
         $core->getServer()->getCommandMap()->register(\core\broadcast\command\Broadcast::class, new \core\broadcast\command\Broadcast($core));
+		$core->getServer()->getPluginManager()->registerEvents(new BroadcastListener($core), $core);
     }
 
     public function getBossBar() : BossBar {

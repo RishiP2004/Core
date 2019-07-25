@@ -149,6 +149,9 @@ class CoreUser {
 		if($player->isOp()) {
 			return true;
 		}
+		if(in_array("*", $this->getAllPermissions())) {
+			return true;
+		}
 		return in_array($permission, $this->getAllPermissions());
     }
 

@@ -40,7 +40,10 @@ use pocketmine\entity\{
 	Monster
 };
 
-use pocketmine\level\Position;
+use pocketmine\level\{
+	Position,
+	Level
+};
 
 class MCPEListener implements Listener {
 	private $core;
@@ -69,13 +72,15 @@ class MCPEListener implements Listener {
 			switch(true) {
 				case $pk instanceof InventoryTransactionPacket:
 					if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY && $pk->trData->actionType === InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT) {
-						$entity = $player->getLevel()->getEntity($pk->trData->entityRuntimeId);
-						$item = $player->getInventory()->getItemInHand();
-						$slot = $pk->trData->hotbarSlot;
-						$clickPos = $pk->trData->clickPos;
+						if($player->getLevel() instanceof Level) {
+							$entity = $player->getLevel()->getEntity($pk->trData->entityRuntimeId);
+							$item = $player->getInventory()->getItemInHand();
+							$slot = $pk->trData->hotbarSlot;
+							$clickPos = $pk->trData->clickPos;
 
-						if(method_exists($entity, "onInteract")) {
-							$entity->onInteract($player, $item, $slot, $clickPos);
+							if(method_exists($entity, "onInteract")) {
+								$entity->onInteract($player, $item, $slot, $clickPos);
+							}
 						}
 					}
 				break;

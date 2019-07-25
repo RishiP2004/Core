@@ -17,7 +17,7 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 
 use core\mcpe\network\InventoryTransactionPacket;
 
-class EssenceEvents implements Listener {
+class EssenceListener implements Listener {
 	private $core;
 
 	public function __construct(Core $core) {

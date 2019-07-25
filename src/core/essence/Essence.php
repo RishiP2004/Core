@@ -39,6 +39,7 @@ class Essence implements EssenceData {
         $this->initNPC(new Athie());
         $this->initNPC(new Factions());
         $this->initNPC(new Lobby());
+		$core->getServer()->getPluginManager()->registerEvents(new EssenceListener($core), $core);
     }
 
     public function getMaxDistance() : int {

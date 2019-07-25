@@ -211,11 +211,15 @@ class CoreListener implements Listener {
 					} else {
 						if(!$server->isWhitelisted()) {
 							$player->join($user);
+						} else if($server->isWhitelisted() && $user->hasPermission("core.network." . $server->getName() . ".whitelist") or $user->hasPermission("core.network.whitelist")) {
+							$player->join($user);
 						}
 					}	
 				} else {
 					if($user->loaded()) {
-						$player->join($user);
+						if($user->hasPermission("core.network." . $server->getName() . ".full")) {
+							$player->join($user);
+						}
 					}
 				}
 			}); 

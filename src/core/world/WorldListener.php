@@ -26,7 +26,6 @@ use pocketmine\event\entity\{
 	EntityDamageEvent,
 	EntityDamageByEntityEvent,
 	EntityExplodeEvent,
-	EntitySpawnEvent,
 	ProjectileLaunchEvent,
 	ProjectileHitEvent
 };
@@ -237,16 +236,6 @@ class WorldListener implements Listener {
 				if(!$area->explosion()) {
 					$event->setCancelled();
 				}
-			}
-		}
-	}
-
-	public function onEntitySpawn(EntitySpawnEvent $event) {
-		$area = $this->core->getWorld()->getAreaFromPosition($event->getEntity());
-
-		if(!is_null($area)) {
-			if(!$area->entitySpawn()) {
-				$event->setCancelled();
 			}
 		}
 	}

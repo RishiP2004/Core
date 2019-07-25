@@ -895,16 +895,18 @@ class CorePlayer extends Player {
 
             switch($type) {
                 case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-                    $target = $this->level->getEntity($pk->trData->entityRuntimeId);
+					if($this->level instanceof Level) {
+						$target = $this->level->getEntity($pk->trData->entityRuntimeId);
 
-                    $this->setTargetEntity($target);
-                    $this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
+						$this->setTargetEntity($target);
+						$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
 
-                    if($target instanceof Interactable) {
-                        $target->onPlayerInteract($this);
-                        return true;
-                        break;
-                    }
+						if($target instanceof Interactable) {
+							$target->onPlayerInteract($this);
+							return true;
+							break;
+						}
+					}
                 break;
             }
         }
