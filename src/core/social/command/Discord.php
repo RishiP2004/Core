@@ -46,7 +46,6 @@ class Discord extends PluginCommand {
 			} else {
             	$msg->setUsername($this->core->getSocial()->getUsername());
 			}
-            $msg->setUsername($args[1]);
             $this->core->getSocial()->sendToDiscord($msg);
             $sender->sendMessage($this->core->getPrefix() . "The Message was sent to discord");
             return true;
