@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace core\social\twitter\command\subCommand;
+namespace core\social\command\subCommand;
 
 use core\Core;
 
@@ -45,7 +45,7 @@ class Tweet extends SubCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "The Tweet is Over the Max Limit: 280");
             return false;
         } else {
-            $this->core->getSocial()->getTwitter()->postTweet(implode(" ", $args));
+            $this->core->getSocial()->postTweet(implode(" ", $args));
             $sender->sendMessage($this->core->getPrefix() . "Tweet: " . $args[0] . " Posted");
             return true;
         }

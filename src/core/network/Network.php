@@ -15,6 +15,10 @@ use core\network\command\{
 	Backup,
 	Restarter
 };
+use core\network\thread\{
+	Compress,
+	Restore
+};
 
 use core\utils\Math;
 
@@ -97,9 +101,7 @@ class Network implements Networking {
 		}
 		if(is_int($this->getServerSave())) {
 			if($this->runs === $this->getServerSave() * 60) {
-				$backThread = new BackThread();
-
-				$backThread->run();
+				$this->compress();
 				$this->core->getStats()->saveUsers();
 			}
 		}
@@ -119,6 +121,15 @@ class Network implements Networking {
 				}
 			}
 		}
+	}
+
+	public function compress() {
+		new Compress(realpath($this->core->getDataFolder()), realpath($this->core->getDataFolder() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'));
+	}
+
+	public function restore() {
+		new Restore(realpath($this->core->getDataFolder()), realpath($this->core->getDataFolder() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'));
+		$this->getTimer()->initiateRestart(Timer::NORMAL);
 	}
 
     public function initServer(Server $server) {

@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace core\social\twitter\command\subCommand;
+namespace core\social\command\subCommand;
 
 use core\Core;
 
@@ -45,7 +45,7 @@ class Follow extends SubCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Username");
             return false;
         } else {
-            $this->core->getSocial()->getTwitter()->follow(implode(" ", $args));
+            $this->core->getSocial()->twitterFollow(implode(" ", $args));
             $sender->sendMessage($this->core->getPrefix() . "Followed " . $args[0]);
             return true;
         }

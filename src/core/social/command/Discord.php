@@ -2,10 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace core\social\discord\command;
+namespace core\social\command;
 
 use core\Core;
-
+use discord\Embed;
+use discord\Message;
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -20,7 +21,7 @@ class Discord extends PluginCommand {
         $this->core = $core;
         
         $this->setPermission("core.social.discord");
-        $this->setUsage("<message>");
+        $this->setUsage("<message> [name]");
         $this->setDescription("discord Command");
     }
     
@@ -33,10 +34,21 @@ class Discord extends PluginCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /discord " . $this->getUsage());
             return false;
         } else {
-            $chatFormat = str_replace(["{PLAYER}", "{MESSAGE}"], [$sender->getName(), implode(" ", $args)], $this->core->getSocial()->getDiscord()->getChatFormat());
-           
-            $this->core->getSocial()->getDiscord()->sendMessageToDiscord($this->core->getSocial()->getDiscord()->getChatURL(), $chatFormat, $sender->getName(), $this->core->getSocial()->getDiscord()->getChatUsername());
-            $sender->sendMessage($this->core->getPrefix() . "The Message: " . $args[0] . " was sent to discord");
+			$msg = new Message();
+
+			if(strtolower($args[0]) === ".") {
+				$msg->setTextToSpeech($args[0]);
+			} else {
+				$msg->setContent($args[0]);
+			}
+            if(isset($args[1])) {
+            	$msg->setUsername($args[1]);
+			} else {
+            	$msg->setUsername($this->core->getSocial()->getUsername());
+			}
+            $msg->setUsername($args[1]);
+            $this->core->getSocial()->sendToDiscord($msg);
+            $sender->sendMessage($this->core->getPrefix() . "The Message was sent to discord");
             return true;
         }
     }

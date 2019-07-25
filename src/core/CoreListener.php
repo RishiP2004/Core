@@ -117,11 +117,6 @@ class CoreListener implements Listener {
 			if(!$player->isInitialized()) {
 				$event->setCancelled();
 			}
-            $str = str_split($event->getMessage());
-
-            if($str[0] !== "/") {
-                return;
-            }
         }
     }
 

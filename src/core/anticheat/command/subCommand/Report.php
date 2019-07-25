@@ -55,8 +55,13 @@ class Report extends SubCommand {
 					$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Cheat");
 					return false;
 				} else {
-					$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "twitter dm GratonePix " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
-					$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "discord " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					if(empty($this->core->getSocial()->getKey() && $this->core->getSocial()->getSecret() && $this->core->getSocial()->getToken() && $this->core->getSocial()->getTokenSecret())) {
+						$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "twitter dm GratonePix " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					}
+					if(empty($this->core->getSocial()->getWebHookURL())) {
+						$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "discord " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					}
+					$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "chat say staff " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
 					$sender->sendMessage($this->core->getPrefix() . "Thanks for Reporting " . $user->getName() . " for " . $cheat->getName());
 					return true;
 				}

@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace core\social\twitter\command\subCommand;
+namespace core\social\command\subCommand;
 
 use core\Core;
 

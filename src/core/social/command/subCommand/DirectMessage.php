@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace core\social\twitter\command\subCommand;
+namespace core\social\command\subCommand;
 
 use core\Core;
 
@@ -45,7 +45,7 @@ class DirectMessage extends SubCommand {
             $sender->sendMessage($this->core->getErrorPrefix() . "The Direct Message is Over the Max Limit: 10000");
             return false;
         } else {
-            $this->core->getSocial()->getTwitter()->sendDirectMessage($args[0], implode(" ", $args));
+            $this->core->getSocial()->twitterDirectMessage($args[0], implode(" ", $args));
             $sender->sendMessage($this->core->getPrefix() . "Direct Message to " . $args[0] . " with the Message: " . $args[1] . " Sent");
             return true;
         }

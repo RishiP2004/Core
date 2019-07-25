@@ -2,13 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace core\social\twitter\command;
+namespace core\social\command;
 
 use core\Core;
 
 use core\utils\SubCommand;
 
-use core\social\twitter\command\subCommand\{
+use core\social\command\subCommand\{
     DirectMessage,
     Follow,
     Help,
