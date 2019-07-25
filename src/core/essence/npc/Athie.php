@@ -30,7 +30,7 @@ class Athie extends NPC {
     }
 
     public function getSize() : float {
-        return 1.75;
+        return 1;
     }
 
     public function getNameTag() : string {
@@ -60,14 +60,17 @@ class Athie extends NPC {
 
     public function getMovement() : array {
         return [
-            1 => "103, 12, 85, Lobby",
-            2 => "104, 15, 86, Lobby",
-            3 => "104, 15, 87, Lobby"
+            1 => "126, 13, 114, Lobby",
+            2 => "126, 13, 113, Lobby",
+            3 => "126, 13, 112, Lobby",
+			4 => "126, 13, 111, Lobby",
+			5 => "126, 13, 110, Lobby",
+			6 => "126, 13, 109, Lobby",
         ];
     }
 	
 	public function getMoveTime() : int {
-		return 3;
+		return 20;
 	}
 
     public function getCommands() : array {

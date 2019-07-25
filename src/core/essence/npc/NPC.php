@@ -244,7 +244,7 @@ abstract class NPC {
             $player->sendDataPacket($packet);
 
             if(end($array)) {
-                $this->int = 0;
+                $this->int--;
             }
         }
     }
