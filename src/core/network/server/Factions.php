@@ -43,24 +43,32 @@ class Factions extends Server {
 	public function addHud(int $type, CorePlayer $player) {
 		switch($type) {
 			case CorePlayer::SCOREBOARD:
-				if(ScoreboardManager::getId(Core::getInstance()->getPrefix() . $this->getName()) === null) {
+				if(ScoreboardManager::getId(TextFormat::BOLD . Core::getInstance()->getPrefix()) === null) {
 					$scoreboard = new Scoreboard(Core::getInstance()->getPrefix() . $this->getName(), ScoreboardAction::CREATE);
 				} else {
 					$scoreboard = new Scoreboard(Core::getInstance()->getPrefix() . $this->getName(), ScoreboardAction::MODIFY);
 				}
+				$players = [];
+
+				foreach(Core::getInstance()->getNetwork()->getServers() as $server) {
+					$players[] = count($server->getOnlinePlayers());
+				}
 				$scoreboard->create(ScoreboardDisplaySlot::SIDEBAR, ScoreboardSort::ASCENDING);
 				$scoreboard->setLine(1, TextFormat::GRAY . "------------");
-				$scoreboard->setLine(2, TextFormat::RED . "Players In Server:");
-				$scoreboard->setLine(3, TextFormat::GRAY . $this->getOnlinePlayers() . "/" . $this->getMaxSlots());
-				$scoreboard->setLine(4, TextFormat::GRAY . "------------");
-				$scoreboard->setLine(5, TextFormat::RED . "Your Coins:");
-				$scoreboard->setLine(6, TextFormat::GREEN . Statistics::UNITS["coins"] . $player->getCoreUser()->getCoins());
-				$scoreboard->setLine(7, TextFormat::GRAY . "------------");
+				$scoreboard->setLine(2, TextFormat::RED . "Player Counts:");
+				$scoreboard->setLine(3, TextFormat::GOLD . "     Total:" . Core::getInstance()->getNetwork()->getTotalOnlinePlayers() . "/" . Core::getInstance()->getNetwork()->getTotalMaxSlots());
+				$scoreboard->setLine(4, TextFormat::GOLD . "     " . $this->getName() . ":" . $this->getOnlinePlayers() . "/" . $this->getMaxSlots());
+				$scoreboard->setLine(5, TextFormat::GRAY . "------------");
+				$scoreboard->setLine(6, TextFormat::RED . "Your Coins:");
+				$scoreboard->setLine(7, TextFormat::GREEN . Statistics::UNITS["coins"] . $player->getCoreUser()->getCoins());
 				$scoreboard->setLine(8, TextFormat::RED . "Your Balance:");
 				$scoreboard->setLine(9, TextFormat::GREEN . Statistics::UNITS["balance"] . $player->getCoreUser()->getBalance());
-				$scoreboard->setLine(7, TextFormat::GRAY . "------------");
+				$scoreboard->setLine(10, TextFormat::RED . "Your Rank:");
+				$scoreboard->setLine(11, $player->getCoreUser()->getRank()->getFormat());
+				$scoreboard->setLine(12, TextFormat::GRAY . "------------");
 				//TODO: Faction, etc
-				$scoreboard->setLine(9, TextFormat::DARK_GREEN . $this->getIp());
+				$scoreboard->setLine(13, TextFormat::DARK_RED . "gratonepix.buycraft.net");
+				$scoreboard->addDisplay($player);
 			break;
 			case CorePlayer::POPUP:
 				$msg = Core::getInstance()->getPrefix() . "Welcome to the " . $this->getName() . "\n";

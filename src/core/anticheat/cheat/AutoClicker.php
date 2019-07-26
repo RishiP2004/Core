@@ -26,11 +26,18 @@ class AutoClicker extends Cheat {
 	}
 
 	public function getPunishment() {
-		return [self::KICK, "Auto Clicker; Warning (" . $this->getPlayer()->getCoreUser()->getCheatHistory()[$this->getId()] . ")"];
+		return [
+			self::KICK,
+			"Auto Clicker; Warning (" . $this->getPlayer()->getCoreUser()->getCheatHistory()[$this->getId()] . ")"
+		];
 	}
 
 	public function getMainPunishment() {
-		return [self::BAN, "Auto Clicker; Too many Chances given (" . $this->maxCheating() . ")", "10 days"];
+		return [
+			self::BAN,
+			"Auto Clicker; Too many Chances given (" . $this->maxCheating() . ")",
+			"10 days"
+		];
 	}
 
 	public function onRun() : void {

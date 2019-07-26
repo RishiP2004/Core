@@ -6,6 +6,8 @@ namespace core\anticheat\command\subCommand;
 
 use core\Core;
 
+use core\anticheat\cheat\Cheat;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
@@ -48,31 +50,63 @@ class History extends SubCommand {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;
 			}
-			if(!is_numeric($args[3])) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not Numeric");
-				return false;
-			}
-			$cheat = $this->core->getAntiCheat()->getCheat(trim($args[2]));
+			$cheat = $this->core->getAntiCheat()->getCheat($args[2]);
 
-			if(!$cheat instanceof \core\anticheat\cheat\Cheat and !strtolower($args[2]) !== "all" and strtolower($args[0]) !== "see") {
+			if(!$cheat instanceof Cheat and strtolower($args[2]) !== "all") {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Cheat");
 				return false;
 			} else {
 				switch(strtolower($args[0])) {
 					case "add":
-						$user->addToCheatHistory($this->core->getAntiCheat()->getCheat($cheat->getId()), $args[3]);
-						$sender->sendMessage($this->core->getPrefix() . "Added " . $args[0] . " value to " . $user->getName() . "'s " . $cheat->getName() . " History");
+						if(isset($args[3])) {
+							if(!is_int((int) $args[3])) {
+								$sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not a valid Number");
+								return false;
+							}
+							$amount = $args[3];
+						} else {
+							$amount = 1;
+						}
+						$cheat->final($amount);
+						$sender->sendMessage($this->core->getPrefix() . "Added " . $amount . " value to " . $user->getName() . "'s " . $cheat->getName() . " History");
+						return true;
 					break;
 					case "remove":
-						$user->subtractFromCheatHistory($this->core->getAntiCheat()->getCheat($cheat->getId()), $args[3]);
+						if(strtolower($args[2]) === "all") {
+							foreach($this->core->getAntiCheat()->getCheats() as $cheat) {
+								$user->setCheatHistory($cheat, 0);
+								$sender->sendMessage($this->core->getPrefix() . "Reset " . $user->getName() . "'s Cheat History");
+								return true;
+							}
+						}
+						if(isset($args[3])) {
+							if(!is_int((int) $args[3])) {
+								$sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not a valid Number");
+								return false;
+							}
+							$amount = $args[3];
+						} else {
+							$amount = 1;
+						}
+						$user->subtractFromCheatHistory($this->core->getAntiCheat()->getCheat($cheat->getId()), $amount);
 						$sender->sendMessage($this->core->getPrefix() . "Subtracted " . $args[0] . " value to " . $user->getName() . "'s " . $cheat->getName() . " History");
+						return true;
 					break;
 					case "set":
-						$user->setCheatHistory($this->core->getAntiCheat()->getCheat($cheat->getId()), $args[3]);
+						if(isset($args[3])) {
+							if(!is_int((int) $args[3])) {
+								$sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not a valid Number");
+								return false;
+							}
+							$amount = $args[3];
+						}
+						$cheat->final($args[3]);
+						$user->setCheatHistory($this->core->getAntiCheat()->getCheat($cheat->getId()), $amount);
 						$sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s " . $cheat->getId() . " History to " . $args[0]);
+						return true;
 					break;
 					case "see":
-						if(isset($args[2]) === "all") {
+						if(strtolower($args[2]) === "all") {
 							$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s " . "Cheat History:");
 
 							foreach($user->getCheatHistory as $history) {
@@ -82,8 +116,7 @@ class History extends SubCommand {
 								$sender->sendMessage(TextFormat::GRAY . $cheat->getName() . ": " . $amount);
 							}
 						} else {
-							$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s " . " Cheat History:");
-							$sender->sendMessage();
+							$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s " . $cheat->getName() . " Cheat History: " . $user->getCheatHistoryFor($cheat));
 						}
 					break;
 				}

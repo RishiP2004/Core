@@ -182,6 +182,10 @@ class CoreUser {
     	return $this->cheatHistory;
 	}
 
+	public function getCheatHistoryFor(Cheat $cheat) {
+    	return $this->cheatHistory[$cheat->getId()];
+	}
+
 	public function setCheatHistory(Cheat $cheat, int $amount) {
 		$this->cheatHistory[$cheat->getId()] = $amount;
 	}

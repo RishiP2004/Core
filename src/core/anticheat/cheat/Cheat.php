@@ -24,6 +24,7 @@ abstract class Cheat implements Cheats {
 	const WARNING = 0;
 	const KICK = 1;
 	const BAN = 2;
+	const BAN_IP = 3;
 
 	public abstract function set(CorePlayer $player);
 
@@ -44,9 +45,7 @@ abstract class Cheat implements Cheats {
 	public function historyCheck() : bool {
 		$p = $this->getPlayer();
 
-		$cheatHistory = $p->getCoreUser()->getCheatHistory();
-
-		if($cheatHistory[$this->getId()] === $this->maxCheating()) {
+		if($p->getCoreUser()->getCheatHistoryFor($this) >= $this->maxCheating()) {
 			return true;
 		}
 		return false;
@@ -54,8 +53,10 @@ abstract class Cheat implements Cheats {
 
 	public abstract function onRun() : void;
 
-	public function final() {
+	public function final(int $amount = 1) : void {
 		$p = $this->getPlayer();
+
+		$p->getCoreUser()->addToCheatHistory(Core::getInstance()->getAntiCheat()->getCheat($this->getId()), $amount);
 
 		if($this->historyCheck()) {
 			$punishment = $this->getMainPunishment();
@@ -63,8 +64,6 @@ abstract class Cheat implements Cheats {
 			$p->getCoreUser()->setCheatHistory(Core::getInstance()->getAntiCheat()->getCheat($this->getId()), 0);
 		} else {
 			$punishment = $this->getPunishment();
-
-			$p->getCoreUser()->addToCheatHistory(Core::getInstance()->getAntiCheat()->getCheat($this->getId()), 1);
 		}
 		switch($punishment) {
 			case self::WARNING:
@@ -74,16 +73,18 @@ abstract class Cheat implements Cheats {
 				Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "kick " . $p->getName() . " " . $punishment[1]);
 			break;
 			case self::BAN:
-				if($punishment[2]) {
-					$type = $punishment[1];
-
-					if($type === "ip") {
-						Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "banIp " . $p->getName() . " " . $punishment[1]);
-					} else {
-						$time = $type;
-						Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "ban " . $p->getName() . " " . $punishment[2] . " " . $time);
-					}
+				if(isset($punishment[2])) {
+					Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "ban " . $p->getName() . " " . $punishment[1] . " " . $punishment[2]);
+					return;
 				}
+				Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "ban " . $p->getName() . " " . $punishment[1]);
+			break;
+			case self::BAN_IP:
+				if($punishment[2]) {
+					Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "ban-ip " . $p->getName() . " " . $punishment[1] . " " . $punishment[2]);
+					return;
+				}
+				Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "ban-ip " . $p->getName() . " " . $punishment[1]);
 			break;
 		}
 	}
