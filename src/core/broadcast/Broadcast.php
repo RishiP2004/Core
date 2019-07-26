@@ -33,66 +33,14 @@ class Broadcast implements Broadcasts {
         return $this->bossBar;
     }
 
-    public function getName() : string {
-        return self::NAME;
-    }
-
-    public function getFormats(string $key) {
-        return self::FORMATS[$key];
-    }
-
-    public function getAutos(string $key) {
-        return self::AUTOS[$key];
-    }
-
-    public function getTimes(string $key) {
-        return self::TIMES[$key];
-    }
-
-    public function getDurations(string $key) {
-        return self::DURATIONS[$key];
-    }
-
-    public function getMessages() : array {
-        return self::Messages;
-    }
-
-    public function getPopups() : array {
-        return self::POPUPS;
-    }
-
-    public function getTitles() : array {
-        return self::TITLES;
-    }
-
-    public function getJoins(string $key) {
-        return self::JOINS[$key];
-    }
-
-    public function getDeaths(string $key) {
-        return self::DEATHS[$key];
-    }
-
-    public function getQuits(string $key) {
-        return self::QUITS[$key];
-    }
-
-    public function getDimensions(string $key) {
-        return self::DIMENSIONS[$key];
-    }
-
-    public function getKicks(string $key) {
-        return self::KICKS[$key];
-    }
-
-    public function tick() {
+    public function tick() : void {
         $this->getBossBar()->tick();
         $this->runs++;
 
-        if($this->getAutos("message")) {
-            if($this->runs === $this->getTimes("message") * 20) {
+        if(self::AUTOS["message"]) {
+            if($this->runs === self::TIMES["message"] * 20) {
                 $this->runs = $this->length + 1;
-                $messages = $this->getMessages();
+                $messages = self::Messages;
                 $messageKey = $this->length;
                 $message = $messages[$messageKey];
 
@@ -102,10 +50,10 @@ class Broadcast implements Broadcasts {
                 $this->core->getServer()->broadcastMessage($this->broadcast($message));
             }
         }
-        if($this->getAutos("popup")) {
-            if($this->runs === $this->getTimes("popup") * 20) {
+        if(self::AUTOS["popup"]) {
+            if($this->runs === self::TIMES["popup"] * 20) {
                 $this->length = $this->length + 1;
-                $popups = $this->getPopups();
+                $popups = self::POPUPS;
                 $popupKey = $this->length;
                 $popup = $popups[$popupKey];
                 $player = null;
@@ -113,13 +61,13 @@ class Broadcast implements Broadcasts {
                 if($this->length === count($popups) - 1) {
                     $this->length = -1;
                 }
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, self::POPUP, null, $this->getDurations("popup"), $this->broadcast($popup)), 10);
+                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, self::POPUP, null, self::DURATIONS["popup"], $this->broadcast($popup)), 10);
             }
         }
-        if($this->getAutos("title")) {
-            if($this->runs === $this->getTimes("title") * 20) {
+        if(self::AUTOS["title"]) {
+            if($this->runs === self::TIMES["title"] * 20) {
                 $this->length = $this->length + 1;
-                $titles = $this->getTitles();
+                $titles = self::TITLES;
                 $titleKey = $this->length;
                 $title = $titles[$titleKey];
 
@@ -128,7 +76,7 @@ class Broadcast implements Broadcasts {
                 }
                 $subTitle = str_replace(array_shift($title), ":", "");
 
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, self::TITLE, null, $this->getDurations("title"), $this->broadcast($title), $this->broadcast($subTitle)), 10);
+                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, self::TITLE, null, self::DURATIONS["title"], $this->broadcast($title), $this->broadcast($subTitle)), 10);
             }
         }
     }
@@ -141,7 +89,7 @@ class Broadcast implements Broadcasts {
             "{TOTAL_PLAYERS}"
         ], [
             $this->core->getPrefix(),
-            date($this->getFormats("date_time")),
+            date(self::FORMATS["date_time"]),
             $this->core->getServer()->getMaxPlayers(),
             count($this->core->getServer()->getOnlinePlayers())
         ], $broadcast);
@@ -149,7 +97,7 @@ class Broadcast implements Broadcasts {
     }
 
     public function broadcastByConsole(CommandSender $sender, string $broadcast) : string {
-        $format = $this->getFormats("broadcast");
+        $format = self::FORMATS["broadcast"];
         $format = str_replace([
             "{PREFIX}",
             "{TIME}",
@@ -157,7 +105,7 @@ class Broadcast implements Broadcasts {
             "{SENDER}"
         ], [
             $this->core->getPrefix(),
-            date($this->getFormats("date_time")),
+            date(self::FORMATS["date_time"]),
             $broadcast,
             $sender->getName()
         ], $format);

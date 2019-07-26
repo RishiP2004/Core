@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace core\network\server;
 
 use core\Core;
+use core\CorePlayer;
 
 use core\mcpe\{
     MinecraftQuery,
@@ -12,6 +13,12 @@ use core\mcpe\{
 };
 
 use core\network\FakePlayer;
+
+use scoreboard\{
+	Scoreboard,
+	ScoreboardManager,
+	ScoreboardAction
+};
 
 abstract class Server {
     private $name = "";
@@ -56,6 +63,21 @@ abstract class Server {
     public abstract function getPort() : int;
 
     public abstract function getIcon() : string;
+
+    public abstract function addHud(int $type, CorePlayer $player);
+
+    public function removeHud(int $type, CorePlayer $player) {
+		switch($type) {
+			case CorePlayer::SCOREBOARD:
+				if(ScoreboardManager::getId(Core::getInstance()->getPrefix() . $this->getName()) !== null) {
+					$scoreboard = new Scoreboard(Core::getInstance()->getPrefix() . $this->getName(), ScoreboardAction::MODIFY);
+				}
+				$scoreboard->removeDisplay($player);
+			break;
+			case CorePlayer::POPUP:
+			break;
+		}
+	}
 
     public function isWhitelisted() : bool {
 		return $this->whitelisted;

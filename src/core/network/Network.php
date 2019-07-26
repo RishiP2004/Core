@@ -50,48 +50,16 @@ class Network implements Networking {
         return $this->timer;
     }
 
-    public function getRestart() : int {
-    	return self::RESTART;
-	}
-
-	public function getServerSave() : int {
-		return self::SERVER_SAVE;
-	}
-
-	public function getCountdownStart() : int {
-    	return self::COUNTDOWN_START;
-	}
-
-    public function getMemoryLimit() : string {
-        return self::MEMORY_LIMIT;
-    }
-
-    public function getDisplayType() : int {
-        return self::DISPLAY_TYPE;
-    }
-
-    public function restartOnOverload() : bool {
-        return self::RESTART_ON_OVERLOAD;
-    }
-
-    public function getBroadcastInterval() : int {
-    	return self::BROADCAST_INTERVAL;
-	}
-
-    public function getMessages(string $key) {
-        return self::MESSAGES[$key];
-    }
-
-    public function tick() {
+    public function tick() : void {
     	$this->runs++;
 
-		if(is_int($this->getRestart())) {
-			if($this->runs === $this->getRestart() * 60) {
+		if(is_int(self::RESTART)) {
+			if($this->runs === self::RESTART * 60) {
 				if(!$this->getTimer()->isPaused()) {
 					$this->getTimer()->subtractTime(1);
 
-					if($this->getTimer()->getTime() <= $this->getCountdownStart()) {
-						$this->getTimer()->broadcastTime($this->getMessages("countdown"), $this->getDisplayType());
+					if($this->getTimer()->getTime() <= self::COUNTDOWN_START) {
+						$this->getTimer()->broadcastTime(self::MESSAGES["countdown"], self::DISPLAY_TYPE);
 					}
 					if($this->getTimer()->getTime() < 1) {
 						$this->getTimer()->initiateRestart(Timer::NORMAL);
@@ -99,24 +67,24 @@ class Network implements Networking {
 				}
 			}
 		}
-		if(is_int($this->getServerSave())) {
-			if($this->runs === $this->getServerSave() * 60) {
+		if(is_int(self::SERVER_SAVE)) {
+			if($this->runs === self::SERVER_SAVE * 60) {
 				$this->compress();
 				$this->core->getStats()->saveUsers();
 			}
 		}
-		if($this->restartOnOverload()) {
+		if(self::RESTART_ON_OVERLOAD) {
 			if($this->runs === 6000) {
-				if(Math::isOverloaded($this->getMemoryLimit())) {
+				if(Math::isOverloaded(self::MEMORY_LIMIT)) {
 					$this->getTimer()->initiateRestart(Timer::OVERLOADED);
 				}
 			}
 		}
-		if(is_int($this->getBroadcastInterval())) {
-			if($this->runs === $this->getBroadcastInterval()) {
+		if(is_int(self::BROADCAST_INTERVAL)) {
+			if($this->runs === self::BROADCAST_INTERVAL) {
 				if(!$this->getTimer()->isPaused()) {
-					if($this->getTimer()->getTime() >= $this->getCountdownStart()) {
-						$this->getTimer()->broadcastTime($this->getMessages("broadcast"), $this->getDisplayType());
+					if($this->getTimer()->getTime() >= self::COUNTDOWN_START) {
+						$this->getTimer()->broadcastTime(self::MESSAGES["broadcast"], self::DISPLAY_TYPE);
 					}
 				}
 			}
@@ -157,7 +125,7 @@ class Network implements Networking {
                 return $this->getServer($server->getName());
             }
         }
-        return $this->getServer("Lobby");
+        return new Lobby();
     }
 
     public function getTotalMaxSlots() : int {

@@ -45,7 +45,7 @@ use pocketmine\level\{
 	Level
 };
 
-class MCPEListener implements Listener {
+class MCPEListener implements Listener, Addon {
 	private $core;
 
 	public function __construct(Core $core) {
@@ -136,7 +136,7 @@ class MCPEListener implements Listener {
 		$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
 		$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 
-		if(!$this->core->getMCPE()->entitySpawn()) {
+		if(!self::ENTITY_SPAWN) {
 			return;
 		}
 		if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
@@ -203,7 +203,7 @@ class MCPEListener implements Listener {
 	public function onChunkUnload(ChunkUnloadEvent $event) {
 		$chunk = $event->getChunk();
 
-		if(!$this->core->getMCPE()->entityDespawn()) {
+		if(!self::ENTITY_DESPAWN) {
 			return;
 		}
 		foreach($chunk->getEntities() as $entity) {

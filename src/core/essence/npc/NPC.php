@@ -6,7 +6,7 @@ namespace core\essence\npc;
 
 use core\Core;
 use core\CorePlayer;
-
+use core\essence\EssenceData;
 use pocketmine\level\Position;
 
 use pocketmine\entity\{
@@ -204,7 +204,7 @@ abstract class NPC {
         if($this->rotate()) {
             $NPCPos = $this->getPosition()->asVector3();
 
-            if($this->isSpawnedTo($player) && $player->distance($NPCPos) <= Core::getInstance()->getEssence()->getMaxDistance()) {
+            if($this->isSpawnedTo($player) && $player->distance($NPCPos) <= EssenceData::MAX_DISTANCE) {
                 $x = $NPCPos->x - $player->getX();
                 $y = $NPCPos->y - $player->getY();
                 $z = $NPCPos->z - $player->getZ();

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace core\essentials;
 
 use core\Core;
+use core\CorePlayer;
 
 use core\essentials\command\{
 	Chat,
@@ -79,6 +80,8 @@ class Essentials {
     const BAN = 0;
     const BLOCK = 1;
     const MUTE = 2;
+
+    private $runs = 0;
 
     public function __construct(Core $core) {
         $this->core = $core;
@@ -175,12 +178,12 @@ class Essentials {
         $core->getServer()->getCommandMap()->register(Save::class, new Save($this->core));
         $core->getServer()->getCommandMap()->register(SetSpawn::class, new SetSpawn($this->core));
         $core->getServer()->getCommandMap()->register(Spawn::class, new Spawn($this->core));
-		$core->getServer()->getCommandMap()->register(Scoreboard::class, new Scoreboard($this->core));
+        $core->getServer()->getCommandMap()->register(Scoreboard::class, new Scoreboard($this->core));
         $core->getServer()->getCommandMap()->register(Status::class, new Status($this->core));
         $core->getServer()->getCommandMap()->register(Stop::class, new Stop($this->core));
         $core->getServer()->getCommandMap()->register(Summon::class, new Summon($this->core));
         $core->getServer()->getCommandMap()->register(Teleport::class, new Teleport($this->core));
-		$core->getServer()->getCommandMap()->register(Tell::class, new Tell($this->core));
+        $core->getServer()->getCommandMap()->register(Tell::class, new Tell($this->core));
         $core->getServer()->getCommandMap()->register(Time::class, new Time($this->core));
         $core->getServer()->getCommandMap()->register(Timings::class, new Timings($this->core));
         $core->getServer()->getCommandMap()->register(Transfer::class, new Transfer($this->core));
@@ -193,6 +196,16 @@ class Essentials {
         $core->getServer()->getCommandMap()->register(Whitelist::class, new Whitelist($this->core));
 		$core->getServer()->getPluginManager()->registerEvents(new EssentialsListener($core), $core);
     }
+
+    public function tick() : void {
+    	foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+			if($onlinePlayer instanceof CorePlayer) {
+				if($onlinePlayer->hasHud($onlinePlayer::SCOREBOARD)) {
+					$onlinePlayer->setHud($onlinePlayer::POPUP);
+				}
+			}
+    	}
+	}
 
     public function getNameBans() : \core\essentials\permission\BanList {
         $banList = new \core\essentials\permission\BanList(self::NAME);

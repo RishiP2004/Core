@@ -272,20 +272,8 @@ class MCPE implements Addon {
     public function getRegisteredEntities() : array {
         return $this->registeredEntities;
     }
-
-    public function getTierCost(int $tier) : array {
-        return self::TIER_COSTS[$tier];
-    }
-
-    public function entitySpawn() : bool {
-    	return self::ENTITY_SPAWN;
-	}
-
-	public function entityDespawn() : bool {
-		return self::ENTITY_DESPAWN;
-	}
 	
-	public function tick() {
+	public function tick() : void {
     	$this->runs++;
 		
 		if($this->runs % 1 === 0) {

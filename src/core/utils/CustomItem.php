@@ -6,10 +6,7 @@ namespace core\utils;
 
 use pocketmine\item\Item;
 
-use pocketmine\nbt\tag\{
-    CompoundTag,
-    NamedTag
-};
+use pocketmine\nbt\tag\CompoundTag;
 
 use pocketmine\utils\TextFormat;
 

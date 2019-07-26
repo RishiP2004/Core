@@ -7,6 +7,8 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Statistics;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -47,7 +49,7 @@ class SetCoins extends PluginCommand {
 				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
 				return false;
 			}
-			if($args[1] > $this->core->getStats()->getMaximumEconomy("coins")) {
+			if($args[1] > Statistics::MAXIMUMS["coins"]) {
 				$sender->sendMessage($this->core->getErrorPrefix() . $user->getName() . " will have over the Maximum amount of Coins");
 				return false;
 			} else {
@@ -56,9 +58,9 @@ class SetCoins extends PluginCommand {
 				$player = $this->core->getServer()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Coins to " . $this->core->getStats()->getEconomyUnit("coins") . $args[1]);
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Coins to " . Statistics::UNITS["coins"] . $args[1]);
 				}
-				$sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Coins to " . $this->core->getStats()->getEconomyUnit("coins") . $args[1]);
+				$sender->sendMessage($this->core->getPrefix() . "Set " . $user->getName() . "'s Coins to " . Statistics::UNITS["coins"] . $args[1]);
 				return true;
 			}
 		});

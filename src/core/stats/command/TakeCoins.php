@@ -7,6 +7,8 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Statistics;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -56,9 +58,9 @@ class TakeCoins extends PluginCommand {
 				$player = $this->core->getServer()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Took " . $this->core->getStats()->getEconomyUnit("coins") . $args[1] . " from you");
+					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Took " . Statistics::UNITS["coins"] . $args[1] . " from you");
 				}
-				$sender->sendMessage($this->core->getPrefix() . "Took away " . $this->core->getStats()->getEconomyUnit("coins") . $args[1] . " from " . $user->getName());
+				$sender->sendMessage($this->core->getPrefix() . "Took away " . Statistics::UNITS["coins"] . $args[1] . " from " . $user->getName());
 				return true;
 			}
         });

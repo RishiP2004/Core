@@ -7,6 +7,8 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Statistics;
+
 use core\stats\rank\Rank;
 
 use pocketmine\command\{
@@ -45,7 +47,7 @@ class BuyRank extends PluginCommand {
         } else {
             $sender->getCoreUser()->setRank($this->core->getStats()->getRank("OG"));
             $sender->getCoreUser()->setCoins($sender->getCoreUser()->getCoins() - $this->core->getStats()->getRank("OG")->getFreePrice());
-            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . $this->core->getStats()->getEconomyUnit("coins") . $this->core->getStats()->getRank("OG")->getFreePrice());
+            $sender->sendMessage($this->core->getPrefix() . "You have bought the Rank OG for " . Statistics::UNITS["coins"] . $this->core->getStats()->getRank("OG")->getFreePrice());
             return true;
         }
     }

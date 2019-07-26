@@ -7,6 +7,8 @@ namespace core\broadcast\command\subCommand;
 use core\Core;
 use core\CorePlayer;
 
+use core\broadcast\Broadcasts;
+
 use core\utils\SubCommand;
 
 use core\broadcast\task\DurationSend;
@@ -60,10 +62,10 @@ class SendPopup extends SubCommand {
 				$p = $player->getName();
 			}
             if($sender instanceof CommandSender) {
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, $this->core->getBroadcast()->getDurations("popup"), $this->core->getBroadcast()->broadcastByConsole($sender, $args[0])), 10);
+                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, Broadcasts::DURATIONS["popup"], $this->core->getBroadcast()->broadcastByConsole($sender, $args[0])), 10);
                 $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $p);
             } else if($sender instanceof CorePlayer) {
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, $this->core->getBroadcast()->getDurations("popup"), $sender->broadcast($args[0])), 10);
+                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, Broadcasts::DURATIONS["popup"], $sender->broadcast($args[0])), 10);
                 $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $p);
             }
             return true;

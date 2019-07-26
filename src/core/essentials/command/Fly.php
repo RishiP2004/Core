@@ -64,8 +64,6 @@ class Fly extends PluginCommand {
 					$flying = $player->getAllowFlight() === false ? true : false;
 				}
 				$player->setFly($flying);
-				$player->setAllowFlight($flying);
-				$player->setFlying($flying);
 				
 				$str = $player->getAllowFlight() === false ? "False" : "True";
 				
@@ -84,8 +82,6 @@ class Fly extends PluginCommand {
 				$flying = $sender->getAllowFlight() === false ? true : false;
 			}
 			$sender->setFly($flying);
-			$sender->setAllowFlight($flying);
-			$sender->setFlying($flying);
 			
 			$str = $sender->getAllowFlight() === false ? "False" : "True";
 			

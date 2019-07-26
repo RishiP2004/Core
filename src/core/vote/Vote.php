@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace core\vote;
 
 use core\Core;
-use core\CorePlayer;
 use core\CoreUser;
 
 use core\vote\task\TopVoters;
@@ -20,37 +19,17 @@ class Vote implements VoteData {
     public function __construct(Core $core) {
         $this->core = $core;
 
-        if(!empty($this->getAPIKey())) {
+        if(!empty(self::API_KEY)) {
 			$core->getServer()->getCommandMap()->register("vote", new \vote\command\Vote($core));
 		}
     }
 
-    public function getAPIKey() : string {
-        return self::API_KEY;
-    }
-
-    public function getVoteUpdate() : int {
-    	return self::VOTE_UPDATE;
-	}
-
-    public function getItems() : array {
-        return self::ITEMS;
-    }
-    
-    public function getCommands() : array {
-        return self::COMMANDS;
-    }
-
-    public function getTopVotersLimit() : int {
-    	return self::TOP_VOTERS_LIMIT;
-	}
-
-    public function tick() {
+    public function tick() : void {
     	$this->runs++;
 
-    	if(!empty($this->getAPIKey())) {
-    		if($this->runs % $this->getVoteUpdate() === 0) {
-				$this->core->getServer()->getAsyncPool()->submitTask(new TopVoters($this->getAPIKey(), $this->getTopVotersLimit()));
+    	if(!empty(self::API_KEY)) {
+    		if($this->runs % self::VOTE_UPDATE === 0) {
+				$this->core->getServer()->getAsyncPool()->submitTask(new TopVoters(self::API_KEY, self::TOP_VOTERS_LIMIT));
 			}
 		}
 	}

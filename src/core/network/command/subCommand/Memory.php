@@ -6,6 +6,8 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
+use core\network\Networking;
+
 use core\utils\{
 	SubCommand,
 	Math
@@ -44,10 +46,10 @@ class Memory extends SubCommand {
 
     public function execute(CommandSender $sender, array $args) : bool {
         $sender->sendMessage($this->core->getPrefix() . "Restarter Memory Info:");
-        $sender->sendMessage(TextFormat::GRAY . "Bytes: " . memory_get_usage(true) . "/" . Math::calculateBytes($this->core->getNetwork()->getMemoryLimit()));
-        $sender->sendMessage(TextFormat::GRAY . "Memory-limit: " . $this->core->getNetwork()->getMemoryLimit());
+        $sender->sendMessage(TextFormat::GRAY . "Bytes: " . memory_get_usage(true) . "/" . Math::calculateBytes(Networking::MEMORY_LIMIT));
+        $sender->sendMessage(TextFormat::GRAY . "Memory-limit: " . Networking::MEMORY_LIMIT);
 		
-		$overloaded = Math::isOverloaded($this->core->getNetwork()->getMemoryLimit()) ? "Yes" : "No";
+		$overloaded = Math::isOverloaded(Networking::MEMORY_LIMIT) ? "Yes" : "No";
 		
         $sender->sendMessage(TextFormat::GRAY . "Overloaded: " . $overloaded);
         return true;

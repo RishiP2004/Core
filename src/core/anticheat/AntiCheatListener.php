@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace core\anticheat;
 
+use core\broadcast\Broadcasts;
 use core\Core;
 use core\CorePlayer;
 
@@ -30,7 +31,7 @@ use pocketmine\entity\{
 	Monster
 };
 
-class AntiCheatListener implements Listener {
+class AntiCheatListener implements Listener, Cheats {
 	private $core;
 
 	public function __construct(Core $core) {
@@ -62,7 +63,7 @@ class AntiCheatListener implements Listener {
 			$data->ids[$entity->getId()] = $uuid;
 			$data->animals[$uuid] = $entity;
 
-			if(count($data->animals) > $data->getMaxEntities("animals")) {
+			if(count($data->animals) > self::MAX_ENTITIES["animals"]) {
 				$despawn = array_shift($data->animals);
 			}
 		}
@@ -70,7 +71,7 @@ class AntiCheatListener implements Listener {
 			$data->ids[$entity->getId()] = $uuid;
 			$data->monsters[$uuid] = $entity;
 
-			if(count($data->monsters) > $data->getMaxEntities("monsters")) {
+			if(count($data->monsters) > self::MAX_ENTITIES["monsters"]) {
 				$despawn = array_shift($data->monsters);
 			}
 		}
@@ -78,7 +79,7 @@ class AntiCheatListener implements Listener {
 			$data->ids[$entity->getId()] = $uuid;
 			$data->itemEntities[$uuid] = $entity;
 
-			if(count($data->itemEntities) > $data->getMaxEntities("items")) {
+			if(count($data->itemEntities) > self::MAX_ENTITIES["items"]) {
 				$despawn = array_shift($data->itemEntities);
 			}
 		}

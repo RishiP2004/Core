@@ -7,9 +7,11 @@ namespace core\anticheat\cheat;
 use core\Core;
 use core\CorePlayer;
 
+use core\anticheat\Cheats;
+
 use pocketmine\command\ConsoleCommandSender;
 
-abstract class Cheat {
+abstract class Cheat implements Cheats {
 	public $player;
 
 	const AUTO_CLICKER = "autoClicker";
@@ -50,7 +52,7 @@ abstract class Cheat {
 		return false;
 	}
 
-	public abstract function onRun();
+	public abstract function onRun() : void;
 
 	public function final() {
 		$p = $this->getPlayer();
@@ -67,10 +69,10 @@ abstract class Cheat {
 		switch($punishment) {
 			case self::WARNING:
 				$p->sendMessage(Core::ERROR_PREFIX . $punishment[1]);
-				break;
+			break;
 			case self::KICK:
 				Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "kick " . $p->getName() . " " . $punishment[1]);
-				break;
+			break;
 			case self::BAN:
 				if($punishment[2]) {
 					$type = $punishment[1];
@@ -82,7 +84,7 @@ abstract class Cheat {
 						Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), "ban " . $p->getName() . " " . $punishment[2] . " " . $time);
 					}
 				}
-				break;
+			break;
 		}
 	}
 }

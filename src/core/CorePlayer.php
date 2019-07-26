@@ -6,6 +6,9 @@ namespace core;
 
 use core\utils\Item;
 
+use core\broadcast\Broadcasts;
+use core\broadcast\bossbar\Messages;
+
 use core\essence\npc\NPC;
 use core\essence\floatingtext\FloatingText;
 
@@ -21,9 +24,10 @@ use core\mcpe\block\Pumpkin;
 
 use core\network\server\Server;
 
-use core\stats\task\{
-    PlayerJoin
-};
+use core\stats\task\PlayerJoin;
+use core\stats\Statistics;
+
+use core\vote\VoteData;
 
 use core\world\area\Area;
 
@@ -77,6 +81,9 @@ class CorePlayer extends Player {
 	const NORMAL = "normal";
 	const VIP = "vip";
 
+	const SCOREBOARD = 0;
+	const POPUP = 1;
+
     private $interacts = [];
 
     private $chatTime = 0;
@@ -88,6 +95,8 @@ class CorePlayer extends Player {
     public $chatType = self::NORMAL;
 
     public $usingElytra = false, $allowCheats = false, $fly = false;
+
+    public $hud = [];
     /** 
 	 * @var null|FishingHook 
 	 */
@@ -173,9 +182,9 @@ class CorePlayer extends Player {
 	}
 
     public function broadcast(string $broadcast) : string {
-        $format = $this->core->getBroadcast()->getFormats("broadcast");
+        $format = Broadcasts::FORMATS["broadcast"];
         $format = str_replace("{PREFIX}", $this->core->getPrefix(), $format);
-        $format = str_replace("{TIME}", date($this->core->getBroadcast()->getFormats("date_time")), $format);
+        $format = str_replace("{TIME}", date(Broadcasts::FORMATS["date_time"]), $format);
         $format = str_replace("{MESSAGE}", $broadcast, $format);
         $format = str_replace("{SENDER}", $this->getName(), $format);
         return $format;
@@ -193,10 +202,10 @@ class CorePlayer extends Player {
 	public function setText() {
     	$bossBar = $this->core->getBroadcast()->getBossBar()->get();
 
-		if(!empty($this->core->getBroadcast()->getBossBar()->getHeadMessage())) {
-			$bossBar->setTitle($this->formatBossBar($this->core->getBroadcast()->getBossBar()->getHeadMessage()) . TextFormat::RESET);
+		if(!empty(Messages::HEAD_MESSAGE)) {
+			$bossBar->setTitle($this->formatBossBar(Messages::HEAD_MESSAGE) . TextFormat::RESET);
 		}
-		$currentMSG = $this->core->getBroadcast()->getBossBar()->getChanging("messages")[$this->core->getBroadcast()->getBossBar()->int % count($this->core->getBroadcast()->getBossBar()->getChanging("messages"))];
+		$currentMSG = Messages::CHANGING["messages"][$this->core->getBroadcast()->getBossBar()->int % count(Messages::CHANGING["messages"])];
 
 		if(strpos($currentMSG, '%') > -1) {
 			$percentage = substr($currentMSG, 1, strpos($currentMSG, '%') - 1);
@@ -222,7 +231,7 @@ class CorePlayer extends Player {
 			$this->getDisplayName(),
 			$this->core->getServer()->getMaxPlayers(),
 			count($this->getServer()->getOnlinePlayers()),
-			date($this->core->getBroadcast()->getFormats("date_time"))
+			date(Broadcasts::FORMATS["date_time"])
 		], $text);
 		return $text;
 	}
@@ -331,6 +340,10 @@ class CorePlayer extends Player {
     	$this->chatType = $chatType;
 	}
 
+	public function getInteracts() : array {
+		return $this->interacts;
+	}
+
     public function addToInteract() {
         if(($this->interacts["time"] ?? 0) === time()) {
             $this->interacts["amount"]++;
@@ -339,10 +352,6 @@ class CorePlayer extends Player {
         $this->interacts["time"] = time();
         $this->interacts["amount"] = 1;
         return;
-    }
-
-    public function getInteracts() : array {
-        return $this->interacts;
     }
 
     public function isFishing() : bool {
@@ -370,6 +379,23 @@ class CorePlayer extends Player {
 	
 	public function setFly(bool $fly = true) {
 		$this->fly = $fly;
+
+		$this->setAllowFlight($fly);
+		$this->setFlying($fly);
+	}
+
+	public function hasHud(int $type) {
+    	return $this->hud[$type];
+	}
+
+	public function setHud(int $type, bool $hud = true) {
+    	$this->hud[$type] = $hud;
+
+		if($hud) {
+			$this->getCoreUser()->getServer()->addHud($type, $this);
+		} else {
+			$this->getCoreUser()->getServer()->removeHud($type, $this);
+		}
 	}
 
     public function getAttachment() : ?PermissionAttachment {
@@ -518,8 +544,8 @@ class CorePlayer extends Player {
 					$profile = $user->getName() . "'s Profile";
 				} 
                 $l1 = new Label(TextFormat::GRAY . "Rank: " . $rank);
-                $l2 = new Label(TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $coins);
-                $l3 = new Label(TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $balance);
+                $l2 = new Label(TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"] . $coins);
+                $l3 = new Label(TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $balance);
                 $l4 = new Label(TextFormat::GRAY . "Server: " . $server);
 
                 $data = [
@@ -539,15 +565,15 @@ class CorePlayer extends Player {
     }
 
     public function sendCurrencyChangeForm() {
-		$e1 = new Label(TextFormat::GRAY . "Your Coins: " . Core::getInstance()->getStats()->getEconomyUnit("coins") . $this->getCoreUser()->getCoins());
+		$e1 = new Label(TextFormat::GRAY . "Your Coins: " . Statistics::UNITS["coins"] . $this->getCoreUser()->getCoins());
 
 		$e1->setValue(1);
 
-		$e2 = new Label(TextFormat::GRAY . "Your Balance: " . Core::getInstance()->getStats()->getEconomyUnit("balance") . $this->getCoreUser()->getBalance());
+		$e2 = new Label(TextFormat::GRAY . "Your Balance: " . Statistics::UNITS["balance"] . $this->getCoreUser()->getBalance());
 
 		$e2->setValue(2);
 
-		$e3 = new Label(TextFormat::GRAY . "Value of a Coin (Transferred): " . Core::getInstance()->getStats()->getCoinValue());
+		$e3 = new Label(TextFormat::GRAY . "Value of a Coin (Transferred): " . Statistics::COIN_VALUE);
 
 		$e3->setValue(3);
 
@@ -580,7 +606,7 @@ class CorePlayer extends Player {
 					$user = $player->getCoreUser();
 
 					if($type === "Coins") {
-						if($amount < 1000) {
+						if($amount < Statistics::COIN_VALUE) {
 							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Coins");
 							return;
 						}
@@ -588,7 +614,7 @@ class CorePlayer extends Player {
 							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
 							return;
 						}
-						$user->setCoins($amount / 1000);
+						$user->setCoins($amount / Statistics::COIN_VALUE);
 						$user->setBalance($user->getBalance() - $amount);
 						$player->sendMessage("Transferred " . $amount . " Balance to Coins");
 					}
@@ -597,7 +623,7 @@ class CorePlayer extends Player {
 							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
 							return;
 						}
-						$user->setBalance($user->getBalance() * 1000);
+						$user->setBalance($user->getBalance() * Statistics::COIN_VALUE);
 						$user->setCoins($user->getCoins() - $amount);
 						$player->sendMessage("Transferred " . $amount . " Coins to Balance");
 					}
@@ -641,14 +667,14 @@ class CorePlayer extends Player {
 	}
 
     public function claimVote() {
-    	$item = Item::getRandomItems($this->core->getVote()->getItems());
+    	$item = Item::getRandomItems(VoteData::ITEMS);
 
     	if($this->getInventory()->canAddItem($item)) {
     		$this->getInventory()->addItem($item);
 		} else {
     		$this->getLevel()->dropItem($this, $item);
 		}
-        foreach($this->core->getVote()->getCommands() as $key => $command) {
+        foreach(VoteData::COMMANDS as $key => $command) {
             $command = str_replace("{PLAYER}", $this->getName(), $command);
 
             $this->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);

@@ -56,29 +56,13 @@ class AntiCheat implements Cheats {
 		
 		Entity::registerEntity(PrimedTNT::class, true);
 
-        $this->onGoing = new \SplFixedArray($this->getMaxConcurrentExplosions());
+        $this->onGoing = new \SplFixedArray(self::MAX_CONCURRENT_EXPLOSIONS);
         $this->queue = new \SplQueue();
 
         $this->initCheat(new AutoClicker());
 		$core->getServer()->getCommandMap()->register(\core\anticheat\command\Cheat::class, new \core\anticheat\command\Cheat($core));
 		$core->getServer()->getPluginManager()->registerEvents(new AntiCheatListener($core), $core);
     }
-	
-	public function getMaxConcurrentExplosions() : int {
-		return self::MAX_CONCURRENT_EXPLOSIONS;
-	}
-
-    public function getAutoClickAmount() : int {
-        return self::AUTO_CLICK_AMOUNT;
-    }
-
-	public function getLagClearTime(string $key) : int {
-		return self::LAG_CLEAR_TIME[$key];
-	}
-
-	public function getMaxEntities(string $key) : int {
-    	return self::MAX_ENTITIES[$key];
-	}
 
 	public function initCheat(Cheat $cheat) {
 		$this->cheats[$cheat->getId()] = $cheat;
@@ -99,7 +83,7 @@ class AntiCheat implements Cheats {
 		return null;
 	}
 
-	public function tick() {
+	public function tick() : void {
         $this->runs++;
 
         if($this->runs % 1 === 0) {
@@ -112,7 +96,7 @@ class AntiCheat implements Cheats {
                 $explosion->explodeA();
                 $explosion->explodeB();
             }
-        } else if($this->runs % mktime($this->getLagClearTime("hours"), $this->getLagClearTime("minutes")) === 0) {
+        } else if($this->runs % mktime(self::LAG_CLEAR_TIME["hours"], self::LAG_CLEAR_TIME["minutes"]) === 0) {
             foreach($this->core->getServer()->getLevels() as $level) {
                 foreach($level->getEntities() as $entity) {
                     if($entity instanceof Human) {

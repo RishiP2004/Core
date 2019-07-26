@@ -7,6 +7,8 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Statistics;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -35,7 +37,7 @@ class Profile extends PluginCommand {
         if(isset($args[0])) {
 			if(strtolower($args[0]) === "simple" or strtolower($args[0]) === "s") {
 				if(!isset($args[1])) {
-					$msg = $this->core->getPrefix() . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $sender->getCoreUser()->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
+					$msg = $this->core->getPrefix() . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"] . $sender->getCoreUser()->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
 				} else {
 					switch(strtolower($args[1])) {
 						case "global":
@@ -63,6 +65,7 @@ class Profile extends PluginCommand {
 					return false;
 				} else {	
 					$server = "Offline";
+					$msg = "";
 						
 					if(!is_null($user->getServer())) {
 						$server = $user->getServer()->getName();
@@ -73,7 +76,7 @@ class Profile extends PluginCommand {
 						if(!is_null($user->getServer())) {
 							$server = $user->getServer()->getName();
 						}
-						$msg = $this->core->getPrefix() . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . $this->core->getStats()->getEconomyUnit("coins") . $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . $this->core->getStats()->getEconomyUnit("balance") . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
+						$msg = $this->core->getPrefix() . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"]. $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
 					} else {
 						switch(strtolower($args[1])) {
 							case "global":

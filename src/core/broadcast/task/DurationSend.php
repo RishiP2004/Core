@@ -22,7 +22,7 @@ class DurationSend extends Task {
 
     private $type;
     
-    public function __construct(Core $core, $type, $player = null, int $duration, string $display, string $display2 = "") {
+    public function __construct(Core $core, $type, $player, int $duration, string $display, string $display2 = "") {
         $this->core = $core;
 
         $this->type = $type;

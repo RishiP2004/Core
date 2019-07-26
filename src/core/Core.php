@@ -24,8 +24,6 @@ use scoreboard\ScoreboardHandler;
 
 use pocketmine\plugin\PluginBase;
 
-use pocketmine\timings\TimingsHandler;
-
 use pocketmine\utils\TextFormat;
 
 class Core extends PluginBase {

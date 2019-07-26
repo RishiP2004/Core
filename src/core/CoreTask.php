@@ -23,6 +23,7 @@ class CoreTask extends Task {
             $this->core->getBroadcast()->tick();
             $this->core->getEssence()->tick();
             $this->core->getVote()->tick();
+			$this->core->getEssentials()->tick();
         }
 		if($this->runs % 1 === 0) {
 			$this->core->getMCPE()->tick();

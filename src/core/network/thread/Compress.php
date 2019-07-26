@@ -6,7 +6,7 @@ namespace core\network\thread;
 
 use pocketmine\Thread;
 
-class Backup extends Thread {
+class Compress extends Thread {
 	private $datafolder, $folder;
 
 	const DS = DIRECTORY_SEPARATOR;

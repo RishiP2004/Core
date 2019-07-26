@@ -50,8 +50,12 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "This scoreboard named . " . $args[1]. " already exists");
 						return false;
 					}
-					if(!is_numeric($args[3])) {
+					if((!(int) $args[3]) !== 0 or 1) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "The sort order needs to be 0/1");
+						return false;
+					}
+					if((strtolower($args[2]) !== "sidebar" or "list" or "belowname")) {
+						$sender->sendMessage($this->core->getErrorPrefix() . "Not a valid Display Slot");
 						return false;
 					} else {
 						$scoreboard = new \scoreboard\Scoreboard($args[1], ScoreboardAction::CREATE);
@@ -161,7 +165,7 @@ class Scoreboard extends PluginCommand {
 						$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /scoreboard remove <player / all> <title>");
 						return false;
 					}
-					if(ScoreboardManager::getId($args[1]) === null) {
+					if(ScoreboardManager::getId($args[2]) === null) {
 						$sender->sendMessage($this->core->getErrorPrefix() . "There is no Scoreboard with the name " . $args[1]);
 						return false;
 					} else {

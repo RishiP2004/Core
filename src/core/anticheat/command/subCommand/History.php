@@ -82,7 +82,7 @@ class History extends SubCommand {
 								$sender->sendMessage(TextFormat::GRAY . $cheat->getName() . ": " . $amount);
 							}
 						} else {
-							$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s " . "Cheat History:");
+							$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s " . " Cheat History:");
 							$sender->sendMessage();
 						}
 					break;

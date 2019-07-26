@@ -33,10 +33,10 @@ class AutoClicker extends Cheat {
 		return [self::BAN, "Auto Clicker; Too many Chances given (" . $this->maxCheating() . ")", "10 days"];
 	}
 
-	public function onRun() {
+	public function onRun() : void {
 		$interacts = $this->getPlayer()->addToInteract();
 
-		if($interacts["amount"] >= Core::getInstance()->getAntiCheat()->getAutoClickAmount()) {
+		if($interacts["amount"] >= self::AUTO_CLICK_AMOUNT) {
 			Core::getInstance()->getServer()->getLogger()->warning(Core::getInstance()->getErrorPrefix() . $this->getPlayer()->getName() . " seems to have an Auto Clicker");
 			$this->final();
 		}

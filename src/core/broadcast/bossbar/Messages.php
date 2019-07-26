@@ -13,7 +13,6 @@ interface Messages {
     const NOT_REGISTERED_MESSAGE = "{PREFIX}";
 
     const CHANGING = [
-        "enabled" => true,
         "time" => 45,
         "messages" => [
             "{0%}" . TextFormat::GRAY . "Better than the rest!",

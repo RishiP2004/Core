@@ -34,7 +34,7 @@ use pocketmine\network\mcpe\protocol\{
 
 use pocketmine\entity\Living;
 
-class BroadcastListener implements Listener {
+class BroadcastListener implements Listener, Broadcasts {
 	private $core;
 
 	public function __construct(Core $core) {
@@ -119,8 +119,8 @@ class BroadcastListener implements Listener {
 					$stringCause = "normal";
 					break;
 			}
-			if(!empty($this->core->getBroadcast()->getDeaths($stringCause))) {
-				$message = $this->core->getBroadcast()->getJoins($stringCause);
+			if(!empty(self::DEATHS[$stringCause])) {
+				$message = self::JOINS[$stringCause];
 
 				foreach($replaces as $key => $value) {
 					$message = str_replace([
@@ -143,7 +143,7 @@ class BroadcastListener implements Listener {
 			$message = "";
 
 			if(!$player->hasPlayedBefore()) {
-				if(!empty(Broadcasts::JOINS["first"])) {
+				if(!empty(self::JOINS["first"])) {
 					foreach(Core::getInstance()->getStats()->getRanks() as $r) {
 						if($r->getValue() === Rank::DEFAULT) {
 							$rank = $r->getName();
@@ -155,22 +155,22 @@ class BroadcastListener implements Listener {
 						"{NAME_TAG_FORMAT}"
 					], [
 						$player->getName(),
-						date($this->core->getBroadcast()->getFormats("date_time")),
+						date(self::FORMATS["date_time"]),
 						str_replace("{DISPLAY_NAME}", $player->getName(), $rank)
-					], $this->core->getBroadcast()->getJoins("first"));
+					], self::JOINS["first"]);
 				}
 			} else {
 				if($player->hasPermission("core.broadcast.join")) {
-					if(!empty($this->core->getBroadcast()->getJoins("normal"))) {
+					if(!empty(self::JOINS["normal"])) {
 						$message = str_replace([
 							"{PLAYER}",
 							"{TIME}",
 							"{NAME_TAG_FORMAT}"
 						], [
 							$player->getName(),
-							date($this->core->getBroadcast()->getFormats("date_time")),
+							date(self::FORMATS["date_time"]),
 							str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())
-						], $this->core->getBroadcast()->getJoins("normal"));
+						], self::JOINS["normal"]);
 					}
 				}
 			}
@@ -188,7 +188,7 @@ class BroadcastListener implements Listener {
 				$server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
 
 				if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
-					if(!empty($this->core->getBroadcast()->getKicks("whitelisted"))) {
+					if(!empty(self::KICKS["whitelisted"])) {
 						$message = str_replace([
 							"{PLAYER}",
 							"{TIME}",
@@ -197,11 +197,11 @@ class BroadcastListener implements Listener {
 							"{PREFIX}"
 						], [
 							$player->getName(),
-							date($this->core->getBroadcast()->getFormats("date_time")),
+							date(self::FORMATS["date_time"]),
 							count($this->core->getServer()->getOnlinePlayers()),
 							$this->core->getServer()->getMaxPlayers(),
 							$this->core->getPrefix()
-						], $this->core->getBroadcast()->getKicks("whitelisted"));
+						], self::KICKS["whitelisted"]);
 					}
 					if($user === null) {
 						if($server->isWhitelisted()) {
@@ -217,7 +217,7 @@ class BroadcastListener implements Listener {
 				} else {
 					if($user->loaded()) {
 						if(!$user->hasPermission("core.network." . $server->getName() . ".full")) {
-							if(!empty($this->core->getBroadcast()->getKicks("full"))) {
+							if(!empty(self::KICKS["full"])) {
 								$message = str_replace([
 									"{PLAYER}",
 									"{TIME}",
@@ -226,11 +226,11 @@ class BroadcastListener implements Listener {
 									"{PREFIX}"
 								], [
 									$player->getName(),
-									date($this->core->getBroadcast()->getFormats("date_time")),
+									date(self::FORMATS["date_time"]),
 									count($this->core->getServer()->getOnlinePlayers()),
 									$this->core->getServer()->getMaxPlayers(),
 									$this->core->getPrefix()
-								], $this->core->getBroadcast()->getKicks("full"));
+								], self::KICKS["full"]);
 
 								$player->close(null, $message);
 								return;
@@ -249,16 +249,16 @@ class BroadcastListener implements Listener {
 			$message = "";
 
 			if($player->hasPermission("core.broadcast.quit")) {
-				if(!empty($this->core->getBroadcast()->getQuits("normal"))) {
+				if(!empty(self::QUITS["normal"])) {
 					$message = str_replace([
 						"{PLAYER}",
 						"{TIME}",
 						"{NAME_TAG_FORMAT}"
 					], [
 						$player->getName(),
-						date($this->core->getBroadcast()->getFormats("date_time")),
+						date(self::FORMATS["date_time"]),
 						str_replace("{DISPLAY_NAME}", $player->getName(), $player->getCoreUser()->getRank()->getNameTagFormat())
-					], $this->core->getBroadcast()->getQuits("normal"));
+					], self::QUITS["normal"]);
 				}
 			}
 			$event->setQuitMessage($message);
@@ -278,7 +278,7 @@ class BroadcastListener implements Listener {
 			$origin = $event->getOrigin();
 			$target = $event->getTarget();
 
-			if(!empty($this->core->getBroadcast()->getDimensions("change"))) {
+			if(!empty(self::DIMENSIONS["change"])) {
 				$message = str_replace([
 					"{PLAYER}",
 					"{TIME}",
@@ -287,11 +287,11 @@ class BroadcastListener implements Listener {
 					"{NAME_TAG_FORMAT}"
 				], [
 					$entity->getName(),
-					date($this->core->getBroadcast()->getFormats("date_time")),
+					date(self::FORMATS["date_time"]),
 					$origin->getName(),
 					$target->getName(),
 					str_replace("{DISPLAY_NAME}", $entity->getName(), $entity->getCoreUser()->getRank()->getNameTagFormat())
-				], $this->core->getBroadcast()->getDimensions("change"));
+				], self::DIMENSIONS["change"]);
 
 				$this->core->getServer()->broadcastMessage($message);
 			}
@@ -306,15 +306,15 @@ class BroadcastListener implements Listener {
 			switch(true) {
 				case $pk instanceof LoginPacket:
 					if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
-						if(!empty($this->core->getBroadcast()->getKicks("outdated")["client"])) {
-							$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time"))], $this->core->getBroadcast()->getKicks("outdated")["client"]);
+						if(!empty(self::KICKS["outdated"]["client"])) {
+							$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date(self::FORMATS["date_time"])], self::KICKS["outdated"]["client"]);
 
 							$player->close($message);
 							$event->setCancelled(true);
 						}
 					} else if($pk->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
-						if(!empty($this->core->getBroadcast()->getKicks("outdated")["server"])) {
-							$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date($this->core->getBroadcast()->getFormats("date_time"))], $this->core->getBroadcast()->getKicks("outdated")["server"]);
+						if(!empty(self::KICKS["outdated"]["server"])) {
+							$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date(self::FORMATS["date_time"])], self::KICKS["outdated"]["server"]);
 
 							$player->close($message);
 							$event->setCancelled(true);

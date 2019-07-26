@@ -6,6 +6,8 @@ namespace core\essentials\command;
 
 use core\Core;
 
+use core\CorePlayer;
+
 use pocketmine\command\{
 	PluginCommand,
 	CommandSender
@@ -20,7 +22,7 @@ class Hud extends PluginCommand {
 		$this->core = $core;
 
 		$this->setPermission("core.essentials.command.hud");
-		$this->setUsage("<type> <value>");
+		$this->setUsage("<type> [value]");
 		$this->setDescription("Set a Hud Type on or Off");
 	}
 
@@ -29,6 +31,65 @@ class Hud extends PluginCommand {
 			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
 			return false;
 		}
-		return true;
+		if(!$sender instanceof CorePlayer) {
+			$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+			return false;
+		}
+		if(count($args) < 1) {
+			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /hud " . $this->getUsage());
+			return false;
+		} else {
+			$value = false;
+
+			if(isset($args[0])) {
+				switch(strtolower($args[0])) {
+					case "true":
+					case "on":
+						$value = true;
+					break;
+					case "false":
+					case "off":
+						$value = false;
+					break;
+					default:
+						$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Boolean");
+					break;
+				}
+			}
+			switch(strtolower($args[0])) {
+				case "scoreboard":
+				case "sidebar":
+				case "side":
+				case (int) CorePlayer::SCOREBOARD:
+					$type = CorePlayer::SCOREBOARD;
+
+					if(isset($args[1])) {
+						$hud = $value;
+					} else {
+						$hud = $sender->hasHud($type) === false ? false : true;
+					}
+					$sender->setHud($type, $hud);
+
+					$str = $sender->hasHud($type) === false ? "False" : "True";
+					$sender->sendMessage($this->core->getPrefix() . "Set your Scoreboard Hud to " . $str);
+				break;
+				case "popup":
+				case "bottom":
+				case (int) CorePlayer::POPUP:
+					$type = CorePlayer::POPUP;
+
+					if(isset($args[1])) {
+						$hud = $value;
+					} else {
+						$hud = $sender->hasHud($type) === false ? false : true;
+					}
+					$sender->setHud($type, $hud);
+
+					$str = $sender->hasHud($type) === false ? "False" : "True";
+					$sender->sendMessage($this->core->getPrefix() . "Set your Popup Hud to " . $str);
+				break;
+			}
+			return true;
+		}
 	}
 }

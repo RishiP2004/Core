@@ -122,71 +122,19 @@ class Stats implements Statistics {
 		$this->core->getServer()->getCommandMap()->register(UserInformation::class, new UserInformation($this->core));
     }
 
-    public function getCoinValue() : int {
-    	return self::COIN_VALUE;
-	}
-
-    public function getEconomyUnit(string $type) : string {
-        return self::UNITS[$type];
-    }
-
-    public function getDefaultEconomy(string $type) : int {
-        return self::DEFAULTS[$type];
-    }
-
-    public function getMaximumEconomy(string $type) : int {
-        return self::MAXIMUMS[$type];
-    }
-
-    public function getTopShownPerPage(string $type) : int {
-        return self::TOP_SHOWN_PER_PAGE[$type];
-    }
-
-	public function addOps() : bool {
-		return self::ADD_OPS;
-	}
-	
-	public function addBanned() : bool {
-		return self::ADD_BANNED;
-	}
-	
-    public function disableCustomSkins() : bool {
-        return self::DISABLE_CUSTOM_SKINS;
-    }
-
-    public function disableCustomCapes() : bool {
-        return self::DISABLE_CUSTOM_CAPES;
-    }
-
-    public function disableCustomGeometry() : bool {
-        return self::DISABLE_CUSTOM_GEOMETRY;
-    }
-
-    public function disableIngameSkinChange() : bool {
-        return self::DISABLE_INGAME_SKIN_CHANGE;
-    }
-
-    public function disableTransparentSkins() : bool {
-        return self::DISABLE_TRANSPARENT_SKINS;
-    }
-
-    public function allowedTransparencyPercentage() : int {
-        return self::ALLOWED_TRANSPARECNY_PERCENTAGE;
-    }
-
     public function getFallbackSkinData() {
         return $this->fallbackSkinData;
     }
 
     public function getStrippedSkin(Skin $skin) : Skin {
-        $skinData = ($noCustomSkins = $this->disableCustomSkins() === true) ? $this->fallbackSkinData : $skin->getSkinData();
+        $skinData = ($noCustomSkins = self::DISABLE_CUSTOM_SKINS === true) ? $this->fallbackSkinData : $skin->getSkinData();
 
-        if(!$noCustomSkins && $this->disableTransparentSkins() === true && $this->getSkinTransparencyPercentage($skinData) > $this->allowedTransparencyPercentage()) {
+        if(!$noCustomSkins && self::DISABLE_TRANSPARENT_SKINS === true && $this->getSkinTransparencyPercentage($skinData) > self::ALLOWED_TRANSPARECNY_PERCENTAGE) {
             $skinData = $this->fallbackSkinData;
         }
-        $capeData = $this->disableCustomCapes() === true ? "" : $skin->getCapeData();
-        $geometryName = $this->disableCustomGeometry() === true && $skin->getGeometryName() !== "geometry.humanoid.customSlim" ? "geometry.humanoid.custom" : $skin->getGeometryName();
-        $geometryData = $this->disableCustomGeometry() === true ? "" : $skin->getGeometryData();
+        $capeData = self::DISABLE_CUSTOM_CAPES === true ? "" : $skin->getCapeData();
+        $geometryName = self::DISABLE_CUSTOM_GEOMETRY === true && $skin->getGeometryName() !== "geometry.humanoid.customSlim" ? "geometry.humanoid.custom" : $skin->getGeometryName();
+        $geometryData = self::DISABLE_CUSTOM_GEOMETRY === true ? "" : $skin->getGeometryData();
         return new Skin($skin->getSkinId(), $skinData, $capeData, $geometryName, $geometryData);
     }
 
@@ -247,7 +195,7 @@ class Stats implements Statistics {
 					$allEconomy[$user->getName()] = $user->getBalance();
 				}
 			}
-			$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, $this->addOps(), $ops, $this->addBanned(), $banned));
+			$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, self::ADD_OPS, $ops, self::ADD_BANNED, $banned));
 		});
 	}
 

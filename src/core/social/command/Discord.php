@@ -5,8 +5,11 @@ declare(strict_types = 1);
 namespace core\social\command;
 
 use core\Core;
-use discord\Embed;
+
+use core\social\Access;
+
 use discord\Message;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -44,7 +47,7 @@ class Discord extends PluginCommand {
             if(isset($args[1])) {
             	$msg->setUsername($args[1]);
 			} else {
-            	$msg->setUsername($this->core->getSocial()->getUsername());
+            	$msg->setUsername(Access::USERNAME);
 			}
             $this->core->getSocial()->sendToDiscord($msg);
             $sender->sendMessage($this->core->getPrefix() . "The Message was sent to discord");

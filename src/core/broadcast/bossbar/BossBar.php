@@ -23,35 +23,15 @@ class BossBar implements Messages {
         $this->bossBar = new \bossbar\BossBar();
     }
 
-    public function getMode() : int {
-        return self::MODE;
-    }
-
-    public function getHeadMessage() : string {
-        return self::HEAD_MESSAGE;
-    }
-
-    public function getNotRegisteredMessage() : string {
-        return self::NOT_REGISTERED_MESSAGE;
-    }
-
-    public function getChanging(string $key) {
-        return self::CHANGING[$key];
-    }
-
-    public function getWorlds() : array {
-        return self::WORLDS;
-    }
-
     public function get() {
     	return $this->bossBar;
 	}
 
-    public function tick() {
+    public function tick() : void {
     	$this->run++;
 
-        if($this->getChanging("enabled")) {
-            if($this->run === $this->getChanging("time") * 20) {
+        if(is_int(self::CHANGING["time"])) {
+            if($this->run === self::CHANGING["time"] * 20) {
 				$worlds = $this->getWorlds();
 
 				foreach($worlds as $world) {
@@ -68,8 +48,8 @@ class BossBar implements Messages {
         }
     }
 
-    public function getWorld() : ?array {
-        $mode = $this->getMode();
+    public function getWorlds() : ?array {
+        $mode = self::MODE;
         $worldNames = $this->getWorlds();
         $worlds = [];
 

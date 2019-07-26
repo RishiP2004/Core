@@ -16,19 +16,14 @@ use pocketmine\entity\{
 
 use pocketmine\item\{
     Item,
-    ItemFactory,
 	Potion
 };
 
-use pocketmine\block\{
-    Block,
-    BlockFactory
-};
+use pocketmine\block\Block;
 
 use pocketmine\level\Position;
 use pocketmine\level\particle\{
     AngryVillagerParticle,
-    BlockForceFieldParticle,
     BubbleParticle,
     CriticalParticle,
     DustParticle,
@@ -39,7 +34,6 @@ use pocketmine\level\particle\{
     HappyVillagerParticle,
     HeartParticle,
     HugeExplodeParticle,
-    HugeExplodeSeedParticle,
     InkParticle,
     InstantEnchantParticle,
     ItemBreakParticle,

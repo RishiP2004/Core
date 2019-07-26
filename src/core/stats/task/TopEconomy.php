@@ -5,13 +5,10 @@ declare(strict_types = 1);
 namespace core\stats\task;
 
 use core\Core;
-use core\CorePlayer;
 
 use core\stats\Statistics;
 
 use pocketmine\Server;
-
-use pocketmine\command\ConsoleCommandSender;
 
 use pocketmine\scheduler\AsyncTask;
 
@@ -85,7 +82,7 @@ class TopEconomy extends AsyncTask implements Statistics {
 		$output = $core->getPrefix() . "Top " . $unit . " (" . $this->page . "/" . $this->max . "):\n";
 
 		foreach(unserialize($this->topList) as $place => $list) {
-			$output .= TextFormat::GRAY . $place . ". " .  $list[0] . " - " . $core->getStats()->getEconomyUnit($this->unit) . $list[1];
+			$output .= TextFormat::GRAY . $place . ". " .  $list[0] . " - " . Statistics::UNITS[$unit] . $list[1];
 		}
 		$output = substr($output, 0, -1);
 		$player = $server->getPlayerExact($this->sender);

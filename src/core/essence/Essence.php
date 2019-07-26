@@ -42,15 +42,7 @@ class Essence implements EssenceData {
 		$core->getServer()->getPluginManager()->registerEvents(new EssenceListener($core), $core);
     }
 
-    public function getMaxDistance() : int {
-        return self::MAX_DISTANCE;
-    }
-
-    public function getDefaultSkin() : string {
-        return self::DEFAULT_SKIN;
-    }
-
-	public function tick() {
+	public function tick() : void {
 		$this->runs++;
 
 		foreach($this->getFloatingTexts() as $floatingText) {

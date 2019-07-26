@@ -10,6 +10,7 @@ use core\network\server\Server;
 
 use core\stats\rank\Rank;
 
+use core\vote\VoteData;
 use core\vote\task\Vote;
 
 use pocketmine\permission\Permission;
@@ -206,7 +207,7 @@ class CoreUser {
 
     public function vote() {
         Core::getInstance()->getVote()->addToQueue($this);
-        Core::getInstance()->getServer()->getAsyncPool()->submitTask(new Vote($this->getName(), Core::getInstance()->getVote()->getAPIKey()));
+        Core::getInstance()->getServer()->getAsyncPool()->submitTask(new Vote($this->getName(), VoteData::API_KEY));
     }
 
     public function save() {

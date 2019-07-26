@@ -23,7 +23,7 @@ class Backup extends PluginCommand {
 
 		$this->setPermission("core.network.command.backup");
 		$this->setUsage("[restore]");
-		$this->setDescription("Backup the Server");
+		$this->setDescription("Compress the Server");
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
