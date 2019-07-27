@@ -56,7 +56,7 @@ class Item extends PluginCommand {
 		if(!isset($args[2])) {
 			$item->setCount($item->getMaxStackSize());
 		} else {
-			$item->setCount($args[2]);
+			$item->setCount((int) $args[2]);
 		}
 		if(isset($args[3])) {
 			$tags = $exception = \null;

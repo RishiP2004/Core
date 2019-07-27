@@ -41,8 +41,8 @@ class Hud extends PluginCommand {
 		} else {
 			$value = false;
 
-			if(isset($args[0])) {
-				switch(strtolower($args[0])) {
+			if(isset($args[1])) {
+				switch(strtolower($args[1])) {
 					case "true":
 					case "on":
 						$value = true;
@@ -53,6 +53,7 @@ class Hud extends PluginCommand {
 					break;
 					default:
 						$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Boolean");
+						return false;
 					break;
 				}
 			}
@@ -66,12 +67,14 @@ class Hud extends PluginCommand {
 					if(isset($args[1])) {
 						$hud = $value;
 					} else {
-						$hud = $sender->hasHud($type) === false ? false : true;
+						$hud = $sender->hasHud($type) === true ? false : true;
 					}
 					$sender->setHud($type, $hud);
 
-					$str = $sender->hasHud($type) === false ? "False" : "True";
+					$str = $sender->hasHud($type) === true ? "True" : "False";
+					
 					$sender->sendMessage($this->core->getPrefix() . "Set your Scoreboard Hud to " . $str);
+					return true;
 				break;
 				case "popup":
 				case "bottom":
@@ -81,12 +84,18 @@ class Hud extends PluginCommand {
 					if(isset($args[1])) {
 						$hud = $value;
 					} else {
-						$hud = $sender->hasHud($type) === false ? false : true;
+						$hud = $sender->hasHud($type) === true ? false : true;
 					}
 					$sender->setHud($type, $hud);
 
-					$str = $sender->hasHud($type) === false ? "False" : "True";
+					$str = $sender->hasHud($type) === true ? "True" : "False";
+					
 					$sender->sendMessage($this->core->getPrefix() . "Set your Popup Hud to " . $str);
+					return true;
+				break;
+				default:
+					$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Hud Type. Types: Scoreboard, Popup");
+					return false;
 				break;
 			}
 			return true;

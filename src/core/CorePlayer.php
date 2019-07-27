@@ -144,7 +144,6 @@ class CorePlayer extends Player {
 			$this->spawnNPCs();
 			$this->spawnFloatingTexts();
 			$this->sendBossBar();
-			//TODO: Hud and Scoreboard
 
 			$this->core->getWorld()->players[$this->getName()] = null;
 
@@ -160,6 +159,8 @@ class CorePlayer extends Player {
 			}
 			$this->getCoreUser()->setServer($this->core->getNetwork()->getServerFromIp($this->getServer()->getIp()));
 			$this->getCoreUser()->save();
+			$this->setHud(self::SCOREBOARD, true);
+			$this->setHud(self::POPUP, true);
 		}
     }
 
@@ -381,11 +382,14 @@ class CorePlayer extends Player {
 		$this->fly = $fly;
 
 		$this->setAllowFlight($fly);
-		$this->setFlying($fly);
+		
+		if(!$fly) {
+			$this->setFlying(false);
+		}
 	}
 
 	public function hasHud(int $type) {
-    	return $this->hud[$type];
+    	return isset($this->hud[$type]);
 	}
 
 	public function setHud(int $type, bool $hud = true) {

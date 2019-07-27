@@ -109,7 +109,7 @@ class History extends SubCommand {
 						if(strtolower($args[2]) === "all") {
 							$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s " . "Cheat History:");
 
-							foreach($user->getCheatHistory as $history) {
+							foreach($user->getCheatHistory() as $history) {
 								$cheat = $this->core->getAntiCheat()->getCheat($history[1]);
 								$amount = $history[2];
 
