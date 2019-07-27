@@ -8,8 +8,11 @@ use core\Core;
 use core\CorePlayer;
 
 use pocketmine\level\format\Chunk;
+use pocketmine\level\Position;
 
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+
+use pocketmine\math\Vector3;
 
 class Level extends \pocketmine\level\Level {
 	/** @var int[] $chunkCounter */
@@ -108,9 +111,9 @@ class Level extends \pocketmine\level\Level {
         return DimensionIds::OVERWORLD;
     }
 	
-    public function getExplosionAffectedBlocks(Position $center, float $size) {
+    public static function getExplosionAffectedBlocks(Position $center, float $size) {
         if($size < 0.1) {
-            return;
+            return false;
         }
         $affectedBlocks = [];
         $rays = 16;
