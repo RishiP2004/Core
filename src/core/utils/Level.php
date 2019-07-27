@@ -15,19 +15,6 @@ class Level extends \pocketmine\level\Level {
 	/** @var int[] $chunkCounter */
 	public static $chunkCounter = [];
 
-	public static function getClumpedRegionalDifficulty(\pocketmine\level\Level $level, Chunk $chunk) : float {
-		$regionalDifficulty = self::getRegionalDifficulty($level, $chunk);
-		
-		if($regionalDifficulty < 2.0) {
-			$result = 0.0;
-		} else if($regionalDifficulty > 4.0) {
-			$result = 1.0;
-		} else {
-			$result = ($regionalDifficulty - 2.0) / 2.0;
-		}
-		return $result;
-	}
-
 	public static function getRegionalDifficulty(\pocketmine\level\Level $level, Chunk $chunk) : float {
 		$totalPlayTime = 0;
 		

@@ -107,7 +107,7 @@ class Item extends \pocketmine\item\Item {
         return $items[array_rand($items)];
     }
 	
-	public function getRandomEnchantment(int $experienceLevel, Item $item): EnchantmentInstance {
+	public function getRandomEnchantment(int $experienceLevel, Item $item) : EnchantmentInstance {
 		$return = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS));
 		
 		if($experienceLevel <= 8) {
@@ -265,7 +265,7 @@ class Item extends \pocketmine\item\Item {
 		
 		$enchantments = array_filter($enchantments, function($id) {
 			return Enchantment::getEnchantment($id) !== null;
-		}, ARRAY_FILTER_USE_KEY); // filter unregistered enchantments
+		}, ARRAY_FILTER_USE_KEY);
 		$totalWeight = 0;
 		
 		foreach($enchantments as $weight) {

@@ -36,6 +36,7 @@ use pocketmine\level\particle\{
     HugeExplodeParticle,
     InkParticle,
     InstantEnchantParticle,
+	EntityFlameParticle,
     ItemBreakParticle,
     LavaDripParticle,
     LavaParticle,
@@ -48,7 +49,8 @@ use pocketmine\level\particle\{
     SporeParticle,
     TerrainParticle,
     WaterDripParticle,
-    WaterParticle
+    WaterParticle,
+	DestroyBlockParticle
 };
 use pocketmine\network\mcpe\protocol\{
 	ActorEventPacket,

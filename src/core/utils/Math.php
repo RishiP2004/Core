@@ -22,22 +22,6 @@ class Math extends \pocketmine\math\Math {
         return $d0 > $d1 ? $d0 : $d1;
     }
 
-    public static function clamp($value, $min, $max) {
-        return $value < $min ? $min : ($value > $max ? $max : $value);
-    }
-
-    public static function wrapDegrees(float $yaw) {
-        $yaw %= 360.0;
-
-        if($yaw >= 180.0) {
-            $yaw -= 360.0;
-        }
-        if($yaw < -180.0) {
-            $yaw += 360.0;
-        }
-        return $yaw;
-    }
-
 	public static function vector3XZDistance(Vector3 $pos1, Vector3 $pos2) {
 		return (($pos1->x - $pos2->x) + ($pos1->z - $pos2->z));
 	}
@@ -89,15 +73,6 @@ class Math extends \pocketmine\math\Math {
     public static function getFormattedTime(int $time) : string {
         $time = self::toArray($time);
         return $time[0] . " hour(s), " . $time[1] . " minute(s), and " . $time[2] . " second(s)";
-    }
-	
-    public static function validateObjectArray(array $array, string $class) : bool {
-        foreach($array as $key => $item) {
-            if(!$item instanceof $class) {
-                throw new \TypeError("element \"$key\" is not an instance of $class");
-            }
-        }
-        return true;
     }
 
     public static function expirationStringToTimer(string $format) {
