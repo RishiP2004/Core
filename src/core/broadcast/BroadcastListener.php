@@ -156,7 +156,7 @@ class BroadcastListener implements Listener, Broadcasts {
 					], [
 						$player->getName(),
 						date(self::FORMATS["date_time"]),
-						str_replace("{DISPLAY_NAME}", $player->getName(), $rank)
+						str_replace("{DISPLAY_NAME}", $player->getName(), $rank->getNameTagFormat())
 					], self::JOINS["first"]);
 				}
 			} else {

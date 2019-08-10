@@ -136,8 +136,6 @@ class CorePlayer extends Player {
 			$this->coreUser = $coreUser;
 		}
 		if($this->isOnline()) {
-			$this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
-		
 			$this->attachment = $this->addAttachment($this->core);
 		
 			$this->updatePermissions();
@@ -161,6 +159,7 @@ class CorePlayer extends Player {
 			$this->getCoreUser()->save();
 			$this->setHud(self::SCOREBOARD, true);
 			$this->setHud(self::POPUP, true);
+			$this->setNameTag($this->getCoreUser()->getRank()->getNameTagFormat());
 		}
     }
 

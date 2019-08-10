@@ -6,12 +6,12 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\permission\BanEntry;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
-
-use pocketmine\permission\BanEntry;
 
 use pocketmine\utils\TextFormat;
 

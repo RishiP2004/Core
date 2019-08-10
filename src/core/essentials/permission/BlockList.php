@@ -7,6 +7,8 @@ namespace core\essentials\permission;
 use core\Core;
 use core\CoreUser;
 
+use core\essentials\Essentials;
+
 use pocketmine\permission\BanEntry;
 
 class BlockList extends \pocketmine\permission\BanList {
@@ -16,6 +18,8 @@ class BlockList extends \pocketmine\permission\BanList {
 
     public function __construct(string $type) {
         $this->type = $type;
+
+		$this->load();
     }
 
     public function load() {
@@ -38,24 +42,6 @@ class BlockList extends \pocketmine\permission\BanList {
         return $this->list;
     }
 
-    public function getCoreUser(string $name) : ?CoreUser {
-        foreach($this->getSentences() as $coreUser) {
-            if($coreUser->getName() === $name) {
-                return $coreUser;
-            }
-        }
-        return null;
-    }
-
-    public function getCoreUserXuid(string $xuid) : ?CoreUser {
-        foreach($this->getSentences() as $coreUser) {
-            if($coreUser->getXuid() === $xuid) {
-                return $coreUser;
-            }
-        }
-        return null;
-    }
-
     public function isBanned(string $name) : bool {
         $this->removeExpired();
 
@@ -75,8 +61,8 @@ class BlockList extends \pocketmine\permission\BanList {
 			Core::getInstance()->getDatabase()->executeInsert("sentences.register", [
 				"xuid" => $user->getXuid(),
 				"registerDate" => date("m:d:y h:A"),
-				"listType" => "block",
-				"type" => $this->type,
+				"listType" => $this->type,
+				"type" => Essentials::BLOCK,
 				"username" => $user->getName(),
 				"sentencer" => $source,
 				"reason" => $reason,
@@ -87,17 +73,19 @@ class BlockList extends \pocketmine\permission\BanList {
     }
 
     public function remove(string $name) {
-        $user = Core::getInstance()->getStats()->getCoreUser($name);
+		Core::getInstance()->getStats()->getCoreUser($name, function($user) use ($name) {
+			Core::getInstance()->getDatabase()->executeChange("sentences.delete", [
+				"xuid" => $user->getXuid(),
+				"listType" => $this->type,
+				"type" => Essentials::BLOCK
+			]);
 
-        Core::getInstance()->getDatabase()->executeChange("sentences.delete", [
-            "xuid" => $user->getXuid()
-        ]);
+			$name = strtolower($name);
 
-        $name = strtolower($name);
-
-        if(isset($this->list[$name])) {
-            unset($this->list[$name]);
-        }
+			if(isset($this->list[$name])) {
+				unset($this->list[$name]);
+			}
+		});
     }
 
     public function removeExpired() {

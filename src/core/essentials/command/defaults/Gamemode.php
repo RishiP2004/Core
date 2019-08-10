@@ -47,10 +47,10 @@ class Gamemode extends PluginCommand {
 				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
 				return false;
 			}
-            $player = $this->core->getServer()->getPlayer($args[0]);
+            $player = $this->core->getServer()->getPlayer($args[1]);
 
             if(!$player instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
+                $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Online");
                 return false;
             }
 			if($player->getGamemode() === $gamemode) {

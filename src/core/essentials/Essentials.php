@@ -81,8 +81,6 @@ class Essentials {
     const BLOCK = 1;
     const MUTE = 2;
 
-    private $runs = 0;
-
     public function __construct(Core $core) {
         $this->core = $core;
 
@@ -201,6 +199,11 @@ class Essentials {
     	foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
 			if($onlinePlayer instanceof CorePlayer) {
 				if($onlinePlayer->hasHud($onlinePlayer::SCOREBOARD)) {
+					$onlinePlayer->setHud($onlinePlayer::SCOREBOARD);
+				}
+			}
+			if($onlinePlayer instanceof CorePlayer) {
+				if($onlinePlayer->hasHud($onlinePlayer::POPUP)) {
 					$onlinePlayer->setHud($onlinePlayer::POPUP);
 				}
 			}
@@ -209,43 +212,31 @@ class Essentials {
 
     public function getNameBans() : \core\essentials\permission\BanList {
         $banList = new \core\essentials\permission\BanList(self::NAME);
-
-        $banList->load();
         return $banList;
     }
 
     public function getIpBans() : \core\essentials\permission\BanList {
         $banList = new \core\essentials\permission\BanList(self::IP);
-
-        $banList->load();
         return $banList;
     }
 
     public function getNameBlocks() : \core\essentials\permission\BlockList {
         $blockList = new \core\essentials\permission\BlockList(self::NAME);
-
-        $blockList->load();
         return $blockList;
     }
 
     public function getIpBlocks() : \core\essentials\permission\BlockList {
         $blockList = new \core\essentials\permission\BlockList(self::IP);
-
-        $blockList->load();
         return $blockList;
     }
 
     public function getNameMutes() : \core\essentials\permission\MuteList {
         $muteList = new \core\essentials\permission\MuteList(self::NAME);
-
-        $muteList->load();
         return $muteList;
     }
 
     public function getIpMutes() : \core\essentials\permission\MuteList {
         $muteList = new \core\essentials\permission\MuteList(self::IP);
-
-        $muteList->load();
         return $muteList;
     }
 }

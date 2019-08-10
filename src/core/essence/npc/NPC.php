@@ -6,7 +6,9 @@ namespace core\essence\npc;
 
 use core\Core;
 use core\CorePlayer;
+
 use core\essence\EssenceData;
+
 use pocketmine\level\Position;
 
 use pocketmine\entity\{

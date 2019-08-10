@@ -6,12 +6,12 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\permission\MuteEntry;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
-
-use pocketmine\permission\BanEntry;
 
 use pocketmine\utils\TextFormat;
 
@@ -40,7 +40,7 @@ class MuteList extends PluginCommand {
             switch(strtolower($args[0])) {
                 case "players":
                     $list = $this->core->getEssentials()->getNameMutes()->getEntries();
-                    $message = implode(", ", array_map(function(BanEntry $entry) {
+                    $message = implode(", ", array_map(function(MuteEntry $entry) {
                         return $entry->getName();
                     }, $list));
 
@@ -49,7 +49,7 @@ class MuteList extends PluginCommand {
                 break;
                 case "ips":
                     $list = $this->core->getEssentials()->getIpMutes()->getEntries();
-                    $message = implode(", ", array_map(function(BanEntry $entry) {
+                    $message = implode(", ", array_map(function(MuteEntry $entry) {
                         return $entry->getName();
                     }, $list));
 

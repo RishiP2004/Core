@@ -98,7 +98,6 @@ class Hud extends PluginCommand {
 					return false;
 				break;
 			}
-			return true;
 		}
 	}
 }
