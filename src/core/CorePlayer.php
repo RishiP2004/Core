@@ -387,8 +387,8 @@ class CorePlayer extends Player {
 		}
 	}
 
-	public function hasHud(int $type) {
-    	return isset($this->hud[$type]);
+	public function hasHud(int $type) : bool {
+		return isset($this->hud[$type]) ?? $this->hud[$type];
 	}
 
 	public function setHud(int $type, bool $hud = true) {

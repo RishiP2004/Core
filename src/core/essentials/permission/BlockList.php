@@ -18,22 +18,28 @@ class BlockList extends \pocketmine\permission\BanList {
 
     public function __construct(string $type) {
         $this->type = $type;
-
-		$this->load();
     }
 
     public function load() {
-        Core::getInstance()->getDatabase()->executeSelect("sentences.get", [], function(array $rows) {
-            $users = [];
+		Core::getInstance()->getDatabase()->executeSelect("sentences.get", [], function(array $rows) {
+			foreach($rows as [
+					"xuid" => $xuid,
+					"name" => $name,
+					"reason" => $reason,
+					"expires" => $expires,
+					"sentencer" => $source
+			]) {
+				$entry = new \core\essentials\permission\BanEntry($name);
 
-            foreach($rows as [
-                    "xuid" => $xuid,
-            ]) {
-                $coreUser = new CoreUser($xuid);
-                $users[$xuid] = $coreUser;
-            }
-            $this->list[] = $users;
-        });
+				$entry->setReason($reason !== null ? $reason : $entry->getReason());
+				$entry->setExpires($expires);
+				$entry->setSource($source !== null ? $source : $entry->getSource());
+
+				$this->list[$entry->getName()] = $entry;
+
+				$this->removeExpired();
+			}
+		});
     }
     /**
      * @return CoreUser[]

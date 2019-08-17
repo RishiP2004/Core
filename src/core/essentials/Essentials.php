@@ -147,6 +147,9 @@ class Essentials {
                 $commandMap->unregister($command);
             }
         }
+	foreach([$this->getNameBans(), $this->getIpBans(), $this->getNameBlocks(), $this->getIpBlocks(), $this->getNameMutes(), $this->getIpMutes()] as $type) {
+		$type->load();
+	}
         $core->getServer()->getCommandMap()->register(Ban::class, new Ban($this->core));
         $core->getServer()->getCommandMap()->register(BanIp::class, new BanIp($this->core));
         $core->getServer()->getCommandMap()->register(BanList::class, new BanList($this->core));

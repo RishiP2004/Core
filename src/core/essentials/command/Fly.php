@@ -44,6 +44,7 @@ class Fly extends PluginCommand {
 				break;	
 				default:
 					$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Boolean");
+					return false;
 				break;
 			}
 		}
@@ -65,7 +66,7 @@ class Fly extends PluginCommand {
 				}
 				$player->setFly($flying);
 				
-				$str = $player->flying() === false ? "False" : "True";
+				$str = $player->flying() === true ? "True" : "False";
 				
 				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Fly mode to " . $str);
 				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s Fly mode to " . $str);
@@ -83,7 +84,7 @@ class Fly extends PluginCommand {
 			}
 			$sender->setFly($flying);
 			
-			$str = $sender->flying() === false ? "False" : "True";
+			$str = $sender->flying() === true ? "True" : "False";
 			
 			$sender->sendMessage($this->core->getPrefix() . "Set your Fly mode to " . $str);
 			return true;

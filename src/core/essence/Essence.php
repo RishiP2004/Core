@@ -57,7 +57,9 @@ class Essence implements EssenceData {
 				if($onlinePlayer instanceof CorePlayer) {
 					if($npc->isSpawnedTo($onlinePlayer)) {
 						if($npc->getMoveTime() !== 0) {
-							$npc->move($onlinePlayer);
+							if($this->runs % 20 === $npc->getMoveTime()) {
+								$npc->move($onlinePlayer);
+							}
 						}
 					}
 				}

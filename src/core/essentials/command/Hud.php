@@ -39,8 +39,6 @@ class Hud extends PluginCommand {
 			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /hud " . $this->getUsage());
 			return false;
 		} else {
-			$value = false;
-
 			if(isset($args[1])) {
 				switch(strtolower($args[1])) {
 					case "true":
@@ -52,7 +50,7 @@ class Hud extends PluginCommand {
 						$value = false;
 					break;
 					default:
-						$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Boolean");
+						$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Boolean");
 						return false;
 					break;
 				}
@@ -95,7 +93,7 @@ class Hud extends PluginCommand {
 				break;
 				default:
 					$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Hud Type. Types: Scoreboard, Popup");
-					return false;
+					return true;
 				break;
 			}
 		}
