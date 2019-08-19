@@ -388,7 +388,7 @@ class CorePlayer extends Player {
 	}
 
 	public function hasHud(int $type) : bool {
-		return isset($this->hud[$type]) ?? $this->hud[$type];
+    	return $this->hud[$type] ?? isset($this->hud[$type]);
 	}
 
 	public function setHud(int $type, bool $hud = true) {
@@ -810,7 +810,7 @@ class CorePlayer extends Player {
         return true;
     }
 
-    public function sendSetting(Form $form) {
+    public function sendSetting(CustomForm $form) {
 		$reflection = new \ReflectionObject($this);
 		$idProperty = $reflection->getProperty("formIdCounter");
 

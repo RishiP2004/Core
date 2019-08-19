@@ -147,9 +147,9 @@ class Essentials {
                 $commandMap->unregister($command);
             }
         }
-	foreach([$this->getNameBans(), $this->getIpBans(), $this->getNameBlocks(), $this->getIpBlocks(), $this->getNameMutes(), $this->getIpMutes()] as $type) {
-		$type->load();
-	}
+		foreach([$this->getNameBans(), $this->getIpBans(), $this->getNameBlocks(), $this->getIpBlocks(), $this->getNameMutes(), $this->getIpMutes()] as $type) {
+			$type->load();
+		}
         $core->getServer()->getCommandMap()->register(Ban::class, new Ban($this->core));
         $core->getServer()->getCommandMap()->register(BanIp::class, new BanIp($this->core));
         $core->getServer()->getCommandMap()->register(BanList::class, new BanList($this->core));
@@ -202,6 +202,7 @@ class Essentials {
     	foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
 			if($onlinePlayer instanceof CorePlayer) {
 				if($onlinePlayer->hasHud($onlinePlayer::SCOREBOARD)) {
+					$onlinePlayer->setHud($onlinePlayer::SCOREBOARD, false);
 					$onlinePlayer->setHud($onlinePlayer::SCOREBOARD);
 				}
 			}

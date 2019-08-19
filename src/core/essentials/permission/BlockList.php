@@ -24,7 +24,7 @@ class BlockList extends \pocketmine\permission\BanList {
 		Core::getInstance()->getDatabase()->executeSelect("sentences.get", [], function(array $rows) {
 			foreach($rows as [
 					"xuid" => $xuid,
-					"name" => $name,
+					"username" => $name,
 					"reason" => $reason,
 					"expires" => $expires,
 					"sentencer" => $source

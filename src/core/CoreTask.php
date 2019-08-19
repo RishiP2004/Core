@@ -19,11 +19,11 @@ class CoreTask extends Task {
         $this->runs++;
 
         if($this->runs % 20 === 0) {
-            $this->core->getAntiCheat()->tick();
-            $this->core->getBroadcast()->tick();
-            $this->core->getEssence()->tick();
-            $this->core->getVote()->tick();
-			$this->core->getEssentials()->tick();
+        	$this->core->getAntiCheat()->tick();
+        	$this->core->getBroadcast()->tick();
+        	$this->core->getEssence()->tick();
+        	$this->core->getEssentials()->tick();
+        	$this->core->getVote()->tick();
         }
 		if($this->runs % 1 === 0) {
 			$this->core->getMCPE()->tick();

@@ -61,7 +61,7 @@ class Ban extends PluginCommand {
 				} else {
 					$reason = "Not provided";
 				}
-				$banList->addBan($user->getName(), $reason, null, $sender->getName());
+				$banList->addBan($user->getName(), $reason, $expires, $sender->getName());
 
 				$player = $this->core->getServer()->getPlayer($user->getName());
 

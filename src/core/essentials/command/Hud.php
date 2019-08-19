@@ -56,8 +56,24 @@ class Hud extends PluginCommand {
 				}
 			}
 			switch(strtolower($args[0])) {
+				case "popup":
+				case "bottom":
+				case (int) CorePlayer::POPUP:
+					$type = CorePlayer::POPUP;
+
+					if(isset($args[1])) {
+						$hud = $value;
+					} else {
+						$hud = $sender->hasHud($type) === true ? false : true;
+					}
+					$sender->setHud($type, $hud);
+
+					$str = $sender->hasHud($type) === true ? "True" : "False";
+
+					$sender->sendMessage($this->core->getPrefix() . "Set your Popup Hud to " . $str);
+					return true;
+				break;
 				case "scoreboard":
-				case "sidebar":
 				case "side":
 				case (int) CorePlayer::SCOREBOARD:
 					$type = CorePlayer::SCOREBOARD;
@@ -74,26 +90,9 @@ class Hud extends PluginCommand {
 					$sender->sendMessage($this->core->getPrefix() . "Set your Scoreboard Hud to " . $str);
 					return true;
 				break;
-				case "popup":
-				case "bottom":
-				case (int) CorePlayer::POPUP:
-					$type = CorePlayer::POPUP;
-
-					if(isset($args[1])) {
-						$hud = $value;
-					} else {
-						$hud = $sender->hasHud($type) === true ? false : true;
-					}
-					$sender->setHud($type, $hud);
-
-					$str = $sender->hasHud($type) === true ? "True" : "False";
-					
-					$sender->sendMessage($this->core->getPrefix() . "Set your Popup Hud to " . $str);
-					return true;
-				break;
 				default:
 					$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Hud Type. Types: Scoreboard, Popup");
-					return true;
+					return false;
 				break;
 			}
 		}

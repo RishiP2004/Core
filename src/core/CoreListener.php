@@ -285,16 +285,12 @@ class CoreListener implements Listener {
 		$pk = $event->getPacket();
 
 		if($player instanceof CorePlayer) {
-			switch(true) {
-				case $pk instanceof ServerSettingsRequestPacket:
-					$ev = new ServerSettingsRequestEvent($player);
+			if($pk instanceof ServerSettingsRequestPacket){
+				($ev = new ServerSettingsRequestEvent($player))->call();
 
-					$this->core->getServer()->getPluginManager()->callEvent($event);
-
-					if(!$form = $ev->getForm()) {
-						$player->sendSetting($form);
-					}
-				break;
+				if(($form = $ev->getForm()) !== null) {
+					$player->sendSetting($form);
+				}
 			}
 		}
 	}

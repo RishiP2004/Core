@@ -114,6 +114,7 @@ class Stats implements Statistics {
 		$core->getServer()->getCommandMap()->register(RemovePlayerPermission::class, new RemovePlayerPermission($this->core));
 		$core->getServer()->getCommandMap()->register(Servers::class, new Servers($this->core));
 		$core->getServer()->getCommandMap()->register(SetBalance::class, new SetBalance($this->core));
+		$core->getServer()->getCommandMap()->register(SetCoins::class, new SetCoins($this->core));
 		$core->getServer()->getCommandMap()->register(SetRank::class, new SetRank($this->core));
 		$core->getServer()->getCommandMap()->register(TakeBalance::class, new TakeBalance($this->core));
 		$core->getServer()->getCommandMap()->register(TakeCoins::class, new TakeCoins($this->core));

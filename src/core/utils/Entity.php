@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace core\utils;
 
+use core\Core;
 use core\mcpe\block\{
     Portal,
     EndPortal
@@ -447,5 +448,14 @@ class Entity extends \pocketmine\entity\Entity {
 
 	public static function getPotionColor(int $effectID) : Color {
 		return Potion::getPotionEffectsById($effectID)[0]->getColor();
+	}
+
+	public static function nameToId(string $name) : ?int {
+    	foreach(Core::getInstance()->getMCPE()->getRegisteredEntities() as $entity) {
+    		if(strtolower($name) === strtolower($entity->getName())) {
+    			return constant($entity . "::NETWORK_ID");
+    		}
+    	}
+    	return null;
 	}
 }
