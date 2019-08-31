@@ -644,7 +644,7 @@ class CorePlayer extends Player {
 		];
 		$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
 		$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Settings", $elements, $image,
-			function(Player $player, CustomFormResponse $response) {
+			function(Player $player, CustomFormResponse $response) : void {
 
 			}
 		);
@@ -659,7 +659,7 @@ class CorePlayer extends Player {
 				];
 				$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
 				$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Factions Settings", $elements, $image,
-					function(Player $player, CustomFormResponse $response) {
+					function(Player $player, CustomFormResponse $response) : void {
 
 					}
 				);

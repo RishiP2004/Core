@@ -163,7 +163,7 @@ class MCPE implements Addon {
 					\pocketmine\item\Item::addCreativeItem($item);
 				}
 			}
-			$this->registeredEntities[] = $className;
+			$this->registeredEntities[] = new $className(new Level(), new CompoundTag());
 		}
 		ItemFactory::registerItem(new ArmorStand(), true);
 		ItemFactory::registerItem(new Bucket(), true);

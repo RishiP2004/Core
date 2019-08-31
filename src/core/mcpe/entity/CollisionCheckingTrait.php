@@ -19,7 +19,7 @@ trait CollisionCheckingTrait {
 
 			if($entity instanceof Collidable and $this instanceof Collidable) {
 				if($this->getBoundingBox()->intersectsWith($entity->getBoundingBox())) {
-					$entity->push($this->getBoundingBox());
+					$entity->push($this);
 				}
 				$entity->onCollideWithEntity($this);
 			}
