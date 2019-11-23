@@ -10,14 +10,13 @@ use core\mcpe\entity\{
 	Collidable,
 	Interactable,
 	AgeableTrait,
-	CollisionCheckingTrait
+	CollisionCheckingTrait,
+	CreatureBase
 };
 
 use pocketmine\entity\Entity;
 
 use pocketmine\block\Block;
-
-use pocketmine\math\AxisAlignedBB;
 
 class Villager extends \pocketmine\entity\Villager implements Collidable, Interactable {
     use AgeableTrait, CollisionCheckingTrait;
@@ -28,7 +27,7 @@ class Villager extends \pocketmine\entity\Villager implements Collidable, Intera
     public function onCollideWithBlock(Block $block) : void {
     }
 
-    public function push(AxisAlignedBB $source) : void {
+    public function push(CreatureBase $source) : void {
     }
 
     public function onPlayerInteract(CorePlayer $player) : void {

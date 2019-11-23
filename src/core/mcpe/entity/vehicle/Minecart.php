@@ -20,8 +20,6 @@ use pocketmine\entity\Entity;
 
 use pocketmine\block\Block;
 
-use pocketmine\math\AxisAlignedBB;
-
 class Minecart extends Entity implements Interactable, Linkable, Lookable, Collidable {
 	use LinkableTrait, CollisionCheckingTrait;
 
@@ -53,7 +51,7 @@ class Minecart extends Entity implements Interactable, Linkable, Lookable, Colli
 		// TODO: Implement onCollideWithBlock() method.
 	}
 
-	public function push(AxisAlignedBB $source) : void {
+	public function push(CreatureBase $source) : void {
 		// TODO: Implement push() method.
 	}
 }

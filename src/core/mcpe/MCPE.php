@@ -83,6 +83,8 @@ use pocketmine\item\{
 	SpawnEgg
 };
 
+use pocketmine\nbt\tag\CompoundTag;
+
 use pocketmine\tile\Tile;
 
 use pocketmine\math\Vector3;
@@ -163,7 +165,7 @@ class MCPE implements Addon {
 					\pocketmine\item\Item::addCreativeItem($item);
 				}
 			}
-			$this->registeredEntities[] = new $className(new Level(), new CompoundTag());
+			$this->registeredEntities[] = new \ReflectionClass($className);//new $className($core->getServer()->getDefaultLevel(), Entity::createBaseNBT(new Vector3(0, 0, 0), null, lcg_value() * 360, 0));
 		}
 		ItemFactory::registerItem(new ArmorStand(), true);
 		ItemFactory::registerItem(new Bucket(), true);

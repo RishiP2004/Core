@@ -6,7 +6,8 @@ namespace core\mcpe\entity\object;
 
 use core\mcpe\entity\{
 	Collidable,
-	CollisionCheckingTrait
+	CollisionCheckingTrait,
+	CreatureBase
 };
 
 use pocketmine\item\Item;
@@ -14,8 +15,6 @@ use pocketmine\item\Item;
 use pocketmine\entity\Entity;
 
 use pocketmine\block\Block;
-
-use pocketmine\math\AxisAlignedBB;
 
 class ItemEntity extends \pocketmine\entity\object\ItemEntity implements Collidable {
 	use CollisionCheckingTrait;
@@ -43,6 +42,6 @@ class ItemEntity extends \pocketmine\entity\object\ItemEntity implements Collida
 		// TODO: Hoppers, pressure plates, tripwire
 	}
 
-	public function push(AxisAlignedBB $source) : void {
+	public function push(CreatureBase $source) : void {
 	}
 }

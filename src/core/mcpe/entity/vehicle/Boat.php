@@ -12,14 +12,13 @@ use core\mcpe\entity\{
 	Lookable,
 	Collidable,
 	LinkableTrait,
-	CollisionCheckingTrait
+	CollisionCheckingTrait,
+	CreatureBase
 };
 
 use pocketmine\entity\Entity;
 
 use pocketmine\block\Block;
-
-use pocketmine\math\AxisAlignedBB;
 
 class Boat extends Entity implements Interactable, Linkable, Lookable, Collidable {
 	use LinkableTrait, CollisionCheckingTrait;
@@ -54,7 +53,7 @@ class Boat extends Entity implements Interactable, Linkable, Lookable, Collidabl
 		//TODO: Implement onCollideWithBlock() method.
 	}
 
-	public function push(AxisAlignedBB $source) : void {
+	public function push(CreatureBase $source) : void {
 		$base = 0.15;
 		$x = ($source->minX + $source->maxX) / 2;
 		$z = ($source->minZ + $source->maxZ) / 2;
