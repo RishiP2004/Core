@@ -253,7 +253,7 @@ class Stats implements Statistics {
 			$users = [];
 			
 			foreach($rows as [
-                "xuid" => $xuid,
+				"xuid" => $xuid,
 				"username" => $name,
 				"coins" => $coins,
 				"balance" => $balance,

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Add-ons to PMMP from TeaSpoon (CortexPE)
+ * Add-ons to Entity AI from
+ */
 declare(strict_types = 1);
 
 namespace core\mcpe;
@@ -26,7 +30,8 @@ use core\mcpe\block\{
     Portal,
     Pumpkin,
     ShulkerBox as ShulkerBoxBlock,
-    SlimeBlock
+    SlimeBlock,
+	Sponge
 };
 use core\mcpe\entity\{
 	MonsterBase,
@@ -56,7 +61,6 @@ use core\mcpe\item\{
 	LingeringPotion,
 	Minecart,
 	Record,
-	Saddle,
 	Trident
 };
 use core\mcpe\tile\{
@@ -146,6 +150,7 @@ class MCPE implements Addon {
         BlockFactory::registerBlock(new Pumpkin(), true);
         BlockFactory::registerBlock(new ShulkerBoxBlock(), true);
         BlockFactory::registerBlock(new SlimeBlock(), true);
+		BlockFactory::registerBlock(new Sponge(), true);
 
 		foreach(self::ENTITIES as $className => $saveNames) {
 			Entity::registerEntity($className, true, $saveNames);
@@ -192,7 +197,6 @@ class MCPE implements Addon {
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WARD, 0, "Music Disc ward"), true);
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_11, 0, "Music Disc 11"), true);
 		ItemFactory::registerItem(new Record(\pocketmine\item\Item::RECORD_WAIT, 0, "Music Disc wait"), true);
-		//ItemFactory::registerItem(new Saddle(), true);
 		ItemFactory::registerItem(new Trident(), true);
 		\pocketmine\item\Item::initCreativeItems();
 

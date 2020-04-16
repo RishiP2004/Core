@@ -146,7 +146,7 @@ class BroadcastListener implements Listener, Broadcasts {
 				if(!empty(self::JOINS["first"])) {
 					foreach(Core::getInstance()->getStats()->getRanks() as $r) {
 						if($r->getValue() === Rank::DEFAULT) {
-							$rank = $r->getName();
+							$rank = $r->getNameTagFormat();
 						}
 					}
 					$message = str_replace([
@@ -156,7 +156,7 @@ class BroadcastListener implements Listener, Broadcasts {
 					], [
 						$player->getName(),
 						date(self::FORMATS["date_time"]),
-						str_replace("{DISPLAY_NAME}", $player->getName(), $rank->getNameTagFormat())
+						str_replace("{DISPLAY_NAME}", $player->getName(), $rank)
 					], self::JOINS["first"]);
 				}
 			} else {

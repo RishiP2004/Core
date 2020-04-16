@@ -172,19 +172,22 @@ class Entity extends \pocketmine\entity\Entity {
     }
     
     public static function skinFromImage(string $path) : string {
-        $img = imagecreatefrompng($path);
-        [$k, $l] = getimagesize($path);
-        $bytes = '';
+		$img = @imagecreatefrompng($path);
+		$bytes = '';
 
-        for($y = 0; $y < $l; ++$y) {
-            for($x = 0; $x < $k; ++$x) {
-                $argb = imagecolorat($img, $x, $y);
-                $bytes .= chr(($argb >> 16) & 0xff).\chr(($argb >> 8) & 0xff).\chr($argb & 0xff).\chr((~($argb >> 24) << 1) & 0xff);
-            }
-        }
-        imagedestroy($img);
-        return $bytes;
-    }
+		for($y = 0; $y < imagesy($img); $y++) {
+			for($x = 0; $x < imagesx($img); $x++) {
+				$rgba = @imagecolorat($img, $x, $y);
+				$a = ((~((int) ($rgba >> 24))) << 1)&0xff;
+				$r = ($rgba >> 16)&0xff;
+				$g = ($rgba >> 8)&0xff;
+				$b = $rgba&0xff;
+				$bytes .= chr($r) . chr($g) . chr($b) . chr($a);
+			}
+		}
+		@imagedestroy($img);
+		return $bytes;
+	}
 
     public static function getCubes(array $geometryData) : array {
         $cubes = [];
