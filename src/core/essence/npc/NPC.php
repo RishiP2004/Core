@@ -19,15 +19,14 @@ use pocketmine\entity\{
 use pocketmine\item\Item;
 
 use pocketmine\utils\UUID;
-
 use pocketmine\network\mcpe\protocol\{
-    AddPlayerPacket,
-    MobArmorEquipmentPacket,
+	AddPlayerPacket,
+	MobArmorEquipmentPacket,
 	PlayerListPacket,
-    PlayerSkinPacket,
-    RemoveActorPacket,
-    MovePlayerPacket,
-    MoveActorAbsolutePacket
+	PlayerSkinPacket,
+	RemoveActorPacket,
+	MovePlayerPacket,
+	MoveActorAbsolutePacket,
 };
 
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -91,7 +90,8 @@ abstract class NPC {
     public function spawnTo(CorePlayer $player) {
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
-		$pk->entries = [PlayerListEntry::createAdditionEntry($this->getUUID(), $this->getEID(), $this->getName(), $this->getSkin())];
+
+		$pk->entries = [PlayerListEntry::createAdditionEntry($this->getUUID(), $this->getEID(), $this->getName(), $this->getSkin()->getSkinData())];
 		$player->dataPacket($pk);
 
         $this->spawnedTo[$player->getName()] = true;

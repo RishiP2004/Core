@@ -11,7 +11,7 @@ use core\mcpe\level\particle\RocketParticle;
 use pocketmine\Player;
 use pocketmine\scheduler\Task;
 
-class ElytraRocketBoostTrackingTask extends Task {
+class ElytraRocketBoostTracking extends Task {
 	protected $player;
 
 	protected $count;
