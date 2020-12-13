@@ -12,24 +12,34 @@ use core\essence\EssenceData;
 use pocketmine\level\Position;
 
 use pocketmine\entity\{
-    Skin,
-    Entity
+	DataPropertyManager,
+	Skin,
+	Entity
 };
 
 use pocketmine\item\Item;
 
+use pocketmine\nbt\tag\{
+	CompoundTag,
+	StringTag
+};
+
 use pocketmine\utils\UUID;
+
 use pocketmine\network\mcpe\protocol\{
 	AddPlayerPacket,
 	MobArmorEquipmentPacket,
 	PlayerListPacket,
-	PlayerSkinPacket,
 	RemoveActorPacket,
 	MovePlayerPacket,
 	MoveActorAbsolutePacket,
+	SetActorDataPacket,
+	AddActorPacket
 };
-
-use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\{
+	SkinAdapterSingleton,
+	PlayerListEntry
+};
 
 use pocketmine\command\ConsoleCommandSender;
 
@@ -43,10 +53,13 @@ abstract class NPC {
 	private $id;
 	private $uuid;
 
+	private $networkProperties;
+
     public function __construct(string $name) {
         $this->name = $name;
 		$this->id = Entity::$entityCount++;
 		$this->uuid = UUID::fromRandom();
+		$this->networkProperties = new DataPropertyManager();
     }
 
     public final function getName() : string {
@@ -88,10 +101,27 @@ abstract class NPC {
     }
 
     public function spawnTo(CorePlayer $player) {
+		$skin1 = $this->getSkin();
+
+		$nbt = new CompoundTag("Skin");
+		$nbt->setString("name", $this->getName());
+		$nbt->setByte("isCustomSkin", 1);
+		$nbt->setTag(\core\utils\Entity::getSkinCompound($skin1));
+
+		$skinTag = $nbt->getCompoundTag("Skin");
+
+		$skin = new Skin(
+			$skinTag->getString("Name"),
+			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"),
+			$skinTag->getByteArray("CapeData", ""),
+			$skinTag->getString("GeometryName", ""),
+			$skinTag->getByteArray("GeometryData", "")
+		);
+
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 
-		$pk->entries = [PlayerListEntry::createAdditionEntry($this->getUUID(), $this->getEID(), $this->getName(), $this->getSkin()->getSkinData())];
+		$pk->entries = [PlayerListEntry::createAdditionEntry($this->getUUID(), $this->getEID(), $this->getName(), SkinAdapterSingleton::get()->toSkinData($skin))];
 		$player->dataPacket($pk);
 
         $this->spawnedTo[$player->getName()] = true;
@@ -134,7 +164,7 @@ abstract class NPC {
         $flags |= 1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG;
         $flags |= 1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG;
         $flags |= 1 << Entity::DATA_FLAG_IMMOBILE;
-        $packet->metadata = [
+        $metadata = [
             Entity::DATA_FLAGS => [
                 Entity::DATA_TYPE_LONG,
                 $flags
@@ -152,8 +182,22 @@ abstract class NPC {
                 $this->getSize()
             ],
         ];
-
+        $packet->metadata = $metadata;
         $player->sendDataPacket($packet);
+
+		$pk1 = new AddActorPacket();
+		$pk1->entityRuntimeId = $this->getEID();
+		$pk1->type = -1;
+		$pk1->position = $this->getPosition()->asVector3();
+		$pk1->pitch = $pk1->headYaw = $pk1->yaw = 0;
+		$pk1->metadata = $metadata;
+
+		$player->sendDataPacket($pk);
+
+		$pk2 = new SetActorDataPacket();
+		$pk2->entityRuntimeId = $this->getEId();
+		$pk2->metadata = $metadata;
+		$player->sendDataPacket($pk);
 
         $maep = new MobArmorEquipmentPacket();
         $maep->entityRuntimeId = $this->getEID();
@@ -182,15 +226,10 @@ abstract class NPC {
 
         $player->sendDataPacket($maep);
 
-		$psp = new PlayerSkinPacket();
-		$psp->uuid = $this->getUUID();
-		$psp->skin = $this->getSkin();
-		$player->sendDataPacket($psp);
-
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_REMOVE;
-		$pk->entries = [PlayerListEntry::createRemovalEntry($this->getUUID())];
-		$player->dataPacket($pk);
+		$pk3 = new PlayerListPacket();
+		$pk3->type = PlayerListPacket::TYPE_REMOVE;
+		$pk3->entries = [PlayerListEntry::createRemovalEntry($this->getUUID())];
+		$player->sendDataPacket($pk3);
     }
 
     public function despawnFrom(CorePlayer $player) {

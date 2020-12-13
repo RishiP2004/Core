@@ -9,11 +9,10 @@ use core\mcpe\block\{
     Portal,
     EndPortal
 };
-
 use pocketmine\entity\{
 	Effect,
-	EffectInstance
-};
+	EffectInstance,
+	Skin};
 
 use pocketmine\item\{
     Item,
@@ -53,6 +52,7 @@ use pocketmine\level\particle\{
     WaterParticle,
 	DestroyBlockParticle
 };
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\{
 	ActorEventPacket,
 	AddActorPacket
@@ -170,8 +170,19 @@ class Entity extends \pocketmine\entity\Entity {
         }
         return null;
     }
+
+	public static function getSkinCompound(Skin $skin) : CompoundTag {
+		$nbt = new CompoundTag("Skin");
+		$nbt->setString("Name", $skin->getSkinId());
+		$nbt->setByteArray("Data", $skin->getSkinData());
+		$nbt->setByteArray("CapeData", $skin->getCapeData());
+		$nbt->setString("GeometryName", $skin->getGeometryName());
+		$nbt->setByteArray("GeometryData", $skin->getGeometryData());
+
+		return $nbt;
+	}
     
-    public static function skinFromImage(string $path) : string {
+    public static function skinFromImage($id, $path) : Skin {
 		$img = @imagecreatefrompng($path);
 		$bytes = '';
 
@@ -186,7 +197,7 @@ class Entity extends \pocketmine\entity\Entity {
 			}
 		}
 		@imagedestroy($img);
-		return $bytes;
+		return new Skin($id, $bytes);
 	}
 
     public static function getCubes(array $geometryData) : array {

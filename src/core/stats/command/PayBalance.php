@@ -18,7 +18,7 @@ class PayBalance extends PluginCommand {
 	private $core;
 
 	public function __construct(Core $core) {
-		parent::__construct("payabalance", $core);
+		parent::__construct("paybalance", $core);
 
 		$this->core = $core;
 

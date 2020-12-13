@@ -38,7 +38,7 @@ class Athie extends NPC {
     }
 
     public function getSkin() : Skin {
-		return new Skin($this->getName(), Entity::skinFromImage(Core::getInstance()->getDataFolder() . "/stats/athie.png") ?? Core::getInstance()->getDataFolder() . "/stats/fallback.png");
+		return Entity::skinFromImage($this->getName(), (Core::getInstance()->getDataFolder() . "/stats/athie.png") ?? Core::getInstance()->getDataFolder() . "/stats/fallback.png");
     }
 
     public function getHeldItem() : Item {

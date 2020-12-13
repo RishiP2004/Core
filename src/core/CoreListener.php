@@ -55,6 +55,7 @@ use pocketmine\network\mcpe\protocol\{
 	ServerSettingsRequestPacket,
 	StartGamePacket
 };
+use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 
 class CoreListener implements Listener {
     private $core;
@@ -301,7 +302,7 @@ class CoreListener implements Listener {
 
 		switch(true) {
 			case $pk instanceof StartGamePacket:
-				$pk->dimension = Level::getDimension($player->getLevel());
+				$pk->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", Level::getDimension($player->getLevel()));
 			break;
 		}
 	}

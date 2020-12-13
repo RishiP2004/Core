@@ -8,7 +8,7 @@ use core\Core;
 
 use core\social\command\Discord;
 
-use discord\{
+use CortexP\DiscordWebHookAPI\{
 	Message,
 	Webhook
 };

@@ -22,7 +22,7 @@ class CurrencyChange extends PluginCommand {
 
 		$this->setPermission("core.stats.command.servers");
 		$this->setAliases(["currencyc", "curc"]);
-		$this->setDescription("Select the Server menu");
+		$this->setDescription("Open the Currency change menu");
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {

@@ -19,12 +19,14 @@ use poggit\libasynql\{
 	libasynql,
 	DataConnector
 };
-use invmenu\InvMenuHandler;
+use muqsit\invmenu\InvMenuHandler;
 use scoreboard\ScoreboardHandler;
 
 use pocketmine\plugin\PluginBase;
 
 use pocketmine\utils\TextFormat;
+
+//VIRIONS REQUIRED: apibossbar, DiscordWebHookAPI, Form, InvMenu, libasynql, Scoreboard, Twitter 
 
 class Core extends PluginBase {
     public static $instance = null;

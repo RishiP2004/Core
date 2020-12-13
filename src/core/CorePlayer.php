@@ -858,7 +858,7 @@ class CorePlayer extends Player {
         }
         return false;
     }
-
+/**
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
 		return false; // TODO
 	}
@@ -940,5 +940,5 @@ class CorePlayer extends Player {
             }
         }
         return $return;
-    }
+    }*/
 }

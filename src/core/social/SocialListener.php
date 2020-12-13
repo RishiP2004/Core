@@ -6,7 +6,7 @@ namespace core\social;
 
 use core\Core;
 
-use discord\Message;
+use CortexP\DiscordWebHookAPI\Message;
 
 use pocketmine\event\Listener;
 

@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace core\anticheat;
 
-use core\broadcast\Broadcasts;
 use core\Core;
 use core\CorePlayer;
 

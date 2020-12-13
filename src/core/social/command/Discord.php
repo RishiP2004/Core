@@ -8,7 +8,7 @@ use core\Core;
 
 use core\social\Access;
 
-use discord\Message;
+use CortexP\DiscordWebHookAPI\Message;
 
 use pocketmine\command\{
     PluginCommand,

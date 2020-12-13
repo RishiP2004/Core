@@ -74,10 +74,10 @@ class Stats implements Statistics {
         $core->saveResource("/stats/fallback.png");
 		$core->saveResource("/stats/humanoid.json");
 
-        $fallbackSkin = new Skin("fallback", Entity::skinFromImage($core->getDataFolder() . "/stats/fallback.png"));
+        $fallbackSkin = Entity::skinFromImage("fallback", $core->getDataFolder() . "/stats/fallback.png");
 
         if(!$fallbackSkin->isValid()) {
-            $fallbackSkin = new Skin('fallback', Entity::skinFromImage($core->getDataFolder() . "/stats/fallback.png"));
+           $fallbackSkin = Entity::skinFromImage("fallback", $core->getDataFolder() . "/stats/fallback.png");
         }
         $this->fallbackSkinData = $fallbackSkin->getSkinData();
         $cubes = Entity::getCubes(json_decode(file_get_contents($core->getDataFolder() . "/stats/humanoid.json"), true)["geometry.humanoid"]);

@@ -35,7 +35,7 @@ class Essence implements EssenceData {
         $this->initFloatingText(new LobbyGreetings());
         $this->initFloatingText(new Parkour());
 		$this->initFloatingText(new TopVoter());
-		$this->initFloatingText(new TopVoter2());
+		//$this->initFloatingText(new TopVoter2());
         $this->initNPC(new Athie());
         $this->initNPC(new Factions());
         $this->initNPC(new Lobby());

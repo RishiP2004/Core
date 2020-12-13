@@ -133,7 +133,7 @@ class WorldListener implements Listener {
 	public function onPlayerExhaust(PlayerExhaustEvent $event) {
 		$player = $event->getPlayer();
 
-		if($player instanceof CorePlayer and $player->isInitialized()) {
+		if($player instanceof CorePlayer) {
 			$area = $player->getArea();
 
 			if(!is_null($area)) {
@@ -297,9 +297,6 @@ class WorldListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			if(!$player->isInitialized()) {
-				$event->setCancelled();
-			}
 			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
 
 			if(!is_null($area)) {
