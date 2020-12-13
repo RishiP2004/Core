@@ -200,7 +200,7 @@ class CoreListener implements Listener {
 				$server = $this->core->getNetwork()->getServerFromIp($this->core->getServer()->getIp());
             
 				if(count($this->core->getServer()->getOnlinePlayers()) - 1 < $this->core->getServer()->getMaxPlayers()) {
-					if($user === null) {
+					if(is_null($user)) {
 						if(!$server->isWhitelisted()) {
 							$this->core->getStats()->registerCoreUser($player);
 						}

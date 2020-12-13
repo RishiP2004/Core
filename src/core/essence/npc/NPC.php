@@ -110,13 +110,7 @@ abstract class NPC {
 
 		$skinTag = $nbt->getCompoundTag("Skin");
 
-		$skin = new Skin(
-			$skinTag->getString("Name"),
-			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"),
-			$skinTag->getByteArray("CapeData", ""),
-			$skinTag->getString("GeometryName", ""),
-			$skinTag->getByteArray("GeometryData", "")
-		);
+		$skin = new Skin($skinTag->getString("Name"), $skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), $skinTag->getByteArray("CapeData", ""), $skinTag->getString("GeometryName", ""), $skinTag->getByteArray("GeometryData", ""));
 
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
@@ -187,7 +181,6 @@ abstract class NPC {
 
 		$pk1 = new AddActorPacket();
 		$pk1->entityRuntimeId = $this->getEID();
-		$pk1->type = -1;
 		$pk1->position = $this->getPosition()->asVector3();
 		$pk1->pitch = $pk1->headYaw = $pk1->yaw = 0;
 		$pk1->metadata = $metadata;

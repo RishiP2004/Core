@@ -74,7 +74,7 @@ class Athie extends NPC {
 	}
 
     public function getCommands() : array {
-        return [];
+		return [];
     }
 
     public function getMessages() : array {
