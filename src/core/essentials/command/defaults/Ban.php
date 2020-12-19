@@ -25,7 +25,7 @@ class Ban extends PluginCommand {
         $this->core = $core;
 
         $this->setPermission("core.essentials.defaults.command.ban");
-        $this->setUsage("<player> [reason] [time]");
+        $this->setUsage("<player> [time] [reason]");
         $this->setDescription("Ban a Player");
     }
 
@@ -51,13 +51,13 @@ class Ban extends PluginCommand {
 			} else {
 				$expires = null;
 
-				if(isset($args[2])) {
-					$expires = Math::expirationStringToTimer($args[2]);
+				if(isset($args[1]) && $args[1] !== "i") {
+					$expires = Math::expirationStringToTimer($args[1]);
 				}
 				$expire = $expires ?? "Not provided";
 				
-				if(isset($args[1])) {
-					$reason = implode(" ", $args[1]);
+				if(isset($args[2])) {
+					$reason = implode(" ", $args[2]);
 				} else {
 					$reason = "Not provided";
 				}

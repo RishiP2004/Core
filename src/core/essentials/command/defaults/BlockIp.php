@@ -23,7 +23,7 @@ class BlockIp extends PluginCommand {
         $this->core = $core;
 
         $this->setPermission("core.essentials.defaults.command.block-ip");
-        $this->setUsage("<player : ip> [reason] [timeFormat]");
+        $this->setUsage("<player : ip> [time] [reason]");
         $this->setDescription("Block an Ip or Player");
     }
 
@@ -48,24 +48,24 @@ class BlockIp extends PluginCommand {
 				$ip = $user->getIp();
 				$player = $this->core->getServer()->getPlayer($user->getName());
 			}
-			$expires = null;
-
-			if(isset($args[2])) {
-				$expires = Math::expirationStringToTimer($args[2]);
-			}
-			$expire = $expires ?? "Not provided";
-			
-			if(isset($args[1])) {
-				$reason = implode(" ", $args[1]);
-			} else {
-				$reason = "Not provided";
-			}
 			$blockList = $this->core->getEssentials()->getIpBlocks();
 
 			if($blockList->isBanned($ip)) {
 				$sender->sendMessage($this->core->getErrorPrefix() . $ip . " is already Ip-Blocked");
 				return false;
 			} else {
+				$expires = null;
+
+				if(isset($args[1]) && $args[1] !== "i") {
+					$expires = Math::expirationStringToTimer($args[1]);
+				}
+				$expire = $expires ?? "Not provided";
+
+				if(isset($args[2])) {
+					$reason = implode(" ", $args[2]);
+				} else {
+					$reason = "Not provided";
+				}
 				$blockList->addBan($ip, $reason, $expires, $sender->getName());
 
 				if($player instanceof CorePlayer) {
