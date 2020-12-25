@@ -7,7 +7,10 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
-use core\stats\Statistics;
+use core\stats\{
+	Stats,
+	Statistics
+};
 
 use pocketmine\command\{
     PluginCommand,
@@ -17,12 +20,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Profile extends PluginCommand {
-    private $core;
+    private $manager;
     
-    public function __construct(Core $core) {
-        parent::__construct("profile", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("profile", Core::getInstance());
        
-        $this->core = $core;
+        $this->manager = $manager;
        
         $this->setPermission("core.stats.command.profile");
         $this->setUsage("[player : simple or s] [global : factions : lobby]");
@@ -31,13 +34,13 @@ class Profile extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(isset($args[0])) {
 			if(strtolower($args[0]) === "simple" or strtolower($args[0]) === "s") {
 				if(!isset($args[1])) {
-					$msg = $this->core->getPrefix() . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"] . $sender->getCoreUser()->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
+					$msg = Core::PREFIX . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"] . $sender->getCoreUser()->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
 				} else {
 					switch(strtolower($args[1])) {
 						case "global":
@@ -45,23 +48,23 @@ class Profile extends PluginCommand {
 						case "factions":
 						case "faction":
 						case "fac":
-							$msg = $this->core->getPrefix() . "Your Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+							$msg = Core::PREFIX . "Your Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 						break;
 						case "lobby":
 						case "hub":
-							$msg = $this->core->getPrefix() . "Your Lobby Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+							$msg = Core::PREFIX . "Your Lobby Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 						break;
 						default:
-							$msg = $this->core->getErrorPrefix() . "Type does not exist";
+							$msg = Core::ERROR_PREFIX . "Type does not exist";
 						break;	
 					}
 				}
 				$sender->sendMessage($msg);
 				return true;
 			}
-			$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			$this->manager->getCoreUser($args[0], function($user) use ($sender, $args) {
 				if(is_null($user)) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+					$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 					return false;
 				} else {	
 					$server = "Offline";
@@ -76,7 +79,7 @@ class Profile extends PluginCommand {
 						if(!is_null($user->getServer())) {
 							$server = $user->getServer()->getName();
 						}
-						$msg = $this->core->getPrefix() . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"]. $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
+						$msg = Core::PREFIX . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"]. $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
 					} else {
 						switch(strtolower($args[1])) {
 							case "global":
@@ -84,14 +87,14 @@ class Profile extends PluginCommand {
 							case "factions":
 							case "faction":
 							case "fac":
-								$msg = $this->core->getPrefix() . $user->getName() . "'s Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+								$msg = Core::PREFIX . $user->getName() . "'s Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 							break;
 							case "lobby":
 							case "hub":
-								$msg = $this->core->getPrefix() . $user->getName() . "'s Lobby Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+								$msg = Core::PREFIX . $user->getName() . "'s Lobby Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 							break;
 							default:
-								$msg = $this->core->getErrorPrefix() . "Profile Type does not exist";
+								$msg = Core::ERROR_PREFIX . "Profile Type does not exist";
 							break;	
 						}
 					}
@@ -100,18 +103,18 @@ class Profile extends PluginCommand {
 						return true;
 					}
 					$sender->sendProfileForm("profile", $user);
-					$sender->sendMessage($this->core->getPrefix() . "Opened " . $user->getName() . "'s Profile menu");
+					$sender->sendMessage(Core::PREFIX . "Opened " . $user->getName() . "'s Profile menu");
 					return true;
 				}
 			});
 			return false;
         } else if(!isset($args[0])) {
             if(!$sender instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+                $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
                 return false;
             } else {
                 $sender->sendProfileForm();
-				$sender->sendMessage($this->core->getPrefix() . "Opened Profile menu");
+				$sender->sendMessage(Core::PREFIX . "Opened Profile menu");
                 return true;
             }
         }

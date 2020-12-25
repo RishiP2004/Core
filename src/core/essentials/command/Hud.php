@@ -5,8 +5,9 @@ declare(strict_types = 1);
 namespace core\essentials\command;
 
 use core\Core;
-
 use core\CorePlayer;
+
+use core\essentials\Essentials;
 
 use pocketmine\command\{
 	PluginCommand,
@@ -14,12 +15,12 @@ use pocketmine\command\{
 };
 
 class Hud extends PluginCommand {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		parent::__construct("hud", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("hud", Core::getInstance());
 
-		$this->core = $core;
+		$this->manager = $manager;
 
 		$this->setPermission("core.essentials.command.hud");
 		$this->setUsage("<type> [value]");
@@ -28,15 +29,15 @@ class Hud extends PluginCommand {
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
 		if(!$sender->hasPermission($this->getPermission())) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 			return false;
 		}
 		if(!$sender instanceof CorePlayer) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
 			return false;
 		}
 		if(count($args) < 1) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /hud " . $this->getUsage());
+			$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /hud " . $this->getUsage());
 			return false;
 		} else {
 			if(isset($args[1])) {
@@ -50,7 +51,7 @@ class Hud extends PluginCommand {
 						$value = false;
 					break;
 					default:
-						$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Boolean");
+						$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Boolean");
 						return false;
 					break;
 				}
@@ -70,7 +71,7 @@ class Hud extends PluginCommand {
 
 					$str = $sender->hasHud($type) === true ? "True" : "False";
 
-					$sender->sendMessage($this->core->getPrefix() . "Set your Popup Hud to " . $str);
+					$sender->sendMessage(Core::PREFIX . "Set your Popup Hud to " . $str);
 					return true;
 				break;
 				case "scoreboard":
@@ -87,11 +88,11 @@ class Hud extends PluginCommand {
 
 					$str = $sender->hasHud($type) === true ? "True" : "False";
 					
-					$sender->sendMessage($this->core->getPrefix() . "Set your Scoreboard Hud to " . $str);
+					$sender->sendMessage(Core::PREFIX . "Set your Scoreboard Hud to " . $str);
 					return true;
 				break;
 				default:
-					$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Hud Type. Types: Scoreboard, Popup");
+					$sender->sendMessage(Core::ERROR_PREFIX . $value . " is not a valid Hud Type. Types: Scoreboard, Popup");
 					return false;
 				break;
 			}

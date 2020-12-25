@@ -6,18 +6,20 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
+use core\network\Network;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
 
 class Add extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Network $manager) {
+		$this->manager = $manager;
+	}
 
-    public function canUse(CommandSender $sender) : bool {
+	public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.network.subcommand.add");
     }
 
@@ -42,11 +44,11 @@ class Add extends SubCommand {
             return false;
         }
         if(!is_numeric($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Numeric");
+            $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not Numeric");
             return false;
         } else {
-            $this->core->getNetwork()->getTimer()->addTime((int) $args[0]);
-            $sender->sendMessage($this->core->getPrefix() . "Added " . $args[0] . " seconds to Restart timer");
+            $this->manager->getTimer()->addTime((int) $args[0]);
+            $sender->sendMessage(Core::ERROR_PREFIX . "Added " . $args[0] . " seconds to Restart timer");
             return true;
         }
     }

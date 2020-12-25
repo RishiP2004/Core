@@ -22,7 +22,7 @@ class Parkour extends FloatingText {
     }
 
     public function getText() : string {
-        return Lobby::getInstance()->getPrefix() . "Parkour coming Soon!";
+        return Lobby::PREFIX . "Parkour coming Soon!";
     }
 
 	public function getUpdateTime() : ?int {

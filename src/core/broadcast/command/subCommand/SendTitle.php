@@ -7,22 +7,26 @@ namespace core\broadcast\command\subCommand;
 use core\Core;
 use core\CorePlayer;
 
+use core\broadcast\Broadcast;
+
 use core\broadcast\Broadcasts;
 
 use core\utils\SubCommand;
 
 use core\broadcast\task\DurationSend;
 
+use pocketmine\Server;
+
 use pocketmine\command\CommandSender;
 
 class SendTitle extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Broadcast $manager) {
+		$this->manager = $manager;
+	}
 
-    public function canUse(CommandSender $sender) : bool {
+	public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.broadcast.command.subcommand.sendtitle");
     }
 
@@ -47,10 +51,10 @@ class SendTitle extends SubCommand {
             return false;
         } else {
             if(isset($args[0]) && strtolower($args[0]) !== "all") {
-                $player = $this->core->getServer()->getPlayer($args[0]);
+                $player = Server::getInstance()->getPlayer($args[0]);
 
 				if(!$player instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+					$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 					return false;
 				}
             } else {
@@ -63,18 +67,18 @@ class SendTitle extends SubCommand {
 			}
             if($sender instanceof CommandSender) {
                 if(isset($args[2])) {
-                    $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "title", $player, Broadcasts::DURATIONS["title"], $this->core->getBroadcast()->broadcastByConsole($sender, $args[1]), $this->core->getBroadcast()->broadcastByConsole($sender, $args[2])), 10);
-                    $sender->sendMessage($this->core->getPrefix() . "Sent SubTitle: " . $args[1] . " to " . $p);
+                    Core::getInstance()->getScheduler()->scheduleRepeatingTask(new DurationSend($this->manager, "title", $player, $this->manager::DURATIONS["title"], $this->manager->broadcastByConsole($sender, $args[1]), $this->manager->broadcastByConsole($sender, $args[2])), 10);
+                    $sender->sendMessage(Core::PREFIX . "Sent SubTitle: " . $args[1] . " to " . $p);
                 }
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "title", $player, Broadcasts::DURATIONS["title"], $this->core->getBroadcast()->broadcastByConsole($sender, $args[1])), 10);
-                $sender->sendMessage($this->core->getPrefix() . "Sent Title: " . $args[0] . " to " . $p);
+                Core::getInstance()->getScheduler()->scheduleRepeatingTask(new DurationSend($this->manager, "title", $player, $this->manager::DURATIONS["title"], $this->manager->broadcastByConsole($sender, $args[1])), 10);
+                $sender->sendMessage(Core::PREFIX . "Sent Title: " . $args[0] . " to " . $p);
             } else if($sender instanceof CorePlayer) {
                 if(isset($args[2])) {
-                    $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "title", $player, Broadcasts::DURATIONS["title"], $sender->broadcast($args[1]), $this->core->getBroadcast()->broadcastByConsole($sender, $args[2])), 10);
-                    $sender->sendMessage($this->core->getPrefix() . "Sent SubTitle: " . $args[1] . " to " . $p);
+                    Core::getInstance()->getScheduler()->scheduleRepeatingTask(new DurationSend($this->manager, "title", $player, $this->manager::DURATIONS["title"], $sender->broadcast($args[1]), $this->manager->broadcastByConsole($sender, $args[2])), 10);
+                    $sender->sendMessage(Core::PREFIX . "Sent SubTitle: " . $args[1] . " to " . $p);
                 }
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "title", $player, Broadcasts::DURATIONS["title"], $sender->broadcast($args[1])), 10);
-                $sender->sendMessage($this->core->getPrefix() . "Sent Title: " . $args[0] . " to " . $p);
+                Core::getInstance()->getScheduler()->scheduleRepeatingTask(new DurationSend($this->manager, "title", $player, Broadcasts::DURATIONS["title"], $sender->broadcast($args[1])), 10);
+                $sender->sendMessage(Core::PREFIX . "Sent Title: " . $args[0] . " to " . $p);
             }
             return true;
         }

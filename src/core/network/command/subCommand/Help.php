@@ -6,6 +6,8 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
+use core\network\Network;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
@@ -13,11 +15,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 
 class Help extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Network $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.network.subcommand.add");
@@ -40,7 +42,7 @@ class Help extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Restarter Help:");
+        $sender->sendMessage(Core::PREFIX . "Restarter Help:");
         $sender->sendMessage(TextFormat::GRAY . "/restarter help");
         $sender->sendMessage(TextFormat::GRAY . "/restarter time");
         $sender->sendMessage(TextFormat::GRAY . "/restarter memory");

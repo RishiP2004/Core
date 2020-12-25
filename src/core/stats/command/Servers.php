@@ -7,18 +7,20 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Stats;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
 class Servers extends PluginCommand {
-    private $core;
+    private $manager;
     
-    public function __construct(Core $core) {
-        parent::__construct("servers", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("servers", Core::getInstance());
        
-        $this->core = $core;
+        $this->manager = $manager;
        
         $this->setPermission("core.stats.command.servers");
 		$this->setAliases(["serverselector", "servermenu"]);
@@ -27,15 +29,15 @@ class Servers extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(!$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
             return false;
         } else {
             $sender->sendServerSelectorForm();
-            $sender->sendMessage($this->core->getPrefix() . "Opened Servers menu");
+            $sender->sendMessage(Core::PREFIX . "Opened Servers menu");
             return true;
         }
     }

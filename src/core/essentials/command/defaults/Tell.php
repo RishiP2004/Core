@@ -7,6 +7,11 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+use pocketmine\Player;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -15,12 +20,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Tell extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("tell", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("tell", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.tell");
         $this->setUsage("<player> [msg]");
@@ -30,21 +35,21 @@ class Tell extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /tell " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /tell " . $this->getUsage());
             return false;
         } else {
-            $player = $this->core->getServer()->getPlayer($args[1]);
+            $player = Server::getInstance()->getPlayer($args[1]);
 
             if(!$player instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[3] . " is not Online");
+                $sender->sendMessage(Core::ERROR_PREFIX . $args[3] . " is not Online");
                 return false;
 			}
 			if($player->hasPermission($this->getPermission() . ".block")) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $player->getName() . " has Messages Blocked");
+				$sender->sendMessage(Core::ERROR_PREFIX . $player->getName() . " has Messages Blocked");
 				return false;
             } else {
 				$sender->sendMessage(TextFormat::GRAY . "[" . $sender->getName() . "] -> [" . $player->getDisplayName() . "]: " . implode(" ", $args));

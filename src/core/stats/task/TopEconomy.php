@@ -77,9 +77,8 @@ class TopEconomy extends AsyncTask implements Statistics {
 	}
 
 	public function onCompletion(Server $server) : void {
-		$core = Core::getInstance();
 		$unit = ucfirst($this->unit);
-		$output = $core->getPrefix() . "Top " . $unit . " (" . $this->page . "/" . $this->max . "):\n";
+		$output = Core::PREFIX . "Top " . $unit . " (" . $this->page . "/" . $this->max . "):\n";
 
 		foreach(unserialize($this->topList) as $place => $list) {
 			$output .= TextFormat::GRAY . $place . ". " .  $list[0] . " - " . Statistics::UNITS[$unit] . $list[1];
@@ -88,7 +87,7 @@ class TopEconomy extends AsyncTask implements Statistics {
 		$player = $server->getPlayerExact($this->sender);
 		
 		if($this->sender === "CONSOLE") {
-			$core->getInstance()->getServer()->getLogger()->info($output);
+			Server::getInstance()->getLogger()->info($output);
 		} else {
 			$player->sendMessage($output);
 		}

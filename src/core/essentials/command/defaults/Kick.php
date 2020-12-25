@@ -7,6 +7,10 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -15,12 +19,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Kick extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("kick", $core);
+	public function __construct(Essentials $manager) {
+        parent::__construct("kick", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.kick");
         $this->setUsage("<all : player> [reason]");
@@ -29,11 +33,11 @@ class Kick extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /kick " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /kick " . $this->getUsage());
             return false;
         } else {
 			$reason = "Not provided";
@@ -42,20 +46,20 @@ class Kick extends PluginCommand {
 				$reason = implode(" ", $args[1]);
 			}      
             if(strtolower($args[0]) === "all") {
-                foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+                foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
                     $onlinePlayer->kick(TextFormat::GRAY . "Kicked by " . $sender->getName() . " for: " . $reason);
-                    $sender->sendMessage($this->core->getPrefix() . "You have Kicked all Online Players for the Reason: " . $reason);
+                    $sender->sendMessage(Core::PREFIX . "You have Kicked all Online Players for the Reason: " . $reason);
                 }
             } else {
-				$player = $this->core->getServer()->getPlayer($args[0]);
+				$player = Server::getInstance()->getPlayer($args[0]);
 
 				if(!$player instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
+					$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not Online");
 					return false;
 				} else {
 					$player->kick(TextFormat::GRAY . "Kicked by " . $sender->getName() . " for: " . $reason);
-					$sender->sendMessage($this->core->getPrefix() . "You have Kicked " . $player->getName(). " for the Reason: " . $reason);
-					$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $player->getName() . " has been Kicked by " . $sender->getName() . " for the Reason: " . $reason);
+					$sender->sendMessage(Core::PREFIX . "You have Kicked " . $player->getName(). " for the Reason: " . $reason);
+					Server::getInstance()->broadcastMessage(Core::PREFIX . $player->getName() . " has been Kicked by " . $sender->getName() . " for the Reason: " . $reason);
 				}
 			}
             return true;

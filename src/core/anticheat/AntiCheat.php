@@ -6,38 +6,39 @@ namespace core\anticheat;
 
 use core\Core;
 
+use core\utils\Manager;
+
 use core\anticheat\cheat\{
 	Cheat,
 	AutoClicker
 };
 use core\anticheat\entity\PrimedTNT;
 
-use core\mcpe\entity\{
-	AnimalBase,
-	MonsterBase,
-};
-use core\mcpe\entity\object\ItemEntity;
+use pocketmine\Server;
 
 use pocketmine\entity\{
-    Entity,
-    Human
+	Animal,
+	Entity,
+	Human,
+	Monster,
+	object\ItemEntity
 };
 
 use pocketmine\level\Explosion;
 
-class AntiCheat implements Cheats {
-    private $core;
+class AntiCheat extends Manager implements Cheats {
+	public static $instance = null;
 
     private $onGoing;
     private $queue;
 
     private $runs = 0;
 	/**
-	 * @var AnimalBase[]
+	 * @var Animal[]
 	 */
     public $animals = [];
 	/**
-	 * @var MonsterBase[]
+	 * @var Monster[]
 	 */
     public $monsters = [];
 	/**
@@ -51,18 +52,22 @@ class AntiCheat implements Cheats {
 
     public $cheats = [], $analyzers = [];
 
-    public function __construct(Core $core) {
-		$this->core = $core;
-		
+    public function init() {
+    	self::$instance = $this;
+
 		Entity::registerEntity(PrimedTNT::class, true);
 
         $this->onGoing = new \SplFixedArray(self::MAX_CONCURRENT_EXPLOSIONS);
         $this->queue = new \SplQueue();
 
         $this->initCheat(new AutoClicker());
-		$core->getServer()->getCommandMap()->register(\core\anticheat\command\Cheat::class, new \core\anticheat\command\Cheat($core));
-		$core->getServer()->getPluginManager()->registerEvents(new AntiCheatListener($core), $core);
+        $this->registerCommand(\core\anticheat\command\Cheat::class, new \core\anticheat\command\Cheat($this));
+        $this->registerListener(new AntiCheatListener($this), Core::getInstance());
     }
+
+    public static function getInstance() : self {
+    	return self::$instance;
+	}
 
 	public function initCheat(Cheat $cheat) {
 		$this->cheats[$cheat->getId()] = $cheat;
@@ -97,7 +102,7 @@ class AntiCheat implements Cheats {
                 $explosion->explodeB();
             }
         } else if($this->runs % mktime(self::LAG_CLEAR_TIME["hours"], self::LAG_CLEAR_TIME["minutes"]) === 0) {
-            foreach($this->core->getServer()->getLevels() as $level) {
+            foreach(Server::getInstance()->getLevels() as $level) {
                 foreach($level->getEntities() as $entity) {
                     if($entity instanceof Human) {
                         continue;
@@ -105,7 +110,7 @@ class AntiCheat implements Cheats {
                     $entity->flagForDespawn();
                 }
             }
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . "Lag has been Cleared");
+            Server::getInstance()->broadcastMessage(Core::PREFIX . "Lag has been Cleared");
         }
     }
 

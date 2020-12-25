@@ -6,7 +6,16 @@ namespace core\anticheat\command\subCommand;
 
 use core\Core;
 
+use core\anticheat\AntiCheat;
+use core\anticheat\cheat\Cheat;
+
+use core\stats\Stats;
+
+use core\social\Social;
+
 use core\utils\SubCommand;
+
+use pocketmine\Server;
 
 use pocketmine\command\{
 	CommandSender,
@@ -14,10 +23,10 @@ use pocketmine\command\{
 };
 
 class Report extends SubCommand {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		$this->core = $core;
+	public function __construct(AntiCheat $manager) {
+		$this->manager = $manager;
 	}
 
 	public function canUse(CommandSender $sender) : bool {
@@ -44,25 +53,25 @@ class Report extends SubCommand {
 		if(count($args) < 2) {
 			return false;
 		}
-		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+		Stats::getInstance()->getCoreUser($args[0], function($user) use ($sender, $args) {
 			if(is_null($user)) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+				$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 				return false;
 			} else {
-				$cheat = $this->core->getAntiCheat()->getCheat(trim($args[1]));
+				$cheat = $this->manager->getCheat(trim($args[1]));
 
-				if(!$cheat instanceof \core\anticheat\cheat\Cheat) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Cheat");
+				if(!$cheat instanceof Cheat) {
+					$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Cheats");
 					return false;
 				} else {
-					if(empty($this->core->getSocial()->getKey() && $this->core->getSocial()->getSecret() && $this->core->getSocial()->getToken() && $this->core->getSocial()->getTokenSecret())) {
-						$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "twitter dm GratonePix " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					if(empty(Social::KEY && Social::SECRET && Social::TOKEN && Social::TOKEN_SECRET)) {
+						Server::getInstance()->dispatchCommand(new ConsoleCommandSender(), "twitter dm GratonePix " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
 					}
-					if(empty($this->core->getSocial()->getWebHookURL())) {
-						$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "discord " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					if(empty(Social::WEB_HOOK_URL)) {
+						Server::getInstance()->dispatchCommand(new ConsoleCommandSender(), "discord " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
 					}
-					$this->core->getServer()->dispatchCommand(new ConsoleCommandSender(), "chat say staff " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
-					$sender->sendMessage($this->core->getPrefix() . "Thanks for Reporting " . $user->getName() . " for " . $cheat->getName());
+					Server::getInstance()->dispatchCommand(new ConsoleCommandSender(), "chat say staff " . $user->getName() . " was Reported by " . $sender->getName() . " for " . $cheat->getName());
+					$sender->sendMessage(Core::PREFIX . "Thanks for Reporting " . $user->getName() . " for " . $cheat->getName());
 					return true;
 				}
 			}

@@ -4,25 +4,27 @@ declare(strict_types = 1);
 
 namespace core\broadcast\command\subCommand;
 
+use core\broadcast\Broadcast;
 use core\Core;
 use core\CorePlayer;
 
-use core\broadcast\Broadcasts;
 
 use core\utils\SubCommand;
 
 use core\broadcast\task\DurationSend;
 
+use pocketmine\Server;
+
 use pocketmine\command\CommandSender;
 
 class SendPopup extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Broadcast $manager) {
+		$this->manager = $manager;
+	}
 
-    public function canUse(CommandSender $sender) : bool {
+	public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.broadcast.subcommand.sendpopup");
     }
 
@@ -47,10 +49,10 @@ class SendPopup extends SubCommand {
             return false;
         } else {
             if(isset($args[1]) && strtolower($args[1]) !== "all") {
-                $player = $this->core->getServer()->getPlayer($args[1]);
+                $player = Server::getInstance()->getPlayer($args[1]);
 
                 if(!$player instanceof CorePlayer) {
-                	$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Player");
+                	$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Player");
                 	return false;
 				}
             } else {
@@ -62,11 +64,11 @@ class SendPopup extends SubCommand {
 				$p = $player->getName();
 			}
             if($sender instanceof CommandSender) {
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, Broadcasts::DURATIONS["popup"], $this->core->getBroadcast()->broadcastByConsole($sender, $args[0])), 10);
-                $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $p);
+				Core::getInstance()->getScheduler()->scheduleRepeatingTask(new DurationSend($this->manager, "popup", $player, $this->manager::DURATIONS["popup"], $this->manager->broadcastByConsole($sender, $args[0])), 10);
+                $sender->sendMessage(Core::PREFIX . "Sent Popup: " . $args[0] . " to " . $p);
             } else if($sender instanceof CorePlayer) {
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, "popup", $player, Broadcasts::DURATIONS["popup"], $sender->broadcast($args[0])), 10);
-                $sender->sendMessage($this->core->getPrefix() . "Sent Popup: " . $args[0] . " to " . $p);
+                Core::getInstance()->getScheduler()->scheduleRepeatingTask(new DurationSend($this->manager, "popup", $player, $this->manager::DURATIONS["popup"], $sender->broadcast($args[0])), 10);
+                $sender->sendMessage(Core::PREFIX . "Sent Popup: " . $args[0] . " to " . $p);
             }
             return true;
         }

@@ -6,7 +6,10 @@ namespace core\social\command;
 
 use core\Core;
 
-use core\social\Access;
+use core\social\{
+	Social,
+	Access
+};
 
 use CortexP\DiscordWebHookAPI\Message;
 
@@ -16,12 +19,12 @@ use pocketmine\command\{
 };
 
 class Discord extends PluginCommand {
-    private $core;
+    private $manager;
     
-    public function __construct(Core $core) {
-        parent::__construct("discord", $core);
+    public function __construct(Social $manager) {
+        parent::__construct("discord", Core::getInstance());
         
-        $this->core = $core;
+        $this->manager = $manager;
         
         $this->setPermission("core.social.discord");
         $this->setUsage("<message> [name]");
@@ -30,11 +33,11 @@ class Discord extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /discord " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /discord " . $this->getUsage());
             return false;
         } else {
 			$msg = new Message();
@@ -49,8 +52,8 @@ class Discord extends PluginCommand {
 			} else {
             	$msg->setUsername(Access::USERNAME);
 			}
-            $this->core->getSocial()->sendToDiscord($msg);
-            $sender->sendMessage($this->core->getPrefix() . "The Message was sent to discord");
+            $this->manager->sendToDiscord($msg);
+            $sender->sendMessage(Core::PREFIX . "The Message was sent to discord");
             return true;
         }
     }

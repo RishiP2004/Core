@@ -6,7 +6,10 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
-use core\network\Networking;
+use core\network\{
+	Network,
+	Networking
+};
 
 use core\utils\{
 	SubCommand,
@@ -18,11 +21,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 
 class Memory extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Network $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.network.subcommand.memory");
@@ -45,7 +48,7 @@ class Memory extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Restarter Memory Info:");
+        $sender->sendMessage(Core::PREFIX . "Restarter Memory Info:");
         $sender->sendMessage(TextFormat::GRAY . "Bytes: " . memory_get_usage(true) . "/" . Math::calculateBytes(Networking::MEMORY_LIMIT));
         $sender->sendMessage(TextFormat::GRAY . "Memory-limit: " . Networking::MEMORY_LIMIT);
 		

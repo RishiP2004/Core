@@ -7,6 +7,8 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -19,12 +21,12 @@ use pocketmine\nbt\JsonNBTParser;
 use pocketmine\nbt\tag\CompoundTag;
 
 class Item extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("item", $core);
+    public function __construct(Essentials $manager) {
+        parent::__construct("item", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
 		$this->setAliases(["give"]);
         $this->setPermission("core.essentials.defaults.command.item");
@@ -34,23 +36,23 @@ class Item extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /item " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /item " . $this->getUsage());
             return false;
         }
 		$player = $sender->getServer()->getPlayer($args[0]);
 
 		if(!$player instanceof CorePlayer) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+			$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 			return true;
 		}
 		try {
 			$item = ItemFactory::fromString($args[1]);
 		} catch(\InvalidArgumentException $exception) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Item");
+			$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Item");
 			return true;
 		}
 		if(!isset($args[2])) {
@@ -68,20 +70,20 @@ class Item extends PluginCommand {
 				$exception = $throwable;
 			}
 			if(!$tags instanceof CompoundTag or $exception !== null) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "Invalid Tag");
+				$sender->sendMessage(Core::ERROR_PREFIX . "Invalid Tag");
 				return true;
 			}
 			$item->setNamedTag($tags);
 		}
 		if(!$player->getInventory()->canAddItem($item)) {
-			$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Gave you the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount());
-			$sender->sendMessage($this->core->getPrefix() . "Gave the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount() . " to " . $player->getName());
+			$player->sendMessage(Core::PREFIX . $sender->getName() . " Gave you the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount());
+			$sender->sendMessage(Core::PREFIX . "Gave the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount() . " to " . $player->getName());
 			$player->getInventory()->getLevel()->dropItem($item, $player);
 			return true;
 		}
 		$player->getInventory()->addItem(clone $item);
-		$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Gave you the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount());
-		$sender->sendMessage($this->core->getPrefix() . "Gave the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount() . " to " . $player->getName());
+		$player->sendMessage(Core::PREFIX . $sender->getName() . " Gave you the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount());
+		$sender->sendMessage(Core::PREFIX . "Gave the Item: " . $item->getName() . ", Id: " . $item->getId() . " Damage: " . $item->getDamage() . " and Count: " . $item->getCount() . " to " . $player->getName());
 		return true;
     }
 }

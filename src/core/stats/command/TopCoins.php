@@ -6,18 +6,24 @@ namespace core\stats\command;
 
 use core\Core;
 
+use core\stats\Stats;
+
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
 class TopCoins extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("topcoins", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("topcoins", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.stats.command.topcoins");
         $this->setUsage("[page]");
@@ -26,32 +32,32 @@ class TopCoins extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
 			$page = $args[0] ?? 1;
 			$banned = [];
 			$ops = [];
 			
-			if(!empty($this->core->getServer()->getNameBans()->getEntries())) {
-				foreach($this->core->getServer()->getNameBans()->getEntries() as $entry) {
-					$this->core->getStats()->getCoreUser($entry->getName(), function($user) use ($banned) {
+			if(!empty(Essentials::getInstance()->getNameBans()->getEntries())) {
+				foreach(Essentials::getInstance()->getNameBans()->getEntries() as $entry) {
+					$this->manager->getCoreUser($entry->getName(), function($user) use ($banned) {
 						if(!is_null($user)) {
 							$banned[] = $user;
 						}
 					});
 				}
 			}
-			if(!empty($this->core->getServer()->getOps()->getAll())) {
-				foreach($this->core->getServer()->getOps()->getAll() as $op) {
-					$this->core->getStats()->getCoreUser((string) $op, function($user) use ($banned) {
+			if(!empty(Server::getInstance()->getOps()->getAll())) {
+				foreach(Server::getInstance()->getOps()->getAll() as $op) {
+					$this->manager->getCoreUser((string) $op, function($user) use ($banned) {
 						if(!is_null($user)) {
 							$ops[] = $user;
 						}
 					});
 				}
 			}
-            $this->core->getStats()->sendTopEconomy("coins", $sender, (int) $page, $ops, $banned);
+            $this->manager->sendTopEconomy("coins", $sender, (int) $page, $ops, $banned);
             return true;
         }
     }

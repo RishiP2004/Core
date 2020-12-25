@@ -7,19 +7,18 @@ namespace core\broadcast\bossbar;
 use core\Core;
 use core\CorePlayer;
 
+use pocketmine\Server;
+
 use pocketmine\level\Level;
 
 class BossBar implements Messages {
-    private $core;
-
     public $bossBar;
 
     private $run = 0;
 
     public $int = 0;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function __construct() {
         $this->bossBar = new \xenialdan\apibossbar\BossBar();
     }
 
@@ -55,19 +54,19 @@ class BossBar implements Messages {
 
         switch($mode) {
             case 0:
-                $worlds = $this->core->getServer()->getLevels();
+                $worlds = Server::getInstance()->getLevels();
             break;
             case 1:
                 foreach($worldNames as $name) {
-                    if(is_null($level = $this->core->getServer()->getLevelByName($name))) {
-                        $this->core->getServer()->getLogger()->error($this->core->getPrefix() . "World provided in BossBar config does not exist");
+                    if(is_null($level = Server::getInstance()->getLevelByName($name))) {
+                        Server::getInstance()->getLogger()->error(Core::PREFIX . "World provided in BossBar config does not exist");
                     } else {
                         $worlds[] = $level;
                     }
                 }
             break;
             case 2:
-                $worlds = $this->core->getServer()->getLevels();
+                $worlds = Server::getInstance()->getLevels();
 
                 foreach($worlds as $world) {
                     if($world instanceof Level) {

@@ -7,18 +7,22 @@ namespace core\essentials\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
 class Fly extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("fly", $core);
+    public function __construct(Essentials $manager) {
+        parent::__construct("fly", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.command.fly");
         $this->setUsage("[value] [player]");
@@ -27,7 +31,7 @@ class Fly extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
 		$value = false;
@@ -43,20 +47,20 @@ class Fly extends PluginCommand {
 					$value = false;
 				break;	
 				default:
-					$sender->sendMessage($this->core->getErrorPrefix() . $value . " is not a valid Boolean");
+					$sender->sendMessage(Core::ERROR_PREFIX . $value . " is not a valid Boolean");
 					return false;
 				break;
 			}
 		}
         if(isset($args[1])) {
             if(!$sender->hasPermission($this->getPermission() . ".other")) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+                $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
                 return false;
             }
-            $player = $this->core->getServer()->getPlayer($args[1]);
+            $player = Server::getInstance()->getPlayer($args[1]);
 
             if(!$player instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Online");
+                $sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not Online");
                 return false;
             } else {
 				if(isset($args[0])) {
@@ -68,13 +72,13 @@ class Fly extends PluginCommand {
 				
 				$str = $player->flying() === true ? "True" : "False";
 				
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " set your Fly mode to " . $str);
-				$sender->sendMessage($this->core->getPrefix() . "Set " . $player->getName() . "'s Fly mode to " . $str);
+				$player->sendMessage(Core::PREFIX . $sender->getName() . " set your Fly mode to " . $str);
+				$sender->sendMessage(Core::PREFIX . "Set " . $player->getName() . "'s Fly mode to " . $str);
 				return true;
             }
         }
         if(!$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
             return false;
         } else {
 			if(isset($args[0])) {
@@ -86,7 +90,7 @@ class Fly extends PluginCommand {
 			
 			$str = $sender->flying() === true ? "True" : "False";
 			
-			$sender->sendMessage($this->core->getPrefix() . "Set your Fly mode to " . $str);
+			$sender->sendMessage(Core::PREFIX . "Set your Fly mode to " . $str);
 			return true;
         }
     }

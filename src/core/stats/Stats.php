@@ -59,8 +59,8 @@ use pocketmine\command\CommandSender;
 
 use pocketmine\entity\Skin;
 
-class Stats implements Statistics {
-    private $core;
+class Stats extends \core\utils\Manager implements Statistics {
+   	public static $instance = null;
 
     public $ranks = [], $coreUsers = [], $allCoreUsers = [], $skinBounds = [];
 
@@ -68,23 +68,23 @@ class Stats implements Statistics {
 	
 	public $user;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function init() {
+    	self::$instance = $this;
 
-        $core->saveResource("/stats/fallback.png");
-		$core->saveResource("/stats/humanoid.json");
+        Core::getInstance()->saveResource("/stats/fallback.png");
+		Core::getInstance()->saveResource("/stats/humanoid.json");
 
-        $fallbackSkin = Entity::skinFromImage("fallback", $core->getDataFolder() . "/stats/fallback.png");
+        $fallbackSkin = Entity::skinFromImage("fallback", Core::getInstance()->getDataFolder() . "/stats/fallback.png");
 
         if(!$fallbackSkin->isValid()) {
-           $fallbackSkin = Entity::skinFromImage("fallback", $core->getDataFolder() . "/stats/fallback.png");
+           $fallbackSkin = Entity::skinFromImage("fallback", Core::getInstance()->getDataFolder() . "/stats/fallback.png");
         }
         $this->fallbackSkinData = $fallbackSkin->getSkinData();
-        $cubes = Entity::getCubes(json_decode(file_get_contents($core->getDataFolder() . "/stats/humanoid.json"), true)["geometry.humanoid"]);
+        $cubes = Entity::getCubes(json_decode(file_get_contents(Core::getInstance()->getDataFolder() . "/stats/humanoid.json"), true)["geometry.humanoid"]);
         $this->skinBounds[self::BOUNDS_64_64] = Entity::getSkinBounds($cubes);
         $this->skinBounds[self::BOUNDS_128_128] = Entity::getSkinBounds($cubes, 2.0);
 
-        $core->getDatabase()->executeGeneric("stats.init");
+        Core::getInstance()->getDatabase()->executeGeneric("stats.init");
         $this->initRank(new Administrator());
         $this->initRank(new Athener());
         $this->initRank(new Eonive());
@@ -97,33 +97,38 @@ class Stats implements Statistics {
         $this->initRank(new Staff());
         $this->initRank(new Universal());
         $this->initRank(new YouTuber());
-		$core->getServer()->getCommandMap()->register(Accounts::class, new Accounts($this->core));
-		$core->getServer()->getCommandMap()->register(AddPlayerPermission::class, new AddPlayerPermission($this->core));
-		$core->getServer()->getCommandMap()->register(BuyRank::class, new BuyRank($this->core));
-		$core->getServer()->getCommandMap()->register(CurrencyChange::class, new CurrencyChange($this->core));
-		$core->getServer()->getCommandMap()->register(DeleteAccount::class, new DeleteAccount($this->core));
-		$core->getServer()->getCommandMap()->register(GiveBalance::class, new GiveBalance($this->core));
-		$core->getServer()->getCommandMap()->register(GiveCoins::class, new GiveCoins($this->core));
-		$core->getServer()->getCommandMap()->register(ListPlayerPermissions::class, new ListPlayerPermissions($this->core));
-		$core->getServer()->getCommandMap()->register(PayBalance::class, new PayBalance($this->core));
-		$core->getServer()->getCommandMap()->register(PayCoins::class, new PayCoins($this->core));
-		$core->getServer()->getCommandMap()->register(PluginPermissions::class, new PluginPermissions($this->core));
-		$core->getServer()->getCommandMap()->register(Profile::class, new Profile($this->core));
-		$core->getServer()->getCommandMap()->register(RankInformation::class, new RankInformation($this->core));
-		$core->getServer()->getCommandMap()->register(Ranks::class, new Ranks($this->core));
-		$core->getServer()->getCommandMap()->register(RemovePlayerPermission::class, new RemovePlayerPermission($this->core));
-		$core->getServer()->getCommandMap()->register(Servers::class, new Servers($this->core));
-		$core->getServer()->getCommandMap()->register(SetBalance::class, new SetBalance($this->core));
-		$core->getServer()->getCommandMap()->register(SetCoins::class, new SetCoins($this->core));
-		$core->getServer()->getCommandMap()->register(SetRank::class, new SetRank($this->core));
-		$core->getServer()->getCommandMap()->register(TakeBalance::class, new TakeBalance($this->core));
-		$core->getServer()->getCommandMap()->register(TakeCoins::class, new TakeCoins($this->core));
-		$core->getServer()->getCommandMap()->register(TopBalance::class, new TopBalance($this->core));
-		$core->getServer()->getCommandMap()->register(TopCoins::class, new TopCoins($this->core));
-		$core->getServer()->getCommandMap()->register(UserInformation::class, new UserInformation($this->core));
+
+		$this->registerCommand(Accounts::class, new Accounts($this));
+		$this->registerCommand(AddPlayerPermission::class, new AddPlayerPermission($this));
+		$this->registerCommand(BuyRank::class, new BuyRank($this));
+		$this->registerCommand(CurrencyChange::class, new CurrencyChange($this));
+		$this->registerCommand(DeleteAccount::class, new DeleteAccount($this));
+		$this->registerCommand(GiveBalance::class, new GiveBalance($this));
+		$this->registerCommand(GiveCoins::class, new GiveCoins($this));
+		$this->registerCommand(ListPlayerPermissions::class, new ListPlayerPermissions($this));
+		$this->registerCommand(PayBalance::class, new PayBalance($this));
+		$this->registerCommand(PayCoins::class, new PayCoins($this));
+		$this->registerCommand(PluginPermissions::class, new PluginPermissions($this));
+		$this->registerCommand(Profile::class, new Profile($this));
+		$this->registerCommand(RankInformation::class, new RankInformation($this));
+		$this->registerCommand(Ranks::class, new Ranks($this));
+		$this->registerCommand(RemovePlayerPermission::class, new RemovePlayerPermission($this));
+		$this->registerCommand(Servers::class, new Servers($this));
+		$this->registerCommand(SetBalance::class, new SetBalance($this));
+		$this->registerCommand(SetCoins::class, new SetCoins($this));
+		$this->registerCommand(SetRank::class, new SetRank($this));
+		$this->registerCommand(TakeBalance::class, new TakeBalance($this));
+		$this->registerCommand(TakeCoins::class, new TakeCoins($this));
+		$this->registerCommand(TopBalance::class, new TopBalance($this));
+		$this->registerCommand(TopCoins::class, new TopCoins($this));
+		$this->registerCommand(UserInformation::class, new UserInformation($this));
     }
 
-    public function getFallbackSkinData() {
+    public static function getInstance() : self {
+    	return self::$instance;
+	}
+
+	public function getFallbackSkinData() {
         return $this->fallbackSkinData;
     }
 
@@ -182,9 +187,9 @@ class Stats implements Statistics {
     }
 
 	public function sendTopEconomy(string $unit, CommandSender $sender, int $page, array $ops, array $banned) {
-		$this->core->getStats()->getAllCoreUsers(function($users) use($unit, $sender, $page, $ops, $banned) {
+		$this->getAllCoreUsers(function($users) use($unit, $sender, $page, $ops, $banned) {
 			if(count($users) === 0) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "No Accounts registered");
+				$sender->sendMessage(Core::ERROR_PREFIX . "No Accounts registered");
 				return;
 			}
 			$allEconomy = [];
@@ -196,7 +201,7 @@ class Stats implements Statistics {
 					$allEconomy[$user->getName()] = $user->getBalance();
 				}
 			}
-			$this->core->getServer()->getAsyncPool()->submitTask(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, self::ADD_OPS, $ops, self::ADD_BANNED, $banned));
+			$this->registerAsyncTank(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, self::ADD_OPS, $ops, self::ADD_BANNED, $banned));
 		});
 	}
 
@@ -234,7 +239,7 @@ class Stats implements Statistics {
     }
 
 	public function getDirectUser(string $string, callable $callback) : void {
-		$this->core->getDatabase()->executeSelect("stats.get", ['key' => $string], function(array $rows) use($callback) {
+    	Core::getInstance()->getDatabase()->executeSelect("stats.get", ['key' => $string], function(array $rows) use($callback) {
 			if(count($rows) === 0) {
 				$callback(null);
 				return;
@@ -249,7 +254,7 @@ class Stats implements Statistics {
 	}
 
 	public function getAllCoreUsers(callable $callback) : void {
-		$this->core->getDatabase()->executeSelect("stats.getAll", [], function(array $rows) use($callback) {
+		Core::getInstance()->getDatabase()->executeSelect("stats.getAll", [], function(array $rows) use($callback) {
 			$users = [];
 			
 			foreach($rows as [
@@ -282,7 +287,7 @@ class Stats implements Statistics {
 		$ip = $player->getAddress();
 		$locale = $player->getLocale();
 		
-        $this->core->getDatabase()->executeInsert("stats.register", [
+       	Core::getInstance()->getDatabase()->executeInsert("stats.register", [
             "xuid" => $player->getXuid(),
             "registerDate" => date("m:d:y h:A"),
             "username" => $name,
@@ -304,7 +309,7 @@ class Stats implements Statistics {
     }
 
     public function unregisterCoreUser(CoreUser $user) {
-        $this->core->getDatabase()->executeChange("stats.delete", [
+        Core::getInstance()->getDatabase()->executeChange("stats.delete", [
             "xuid" => $user->getXuid()
         ]);
         unset($this->coreUsers[$user->getXuid()]);

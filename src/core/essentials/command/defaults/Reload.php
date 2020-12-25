@@ -6,18 +6,22 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
 class Reload extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("reload", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("plugins", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.reload");
         $this->setDescription("Reload the Server");
@@ -25,14 +29,14 @@ class Reload extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
-            $sender->sendMessage($this->core->getPrefix() . "Reloading the Server...");
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " is Reloading the Server...");
-            $this->core->getServer()->reload();
-            $sender->sendMessage($this->core->getPrefix() . "Reloaded the Server");
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Reloaded the Server");
+            $sender->sendMessage(Core::PREFIX . "Reloading the Server...");
+            Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " is Reloading the Server...");
+            Server::getInstance()->reload();
+            $sender->sendMessage(Core::PREFIX . "Reloaded the Server");
+            Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " Reloaded the Server");
             return true;
         }
     }

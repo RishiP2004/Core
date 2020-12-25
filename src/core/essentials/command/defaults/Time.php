@@ -7,7 +7,11 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use core\utils\PocketMine;
+
+use pocketmine\Server;
 
 use pocketmine\command\{
     PluginCommand,
@@ -17,12 +21,12 @@ use pocketmine\command\{
 use pocketmine\level\Level;
 
 class Time extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("time", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("time", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.teleport");
         $this->setUsage("<add <amount> : set <day : night> : start : stop : query>");
@@ -31,17 +35,17 @@ class Time extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /banlist " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /banlist " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {
                 case "add":
                     if(!$sender->hasPermission($this->getPermission() . ".add")){
-                        $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+                        $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
                         return false;
                     }
                     $value = PocketMine::getInteger($sender, $args[1], 0);
@@ -49,12 +53,12 @@ class Time extends PluginCommand {
                     foreach($sender->getServer()->getLevels() as $level) {
                         $level->setTime($level->getTime() + $value);
                     }
-                    $sender->sendMessage($this->core->getPrefix() . "Added " . $value . " to the Time");
-                    $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Added " . $value . " to the Time");
+                    $sender->sendMessage(Core::PREFIX . "Added " . $value . " to the Time");
+                    Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " Added " . $value . " to the Time");
                 break;
                 case "set":
                     if(!$sender->hasPermission($this->getPermission() . ".set")){
-                        $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+                        $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
                         return false;
                     }
                     $value = null;
@@ -76,34 +80,34 @@ class Time extends PluginCommand {
                     foreach($sender->getServer()->getLevels() as $level) {
                         $level->setTime($value);
                     }
-                    $sender->sendMessage($this->core->getPrefix() . "Set the Time to " . $value);
-                    $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Set the Time to " . $value);
+                    $sender->sendMessage(Core::PREFIX . "Set the Time to " . $value);
+                    Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " Set the Time to " . $value);
                 break;
                 case "start":
                     if(!$sender->hasPermission($this->getPermission() . ".start")){
-                        $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+                        $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
                         return false;
                     }
                     foreach($sender->getServer()->getLevels() as $level) {
                         $level->startTime();
                     }
-                    $sender->sendMessage($this->core->getPrefix() . "Started the Time");
-                    $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Started the Time");
+                    $sender->sendMessage(Core::PREFIX . "Started the Time");
+                    Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " Started the Time");
                 break;
                 case "stop":
                     if(!$sender->hasPermission($this->getPermission() . ".stop")){
-                        $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+                        $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
                         return false;
                     }
                     foreach($sender->getServer()->getLevels() as $level) {
                         $level->stopTime();
                     }
-                    $sender->sendMessage($this->core->getPrefix() . "Stopped the Time");
-                    $this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Stopped the Time");
+                    $sender->sendMessage(Core::PREFIX . "Stopped the Time");
+                    Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " Stopped the Time");
                 break;
                 case "query":
                     if(!$sender->hasPermission($this->getPermission() . ".query")){
-                        $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+                        $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
                         return false;
                     }
                     if($sender instanceof CorePlayer) {
@@ -111,7 +115,7 @@ class Time extends PluginCommand {
                     } else {
                         $level = $sender->getServer()->getDefaultLevel();
                     }
-                    $sender->sendMessage($this->core->getPrefix() . "Time: " . $level->getTime());
+                    $sender->sendMessage(Core::PREFIX . "Time: " . $level->getTime());
                 break;
             }
             return true;

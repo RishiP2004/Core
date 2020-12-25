@@ -7,6 +7,8 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Stats;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -15,12 +17,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class UserInformation extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("userinformation", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("userinformation", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setAliases(["userinfo"]);
         $this->setPermission("core.stats.command.userinformation");
@@ -30,16 +32,16 @@ class UserInformation extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(isset($args[0])) {
-			$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+			$this->manager->getCoreUser($args[0], function($user) use ($sender, $args) {
 				if(is_null($user)) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+					$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 					return false;
 				} else {
-					$sender->sendMessage($this->core->getPrefix() . $user->getName() . "'s Information:");
+					$sender->sendMessage(Core::PREFIX . $user->getName() . "'s Information:");
 					$sender->sendMessage(TextFormat::GRAY . "Register Date: " . $user->getRegisterDate());
 					$sender->sendMessage(TextFormat::GRAY . "Ip: " . $user->getIp());
 					$sender->sendMessage(TextFormat::GRAY . "Locale: " . $user->getLocale());
@@ -48,10 +50,10 @@ class UserInformation extends PluginCommand {
             });
         } else {
 			if(!$sender instanceof CorePlayer) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+				$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
 				return false;
 			} else {
-				$sender->sendMessage($this->core->getPrefix() . "Your Information:");
+				$sender->sendMessage(Core::PREFIX . "Your Information:");
 				$sender->sendMessage(TextFormat::GRAY . "Register Date: " . $sender->getCoreUser()->getRegisterDate());
 				$sender->sendMessage(TextFormat::GRAY . "Ip: " . $sender->getCoreUser()->getIp());
 				$sender->sendMessage(TextFormat::GRAY . "Locale: " . $sender->getCoreUser()->getLocale());

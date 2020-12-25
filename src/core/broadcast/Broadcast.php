@@ -6,13 +6,17 @@ namespace core\broadcast;
 
 use core\Core;
 
+use core\utils\Manager;
+
 use core\broadcast\bossbar\BossBar;
 use core\broadcast\task\DurationSend;
 
+use pocketmine\Server;
+
 use pocketmine\command\CommandSender;
 
-class Broadcast implements Broadcasts {
-    private $core;
+class Broadcast extends Manager implements Broadcasts {
+	public static $instance = null;
 
     private $bossBar;
 
@@ -21,15 +25,19 @@ class Broadcast implements Broadcasts {
     const POPUP = 0;
     const TITLE = 1;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-        $this->bossBar = new BossBar($core);
+	public function init() {
+		self::$instance = $this;
+        $this->bossBar = new BossBar();
 
-        $core->getServer()->getCommandMap()->register(\core\broadcast\command\Broadcast::class, new \core\broadcast\command\Broadcast($core));
-		$core->getServer()->getPluginManager()->registerEvents(new BroadcastListener($core), $core);
+        $this->registerCommand(\core\broadcast\command\Broadcast::class, new \core\broadcast\command\Broadcast($this));
+        $this->registerListener(new BroadcastListener($this), Core::getInstance());
     }
 
-    public function getBossBar() : BossBar {
+	public static function getInstance() : self {
+		return self::$instance;
+	}
+
+	public function getBossBar() : BossBar {
         return $this->bossBar;
     }
 
@@ -47,7 +55,7 @@ class Broadcast implements Broadcasts {
                 if($this->length === count($messages) - 1) {
                     $this->length = -1;
                 }
-                $this->core->getServer()->broadcastMessage($this->broadcast($message));
+                Server::getInstance()->broadcastMessage($this->broadcast($message));
             }
         }
         if(self::AUTOS["popup"]) {
@@ -61,7 +69,7 @@ class Broadcast implements Broadcasts {
                 if($this->length === count($popups) - 1) {
                     $this->length = -1;
                 }
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, self::POPUP, null, self::DURATIONS["popup"], $this->broadcast($popup)), 10);
+                $this->registerRepeatingTask(new DurationSend(self::POPUP, null, self::DURATIONS["popup"], $this->broadcast($popup)), 10);
             }
         }
         if(self::AUTOS["title"]) {
@@ -76,7 +84,7 @@ class Broadcast implements Broadcasts {
                 }
                 $subTitle = str_replace(array_shift($title), ":", "");
 
-                $this->core->getScheduler()->scheduleRepeatingTask(new DurationSend($this->core, self::TITLE, null, self::DURATIONS["title"], $this->broadcast($title), $this->broadcast($subTitle)), 10);
+                $this->registerRepeatingTask(new DurationSend(self::TITLE, null, self::DURATIONS["title"], $this->broadcast($title), $this->broadcast($subTitle)), 10);
             }
         }
     }
@@ -88,10 +96,10 @@ class Broadcast implements Broadcasts {
             "{MAX_PLAYERS}",
             "{TOTAL_PLAYERS}"
         ], [
-            $this->core->getPrefix(),
+            Core::PREFIX,
             date(self::FORMATS["date_time"]),
-            $this->core->getServer()->getMaxPlayers(),
-            count($this->core->getServer()->getOnlinePlayers())
+            Server::getInstance()->getMaxPlayers(),
+            count(Server::getInstance()->getOnlinePlayers())
         ], $broadcast);
         return $broadcast;
     }
@@ -104,7 +112,7 @@ class Broadcast implements Broadcasts {
             "{MESSAGE}",
             "{SENDER}"
         ], [
-            $this->core->getPrefix(),
+            Core::PREFIX,
             date(self::FORMATS["date_time"]),
             $broadcast,
             $sender->getName()

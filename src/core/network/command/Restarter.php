@@ -6,6 +6,8 @@ namespace core\network\command;
 
 use core\Core;
 
+use core\network\Network;
+
 use core\utils\SubCommand;
 
 use core\network\command\subCommand\{
@@ -25,26 +27,26 @@ use pocketmine\command\{
 };
 
 class Restarter extends PluginCommand {
-    private $core;
+    private $manager;
 
     private $subCommands = [], $commandObjects = [];
 
-    public function __construct(Core $core) {
-        parent::__construct("restarter", $core);
+    public function __construct(Network $manager) {
+        parent::__construct("restarter", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setAliases(["restart", "serverrestart"]);
         $this->setPermission("core.network.command");
         $this->setDescription("Restart Command");
-        $this->loadSubCommand(new Add($core));
-        $this->loadSubCommand(new Help($core));
-        $this->loadSubCommand(new Memory($core));
-        $this->loadSubCommand(new Set($core));
-        $this->loadSubCommand(new Start($core));
-        $this->loadSubCommand(new Stop($core));
-        $this->loadSubCommand(new Subtract($core));
-        $this->loadSubCommand(new Time($core));
+        $this->loadSubCommand(new Add($manager));
+        $this->loadSubCommand(new Help($manager));
+        $this->loadSubCommand(new Memory($manager));
+        $this->loadSubCommand(new Set($manager));
+        $this->loadSubCommand(new Start($manager));
+        $this->loadSubCommand(new Stop($manager));
+        $this->loadSubCommand(new Subtract($manager));
+        $this->loadSubCommand(new Time($manager));
     }
 
     private function loadSubCommand(SubCommand $subCommand) {
@@ -59,26 +61,26 @@ class Restarter extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(!isset($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /restarter help");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /restarter help");
             return false;
         }
         $subCommand = array_shift($args);
 
         if(!isset($this->subCommands[$subCommand])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /restarter help");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /restarter help");
             return false;
         }
         $command = $this->commandObjects[$this->subCommands[$subCommand]];
 
         if(!$command->canUse($sender)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
         } else {
             if(!$command->execute($sender, $args)) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /restarter" . " " . $command->getName() . " " . $command->getUsage());
+                $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /restarter" . " " . $command->getName() . " " . $command->getUsage());
                 return false;
             } else {
                 return true;

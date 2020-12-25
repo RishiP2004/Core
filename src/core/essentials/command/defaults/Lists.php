@@ -6,6 +6,12 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
+use core\stats\Stats;
+
+use core\network\Network;
+
 use core\stats\rank\Rank;
 
 use pocketmine\command\{
@@ -15,12 +21,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Lists extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("list", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("list", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.list");
         $this->setUsage("[server]");
@@ -29,12 +35,12 @@ class Lists extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
             $ranks = [];
 
-            foreach($this->core->getStats()->getRanks() as $rank) {
+            foreach(Stats::getInstance()->getRanks() as $rank) {
                 if($rank instanceof Rank) {
                     $ranks[] = $rank->getFormat();
                 }
@@ -42,14 +48,14 @@ class Lists extends PluginCommand {
             if(isset($args[0])) {
 				switch(strtolower($args[0])) {
 					case "lobby":
-						$sender->sendMessage($this->core->getPrefix() . "Online Players in Lobby:");
+						$sender->sendMessage(Core::PREFIX . "Online Players in Lobby:");
 						
-						$lobby = $this->core->getNetwork()->getServer("Lobby");
+						$lobby = Network::getInstance()->getServer("Lobby");
 						$slots = $lobby->getMaxSlots();
 						
 						if(!empty($lobby->getOnlinePlayers())) {
 							foreach($lobby->getOnlinePlayers() as $onlinePlayer) {								
-								$this->core->getStats()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {          
+								Stats::getInstance()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
 									$rank = $onlineUser->getRank();
 									$ranks[$rank->getFormat()] = $onlineUser->getName();
 									
@@ -63,14 +69,14 @@ class Lists extends PluginCommand {
 						}
 					break;
 					case "factions":
-					    $sender->sendMessage($this->core->getPrefix() . "Online Players in Factions:");
+					    $sender->sendMessage(Core::PREFIX . "Online Players in Factions:");
 					    
-						$factions = $this->core->getNetwork()->getServer("Factions");
+						$factions = Network::getInstance()->getServer("Factions");
 						$slots = $factions->getMaxSlots();
 						
 						if(!empty($factions->getOnlinePlayers())) {
 							foreach($factions->getOnlinePlayers() as $onlinePlayer) {
-								$this->core->getStats()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
+								Stats::getInstance()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
 									$rank = $onlineUser->getRank();
 									$ranks[$rank->getFormat()] = $onlineUser->getName();
 									
@@ -84,17 +90,17 @@ class Lists extends PluginCommand {
 						}
 					break;
 					default:
-						$sender->sendMessage($this->core->getErrorPrefix() . "No such Server in the Athena Network");
+						$sender->sendMessage(Core::ERROR_PREFIX . "No such Server in the Athena Network");
 					break;
 				}
 			} else {
-				$sender->sendMessage($this->core->getPrefix() . "All Online Players:");
+				$sender->sendMessage(Core::PREFIX . "All Online Players:");
 				
-				$slots = $this->core->getNetwork()->getTotalMaxSlots();
+				$slots = Network::getInstance()->getTotalMaxSlots();
 			
-				if(!empty($this->core->getNetwork()->getTotalOnlinePlayers())) {
-					foreach($this->core->getNetwork()->getTotalOnlinePlayers() as $onlinePlayer) {
-						$this->core->getStats()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
+				if(!empty(Network::getInstance()->getTotalOnlinePlayers())) {
+					foreach(Network::getInstance()->getTotalOnlinePlayers() as $onlinePlayer) {
+						Stats::getInstance()->getCoreUser($onlinePlayer->getName(), function($onlineUser) use ($sender, $ranks, $slots) {
 							$rank = $onlineUser->getRank();
 							$ranks[$rank->getFormat()] = $onlineUser->getName();
 									

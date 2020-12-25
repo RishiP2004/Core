@@ -8,7 +8,6 @@ use core\anticheat\AntiCheat;
 use core\broadcast\Broadcast;
 use core\essence\Essence;
 use core\essentials\Essentials;
-use core\mcpe\MCPE;
 use core\network\Network;
 use core\social\Social;
 use core\stats\Stats;
@@ -37,7 +36,6 @@ class Core extends PluginBase {
     private $broadcast;
     private $essence;
     private $essentials;
-    private $mcpe;
     private $network;
     private $social;
     private $stats;
@@ -71,7 +69,7 @@ class Core extends PluginBase {
                 "mysql" => "mysql/queries.sql"
             ]);
         } catch(\Exception $exception) {
-            $this->getServer()->getLogger()->error($this->getErrorPrefix() . "Core Database connection failed: " . $exception->getMessage());
+            $this->getServer()->getLogger()->error(self::ERROR_PREFIX . "Core Database connection failed: " . $exception->getMessage());
             $this->getServer()->shutdown();
         }
 		if(!InvMenuHandler::isRegistered()) {
@@ -80,21 +78,20 @@ class Core extends PluginBase {
 		if(!ScoreboardHandler::isRegistered()) {
 			ScoreboardHandler::register($this);
 		}
-        $this->anticheat = new AntiCheat($this);
-        $this->broadcast = new Broadcast($this);
-        $this->essence = new Essence($this);
-        $this->essentials = new Essentials($this);
-        $this->mcpe = new MCPE($this);
-        $this->network = new Network($this);
-        $this->social = new Social($this);
-        $this->stats = new Stats($this);
-        $this->vote = new Vote($this);
-        $this->world = new World($this);
+        $this->anticheat = new AntiCheat();
+        $this->broadcast = new Broadcast();
+        $this->essence = new Essence();
+        $this->essentials = new Essentials();
+        $this->network = new Network();
+        $this->social = new Social();
+        $this->stats = new Stats();
+        $this->vote = new Vote();
+        $this->world = new World();
         $this->coreTask = new CoreTask($this);
 
         $this->getServer()->getPluginManager()->registerEvents(new CoreListener($this), $this);
         $this->getScheduler()->scheduleRepeatingTask($this->coreTask, 1);
-        $this->getServer()->getLogger()->notice($this->getPrefix() . "Core Enabled");
+        $this->getServer()->getLogger()->notice(self::PREFIX . "Core Enabled");
     }
 
     public static function getInstance() : Core {
@@ -121,10 +118,6 @@ class Core extends PluginBase {
         return $this->essentials;
     }
 
-    public function getMCPE() : MCPE {
-        return $this->mcpe;
-    }
-
     public function getNetwork() : Network {
         return $this->network;
     }
@@ -149,19 +142,11 @@ class Core extends PluginBase {
         return $this->coreTask;
     }
 
-    public function getPrefix() : string {
-        return self::PREFIX;
-    }
-
-    public function getErrorPrefix() : string {
-        return self::ERROR_PREFIX;
-    }
-
     public function onDisable() {
 		if($this->stats !== null) {
 			$this->getStats()->unloadUsers();
 		}
 		$this->getScheduler()->cancelAllTasks();
-        $this->getServer()->getLogger()->notice($this->getPrefix() . "Core Disabled");
+        $this->getServer()->getLogger()->notice(self::PREFIX. "Core Disabled");
     }
 }

@@ -12,16 +12,6 @@ use core\broadcast\bossbar\Messages;
 use core\essence\npc\NPC;
 use core\essence\floatingtext\FloatingText;
 
-use core\mcpe\network\PlayerNetworkSessionAdapter;
-use core\mcpe\entity\{
-	Linkable,
-	Lookable,
-	Interactable
-};
-use core\mcpe\entity\projectile\FishingHook;
-use core\mcpe\entity\monster\walking\Enderman;
-use core\mcpe\block\Pumpkin;
-
 use core\network\server\Server;
 
 use core\stats\task\PlayerJoin;
@@ -53,14 +43,8 @@ use pocketmine\network\SourceInterface;
 use pocketmine\network\mcpe\protocol\{
 	ActorEventPacket,
 	SetPlayerGameTypePacket,
-	InteractPacket,
-	ActorPickRequestPacket,
-	PlayerInputPacket,
-	InventoryTransactionPacket,
 	ServerSettingsResponsePacket
 };
-
-use pocketmine\entity\Entity;
 
 use pocketmine\level\Level;
 
@@ -97,10 +81,6 @@ class CorePlayer extends Player {
     public $usingElytra = false, $allowCheats = false, $fly = false;
 
     public $hud = [];
-    /** 
-	 * @var null|FishingHook 
-	 */
-    public $fishingHook = null;
 	/** 
 	 * @var int|null
 	 */
@@ -112,8 +92,6 @@ class CorePlayer extends Player {
 
     public function __construct(SourceInterface $interface, string $ip, int $port) {
 		parent::__construct($interface, $ip, $port);
-
-		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
 	}
 
 	public function __destruct() {
@@ -183,7 +161,7 @@ class CorePlayer extends Player {
 
     public function broadcast(string $broadcast) : string {
         $format = Broadcasts::FORMATS["broadcast"];
-        $format = str_replace("{PREFIX}", $this->core->getPrefix(), $format);
+        $format = str_replace("{PREFIX}", $this->core::PREFIX, $format);
         $format = str_replace("{TIME}", date(Broadcasts::FORMATS["date_time"]), $format);
         $format = str_replace("{MESSAGE}", $broadcast, $format);
         $format = str_replace("{SENDER}", $this->getName(), $format);
@@ -226,7 +204,7 @@ class CorePlayer extends Player {
 			"{ONLINE_PLAYERS}",
 			"{TIME}"
 		], [
-			$this->core->getPrefix(),
+			$this->core::PREFIX,
 			$this->getName(),
 			$this->getDisplayName(),
 			$this->core->getServer()->getMaxPlayers(),
@@ -353,25 +331,6 @@ class CorePlayer extends Player {
         $this->interacts["amount"] = 1;
         return;
     }
-
-    public function isFishing() : bool {
-        return $this->fishing;
-    }
-
-    public function setFishing(bool $fishing) {
-        $this->fishing = $fishing;
-
-        if(!$fishing) {
-			if($this->fishingHook instanceof FishingHook) {
-				$this->fishingHook->broadcastEntityEvent(ActorEventPacket::FISH_HOOK_TEASE, null, $this->fishingHook->getViewers());
-
-				if(!$this->fishingHook->isFlaggedForDespawn()) {
-					$this->fishingHook->flagForDespawn();
-				}
-				$this->fishingHook = null;
-			}
-		}
-    }
 	
 	public function flying() : bool {
 		return $this->fly;
@@ -427,7 +386,7 @@ class CorePlayer extends Player {
     }
 
     public function sendServerSelectorForm() {
-        $this->sendMessage($this->core->getPrefix() . "Opened Servers menu");
+        $this->sendMessage($this->core::PREFIX . "Opened Servers menu");
 
         $options = [];
 
@@ -462,30 +421,30 @@ class CorePlayer extends Player {
         $this->sendForm(new MenuForm(TextFormat::GOLD . "Server", TextFormat::LIGHT_PURPLE . "Pick a Server", $options,
 			function(Player $player, Button $button) : void {
 				if($player instanceof CorePlayer) {
-					$server = Core::getInstance()->getNetwork()->getServer($button->getId());
+					$server = $this->core->getNetwork()->getServer($button->getId());
 
 					if($server instanceof Server) {
 						if(!$player->hasPermission("core.network." . $server->getName())) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have Permission to use this Server");
+							$player->sendMessage($this->core::ERROR_PREFIX . "You do not have Permission to use this Server");
 						}
 						if($server->isWhitelisted() && !$player->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . $server->getName() . " is Whitelisted");
+							$player->sendMessage($this->core::ERROR_PREFIX . $server->getName() . " is Whitelisted");
 						} else {
 							$player->transfer($server->getIp() . $server->getPort());
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Transferring to the Server " . $server->getName());
+							$player->sendMessage($this->core::ERROR_PREFIX . "Transferring to the Server " . $server->getName());
 						}
 					}
 				}
 			},
 			function(Player $player) : void {
-				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Servers Form");
+				$player->sendMessage($this->core::PREFIX . "Closed Servers Form");
         }));
     }
 
     public function sendProfileForm(string $key = "profile", CoreUser $user = null) {
         switch($key) {
             case "profile":
-                $this->sendMessage($this->core->getPrefix() . "Opened Profile menu");
+                $this->sendMessage($this->core::PREFIX . "Opened Profile menu");
 
                 $b1 = new Button(TextFormat::GRAY . "Global");
 
@@ -560,7 +519,7 @@ class CorePlayer extends Player {
 				
                 $this->sendForm(new CustomForm(TextFormat::GOLD . $profile . TextFormat::BLUE . " (Global)", $data, function(Player $player) : void {},
 					function(Player $player) : void {
-						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
+						$player->sendMessage($this->core::PREFIX . "Closed Profile menu");
 					}
 				));
             break;
@@ -603,18 +562,18 @@ class CorePlayer extends Player {
 					$amount = $data->getInput()->getValue();
 
 					if(!is_int((int) $amount)) {
-						$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Not a valid Type or valid Amount inputted");
+						$player->sendMessage($this->core::ERROR_PREFIX . "Not a valid Type or valid Amount inputted");
 						return;
 					}
 					$user = $player->getCoreUser();
 
 					if($type === "Coins") {
 						if($amount < Statistics::COIN_VALUE) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "Amount must be greater than 1000 to switch to Coins");
+							$player->sendMessage($this->core::ERROR_PREFIX . "Amount must be greater than 1000 to switch to Coins");
 							return;
 						}
 						if($user->getBalance() < $amount) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
+							$player->sendMessage($this->core::ERROR_PREFIX . "You do not have enough Balance");
 							return;
 						}
 						$user->setCoins($amount / Statistics::COIN_VALUE);
@@ -623,7 +582,7 @@ class CorePlayer extends Player {
 					}
 					if($type === "Balance") {
 						if($user->getCoins() < $amount) {
-							$player->sendMessage(Core::getInstance()->getErrorPrefix() . "You do not have enough Balance");
+							$player->sendMessage($this->core::ERROR_PREFIX . "You do not have enough Balance");
 							return;
 						}
 						$user->setBalance($user->getBalance() * Statistics::COIN_VALUE);
@@ -633,7 +592,7 @@ class CorePlayer extends Player {
 				}
 			},
 			function(Player $player) : void {
-				$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Currency Change menu");
+				$player->sendMessage($this->core::PREFIX . "Closed Currency Change menu");
 			}
 		));
 	}
@@ -643,7 +602,7 @@ class CorePlayer extends Player {
 			new Label(TextFormat::GRAY . "Coming Soon!")
 		];
 		$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
-		$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Settings", $elements, $image,
+		$form = new ServerSettingsForm($this->core::PREFIX . "Athena Settings", $elements, $image,
 			function(Player $player, CustomFormResponse $response) : void {
 
 			}
@@ -658,7 +617,7 @@ class CorePlayer extends Player {
 					new Label(TextFormat::GRAY . "Coming Soon!")
 				];
 				$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
-				$form = new ServerSettingsForm($this->core->getPrefix() . "Athena Factions Settings", $elements, $image,
+				$form = new ServerSettingsForm($this->core::PREFIX . "Athena Factions Settings", $elements, $image,
 					function(Player $player, CustomFormResponse $response) : void {
 
 					}
@@ -682,8 +641,8 @@ class CorePlayer extends Player {
 
             $this->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
         }
-		$this->sendMessage($this->core->getPrefix() . "Thanks for Voting!");
-		$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $this->getName() . " Voted for the Server and got rewarded!");
+		$this->sendMessage($this->core::PREFIX . "Thanks for Voting!");
+		$this->core->getServer()->broadcastMessage($this->core::PREFIX . $this->getName() . " Voted for the Server and got rewarded!");
     }
 
     public function getArea() : ?Area {
@@ -709,7 +668,7 @@ class CorePlayer extends Player {
     public function areaChange(?Area $oldArea, Area $newArea) : bool {
         if(!is_null($oldArea)) {
             if(!$oldArea->allowedLeave() && $this->hasPermission("core.world." . $oldArea->getName() . ".leave")) {
-                $this->sendMessage($this->core->getErrorPrefix() . "You cannot leave this area");
+                $this->sendMessage($this->core::ERROR_PREFIX. "You cannot leave this area");
                 return false;
             }
             if($message = $oldArea->getLeaveNotifications() !== "") {
@@ -752,7 +711,7 @@ class CorePlayer extends Player {
         }
         if(!is_null($newArea)) {
 			if(!$newArea->allowedEnter() && $this->hasPermission("core.world." . $newArea->getName() . ".enter")) {
-				$this->sendMessage($this->core->getErrorPrefix() . "You cannot enter this area");
+				$this->sendMessage($this->core::ERROR_PREFIX . "You cannot enter this area");
                 return false;
 			}
             if($message = $newArea->getEnterNotifications() !== "") {
@@ -846,11 +805,11 @@ class CorePlayer extends Player {
 
             if($isAdmin) {
                 if(!$this->core->getEssentials()->getNameBans()->isBanned($this->getName()) or !$this->core->getEssentials()->getIpBans()->isBanned($this->getName())) {
-                    $message = $this->core->getPrefix() . "You have been Kicked\n" . TextFormat::GRAY . ($reason !== "" ? " Reason: " . $reason : "");
+                    $message = $this->core::PREFIX . "You have been Kicked\n" . TextFormat::GRAY . ($reason !== "" ? " Reason: " . $reason : "");
                 }
             } else {
                 if($reason === "") {
-                    $message = $this->core->getPrefix() . "You have been Kicked";
+                    $message = $this->core::PREFIX . "You have been Kicked";
                 }
             }
             $this->close($event->getQuitMessage(), $message);
@@ -858,87 +817,4 @@ class CorePlayer extends Player {
         }
         return false;
     }
-/**
-	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
-		return false; // TODO
-	}
-
-    public function handleEntityPickRequest(ActorPickRequestPacket $pk) : bool {
-        $target = $this->level->getEntity($pk->entityUniqueId);
-
-        if($target === null) {
-			return false;
-		}
-        if($this->isCreative()) {
-            $item = Item::get(Item::MONSTER_EGG, $target::NETWORK_ID, 64);
-
-            if(!empty($target->getNameTag())) {
-                $item->setCustomName($target->getNameTag());
-            }
-            $this->getInventory()->setItem($pk->hotbarSlot, $item);
-        }
-        return true;
-    }
-
-    public function handleInteract(InteractPacket $pk) : bool {
-        $return = parent::handleInteract($pk);
-
-        switch($pk->action) {
-            case InteractPacket::ACTION_LEAVE_VEHICLE:
-				$target = $this->level->getEntity($pk->target);
-
-				$this->setTargetEntity($target);
-
-				if($target instanceof Linkable) {
-					$target->unlink();
-				}
-            break;
-            case InteractPacket::ACTION_MOUSEOVER:
-				$target = $this->level->getEntity($pk->target);
-
-				$this->setTargetEntity($target);
-				//TODO: Check distance
-				if($target instanceof Lookable) {
-					if($target instanceof Enderman and $this->getArmorInventory()->getHelmet() instanceof Pumpkin) {
-						break;
-					}
-					$target->onPlayerLook($this);
-				} else if($target === null) {
-
-					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
-				}
-				$return = true;
-            break;
-            default:
-                $this->server->getLogger()->debug("Unhandled/unknown interaction type " . $pk->action . "received from " . $this->getName());
-                $return = false;
-        }
-        return $return;
-    }
-
-    public function handleInventoryTransaction(InventoryTransactionPacket $pk) : bool {
-        $return = parent::handleInventoryTransaction($pk);
-
-        if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY) {
-            $type = $pk->trData->actionType;
-
-            switch($type) {
-                case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-					if($this->level instanceof Level) {
-						$target = $this->level->getEntity($pk->trData->entityRuntimeId);
-
-						$this->setTargetEntity($target);
-						$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "");
-
-						if($target instanceof Interactable) {
-							$target->onPlayerInteract($this);
-							return true;
-							break;
-						}
-					}
-                break;
-            }
-        }
-        return $return;
-    }*/
 }

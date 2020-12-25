@@ -8,7 +8,7 @@ use core\Core;
 use core\CorePlayer;
 
 use core\utils\Math;
-
+use core\world\World;
 use pocketmine\event\Listener;
 
 use pocketmine\event\player\{
@@ -16,20 +16,21 @@ use pocketmine\event\player\{
 	PlayerCommandPreprocessEvent,
 	PlayerPreLoginEvent
 };
+use pocketmine\Server;
 
 class EssentialsListener implements Listener {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		$this->core = $core;
+	public function __construct(Essentials $manager) {
+		$this->manager = $manager;
 	}
 
 	public function onPlayerChat(PlayerChatEvent $event) {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$muteList = $this->core->getEssentials()->getNameMutes();
-			$ipMuteList = $this->core->getEssentials()->getIpMutes();
+			$muteList = $this->manager->getNameMutes();
+			$ipMuteList = $this->manager->getIpMutes();
 
 			if($muteList->isBanned($player->getName())) {
 				$entries = $muteList->getEntries();
@@ -38,9 +39,9 @@ class EssentialsListener implements Listener {
 
 				if($entry->getExpires() === null) {
 					if($reason !== null or $reason !== "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted for " . $reason;
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Muted for " . $reason;
 					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted";
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Muted";
 					}
 				} else {
 					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
@@ -50,9 +51,9 @@ class EssentialsListener implements Listener {
 						return;
 					}
 					if($reason !== null or $reason !== "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted for " . $reason . " until " . $expiry;
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Muted for " . $reason . " until " . $expiry;
 					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Muted until " . $expiry;
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Muted until " . $expiry;
 					}
 				}
 				$event->setCancelled(true);
@@ -65,9 +66,9 @@ class EssentialsListener implements Listener {
 
 				if($entry->getExpires() === null) {
 					if($reason != null or $reason != "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted for " . $reason;
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Ip Muted for " . $reason;
 					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted";
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Ip Muted";
 					}
 				} else {
 					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
@@ -77,18 +78,18 @@ class EssentialsListener implements Listener {
 						return;
 					}
 					if($reason !== null or $reason !== "") {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted for " . $reason . " until " . $expiry;
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Ip Muted for " . $reason . " until " . $expiry;
 					} else {
-						$muteMessage = $this->core->getErrorPrefix() . "You are currently Ip Muted until " . $expiry;
+						$muteMessage = Core::ERROR_PREFIX . "You are currently Ip Muted until " . $expiry;
 					}
 				}
 				$event->setCancelled(true);
 				$player->sendMessage($muteMessage);
 			}
-			$muted = $this->core->getWorld()->muted;
+			$muted = World::getInstance()->muted;
 
 			if(!empty($muted)) {
-				$difference = array_diff($this->core->getServer()->getOnlinePlayers(), $muted);
+				$difference = array_diff(Server::getInstance()->getOnlinePlayers(), $muted);
 
 				if(!in_array($player, $difference)) {
 					$difference[] = $player;
@@ -102,8 +103,8 @@ class EssentialsListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$blockList = $this->core->getEssentials()->getNameBlocks();
-			$ipBlockList = $this->core->getEssentials()->getIpBlocks();
+			$blockList = $this->manager->getNameBlocks();
+			$ipBlockList = $this->manager->getIpBlocks();
 
 			if($blockList->isBanned($player->getName())) {
 				$entries = $blockList->getEntries();
@@ -112,9 +113,9 @@ class EssentialsListener implements Listener {
 
 				if($entry->getExpires() === null) {
 					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked for " . $reason;
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Blocked for " . $reason;
 					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked";
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Blocked";
 					}
 				} else {
 					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
@@ -124,9 +125,9 @@ class EssentialsListener implements Listener {
 						return;
 					}
 					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked for " . $reason . " until " . $expiry;
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Blocked for " . $reason . " until " . $expiry;
 					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Blocked until " . $expiry;
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Blocked until " . $expiry;
 					}
 				}
 				$event->setCancelled(true);
@@ -139,9 +140,9 @@ class EssentialsListener implements Listener {
 
 				if($entry->getExpires() == null) {
 					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked for " . $reason;
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Ip Blocked for " . $reason;
 					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked";
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Ip Blocked";
 					}
 				} else {
 					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
@@ -151,9 +152,9 @@ class EssentialsListener implements Listener {
 						return;
 					}
 					if($reason !== null or $reason !== "") {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked for " . $reason . " until " . $expiry;
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Ip Blocked for " . $reason . " until " . $expiry;
 					} else {
-						$blockMessage = $this->core->getErrorPrefix() . "You're currently Ip Blocked until " . $expiry;
+						$blockMessage = Core::ERROR_PREFIX . "You're currently Ip Blocked until " . $expiry;
 					}
 				}
 				$event->setCancelled(true);
@@ -166,8 +167,8 @@ class EssentialsListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$banList = $this->core->getEssentials()->getNameBans();
-			$ipBanList = $this->core->getEssentials()->getIpBans();
+			$banList = $this->manager->getNameBans();
+			$ipBanList = $this->manager->getIpBans();
 
 			if($banList->isBanned($player->getName())) {
 				$entries = $banList->getEntries();
@@ -177,9 +178,9 @@ class EssentialsListener implements Listener {
 					$reason = $entry->getReason();
 
 					if($reason !== null or $reason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned for " . $reason;
+						$banMessage = Core::ERROR_PREFIX . "You are currently Banned for " . $reason;
 					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned";
+						$banMessage = Core::ERROR_PREFIX . "You are currently Banned";
 					}
 				} else {
 					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
@@ -191,9 +192,9 @@ class EssentialsListener implements Listener {
 					$banReason = $entry->getReason();
 
 					if($banReason !== null || $banReason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned for " . $banReason . " until " . $expiry;
+						$banMessage = Core::ERROR_PREFIX . "You are currently Banned for " . $banReason . " until " . $expiry;
 					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Banned until " . $expiry;
+						$banMessage = Core::ERROR_PREFIX . "You are currently Banned until " . $expiry;
 					}
 				}
 				$event->setCancelled(true);
@@ -207,9 +208,9 @@ class EssentialsListener implements Listener {
 					$reason = $entry->getReason();
 
 					if($reason !== null or $reason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned for " . $reason;
+						$banMessage = Core::ERROR_PREFIX . "You are currently Ip Banned for " . $reason;
 					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned";
+						$banMessage = Core::ERROR_PREFIX . "You are currently Ip Banned";
 					}
 				} else {
 					$expiry = Math::expirationTimerToString($entry->getExpires(), new \DateTime());
@@ -221,9 +222,9 @@ class EssentialsListener implements Listener {
 					$banReason = $entry->getReason();
 
 					if($banReason !== null || $banReason !== "") {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned for " . $banReason . " until " . $expiry;
+						$banMessage = Core::ERROR_PREFIX . "You are currently Ip Banned for " . $banReason . " until " . $expiry;
 					} else {
-						$banMessage = $this->core->getErrorPrefix() . "You are currently Ip Banned until " . $expiry;
+						$banMessage = Core::ERROR_PREFIX . "You are currently Ip Banned until " . $expiry;
 					}
 				}
 				$event->setCancelled(true);

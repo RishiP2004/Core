@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace core\anticheat\entity;
 
-use core\Core;
+use core\anticheat\AntiCheat;
 
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
@@ -15,7 +15,7 @@ class PrimedTNT extends \pocketmine\entity\object\PrimedTNT {
 		$this->server->getPluginManager()->callEvent($event = new ExplosionPrimeEvent($this, 4));
 		
         if(!$event->isCancelled()) {
-			Core::getInstance()->getAntiCheat()->addToExplosionQueue(new Explosion($event->getEntity(), $event->getForce(), $event->getEntity()));
+			AntiCheat::getInstance()->addToExplosionQueue(new Explosion($event->getEntity(), $event->getForce(), $event->getEntity()));
 		}
     }
 }

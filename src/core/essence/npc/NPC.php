@@ -9,6 +9,8 @@ use core\CorePlayer;
 
 use core\essence\EssenceData;
 
+use core\network\Network;
+
 use pocketmine\level\Position;
 
 use pocketmine\entity\{
@@ -124,7 +126,7 @@ abstract class NPC {
         $nameTag = $this->getNameTag();
 
         if($this->getName() === "Factions" or $this->getName() === "Lobby") {
-            $server = Core::getInstance()->getNetwork()->getServer($this->getName());
+            $server = Network::getInstance()->getServer($this->getName());
 
             if(!$server->isOnline()) {
                 $onlinePlayers = "";

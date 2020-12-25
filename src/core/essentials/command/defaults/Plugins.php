@@ -6,6 +6,8 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -14,12 +16,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Plugins extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("plugins", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("plugins", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.plugins");
         $this->setDescription("See the Server's Plugins");
@@ -27,7 +29,7 @@ class Plugins extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
             $list = "";
@@ -39,7 +41,7 @@ class Plugins extends PluginCommand {
                 $list .= $plugin->isEnabled() ? TextFormat::GREEN : TextFormat::RED;
                 $list .= $plugin->getDescription()->getFullName();
             }
-            $sender->sendMessage($this->core->getPrefix() . "Plugins (" . count($plugins) . "): " . $list);
+            $sender->sendMessage(Core::PREFIX . "Plugins (" . count($plugins) . "): " . $list);
             return true;
         }
     }

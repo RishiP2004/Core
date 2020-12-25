@@ -21,22 +21,22 @@ use pocketmine\command\{
 };
 
 class Broadcast extends PluginCommand {
-    private $core;
+	private $manager;
 
     private $subCommands = [], $commandObjects = [];
 
-    public function __construct(Core $core) {
-        parent::__construct("broadcast", $core);
+    public function __construct(\core\broadcast\Broadcast $manager) {
+        parent::__construct("broadcast", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setAliases(["bc"]);
         $this->setPermission("core.broadcast.command");
         $this->setDescription("Broadcast Command");
-        $this->loadSubCommand(new Help($core));
-        $this->loadSubCommand(new SendMessage($core));
-        $this->loadSubCommand(new SendPopup($core));
-        $this->loadSubCommand(new SendTitle($core));
+        $this->loadSubCommand(new Help($manager));
+        $this->loadSubCommand(new SendMessage($manager));
+        $this->loadSubCommand(new SendPopup($manager));
+        $this->loadSubCommand(new SendTitle($manager));
     }
 
     private function loadSubCommand(SubCommand $subCommand) {
@@ -51,26 +51,26 @@ class Broadcast extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(!isset($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /broadcast help");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /broadcast help");
             return false;
         }
         $subCommand = array_shift($args);
 
         if(!isset($this->subCommands[$subCommand])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /broadcast help");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /broadcast help");
             return false;
         }
         $command = $this->commandObjects[$this->subCommands[$subCommand]];
 
         if(!$command->canUse($sender)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
         } else {
             if(!$command->execute($sender, $args)) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /broadcast " . $command->getName() . " " . $command->getUsage());
+                $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /broadcast " . $command->getName() . " " . $command->getUsage());
                 return false;
             } else {
                 return true;

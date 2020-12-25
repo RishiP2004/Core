@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace core\anticheat\command;
 
+use core\anticheat\AntiCheat;
 use core\Core;
 
 use core\utils\SubCommand;
@@ -20,21 +21,21 @@ use pocketmine\command\{
 };
 
 class Cheat extends PluginCommand {
-	private $core;
+	private $manager;
 
 	private $subCommands = [], $commandObjects = [];
 
-	public function __construct(Core $core) {
-		parent::__construct("cheat", $core);
+	public function __construct(AntiCheat $manager) {
+		parent::__construct("cheat", Core::getInstance());
 
-		$this->core = $core;
+		$this->manager = $manager;
 
 		$this->setAliases(["hack"]);
 		$this->setPermission("core.chat.command");
 		$this->setDescription("Cheat Command");
-		$this->loadSubCommand(new Help($core));
-		$this->loadSubCommand(new Report($core));
-		$this->loadSubCommand(new History($core));
+		$this->loadSubCommand(new Help($manager));
+		$this->loadSubCommand(new Report($manager));
+		$this->loadSubCommand(new History($manager));
 	}
 
 	private function loadSubCommand(SubCommand $subCommand) {
@@ -49,26 +50,26 @@ class Cheat extends PluginCommand {
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
 		if(!$sender->hasPermission($this->getPermission())) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 			return false;
 		}
 		if(!isset($args[0])) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /cheat help");
+			$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /cheat help");
 			return false;
 		}
 		$subCommand = array_shift($args);
 
 		if(!isset($this->subCommands[$subCommand])) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /cheat help");
+			$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /cheat help");
 			return false;
 		}
 		$command = $this->commandObjects[$this->subCommands[$subCommand]];
 
 		if(!$command->canUse($sender)) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 		} else {
 			if(!$command->execute($sender, $args)) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /cheat " . $command->getName() . " " . $command->getUsage());
+				$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /cheat " . $command->getName() . " " . $command->getUsage());
 				return false;
 			} else {
 				return true;

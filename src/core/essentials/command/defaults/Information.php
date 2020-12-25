@@ -6,6 +6,8 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -18,12 +20,12 @@ use pocketmine\utils\TextFormat;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class Information extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("information", $core);
+	public function __construct(Essentials $manager) {
+        parent::__construct("information", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
 		$this->setAliases(["info", "about"]);
 		$this->setUsage("[plugin]");
@@ -33,7 +35,7 @@ class Information extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
 			if(isset($args[0])) {
@@ -50,7 +52,7 @@ class Information extends PluginCommand {
                     if(stripos($plugin->getName(), $pluginName) !== false) {
                         $description = $plugin->getDescription();
 
-                        $sender->sendMessage($this->core->getPrefix() . $description->getDescription() . " Information:");
+                        $sender->sendMessage(Core::PREFIX . $description->getDescription() . " Information:");
                         $sender->sendMessage(TextFormat::GRAY . "Version " . $description->getVersion());
 
                         if($description->getDescription() !== "") {
@@ -70,11 +72,11 @@ class Information extends PluginCommand {
                     }
                 }
                 if(!$found) {
-                    $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Plugin");
+                    $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Plugin");
                     return true;
                 }
 			}
-			$sender->sendMessage($this->core->getPrefix() . "Server Info:");
+			$sender->sendMessage(Core::PREFIX . "Server Info:");
 			$sender->sendMessage(TextFormat::GRAY . "Name: " . $sender->getServer()->getName());
 			$sender->sendMessage(TextFormat::GRAY . "PocketMine Version: " . $sender->getServer()->getPocketMineVersion());
 			$sender->sendMessage(TextFormat::GRAY . "Minecraft Version: " . $sender->getServer()->getVersion());

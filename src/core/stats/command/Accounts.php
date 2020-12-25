@@ -5,7 +5,8 @@ declare(strict_types = 1);
 namespace core\stats\command;
 
 use core\Core;
-use core\CoreUser;
+
+use core\stats\Stats;
 
 use pocketmine\command\{
     PluginCommand,
@@ -15,12 +16,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Accounts extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("accounts", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("accounts", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setAliases(["accs"]);
         $this->setPermission("core.stats.command.accounts");
@@ -29,11 +30,11 @@ class Accounts extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
-			$this->core->getStats()->getAllCoreUsers(function($users) use($sender) {
-				$sender->sendMessage($this->core->getPrefix() . "Total Accounts Registered (x" . count($users) . ")");
+			$this->manager->getAllCoreUsers(function($users) use($sender) {
+				$sender->sendMessage(Core::PREFIX . "Total Accounts Registered (x" . count($users) . ")");
 				
 				$allUsers = [];
 				

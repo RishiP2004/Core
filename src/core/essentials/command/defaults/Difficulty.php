@@ -7,6 +7,10 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -15,12 +19,12 @@ use pocketmine\command\{
 use pocketmine\level\Level;
 
 class Difficulty extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("difficulty", $core);
+	public function __construct(Essentials $manager) {
+        parent::__construct("difficulty", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.difficulty");
         $this->setUsage("<difficulty>");
@@ -29,11 +33,11 @@ class Difficulty extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /difficulty " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /difficulty " . $this->getUsage());
             return false;
         }
 		$difficulty = Level::getDifficultyFromString($args[0]);
@@ -41,12 +45,12 @@ class Difficulty extends PluginCommand {
 		if($sender->getServer()->isHardcore()) {
 			$difficulty = Level::DIFFICULTY_HARD;
 		}
-		if($difficulty === $this->core->getServer()->getDifficulty()) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $difficulty . " is already the Server's Difficulty");
+		if($difficulty === Server::getInstance()->getDifficulty()) {
+			$sender->sendMessage(Core::ERROR_PREFIX . $difficulty . " is already the Server's Difficulty");
 			return false;
 		}
 		if($difficulty === -1) {
-			$sender->sendMessage($this->core->getErrorPrefix() . $difficulty . " is not a valid Difficulty");
+			$sender->sendMessage(Core::ERROR_PREFIX . $difficulty . " is not a valid Difficulty");
             return false;
 		} else {
 			if($sender instanceof CorePlayer) {
@@ -66,8 +70,8 @@ class Difficulty extends PluginCommand {
 					}
 				}
 			}
-			$sender->sendMessage($this->core->getPrefix() . $difficulty . " is now the Server's Difficulty");
-            $this->core->getServer()->broadcastMessage($this->core->getPrefix() . "The Server's Difficulty has been set to " . $difficulty . " by " . $sender->getName());
+			$sender->sendMessage(Core::PREFIX . $difficulty . " is now the Server's Difficulty");
+            Server::getInstance()->broadcastMessage(Core::PREFIX . "The Server's Difficulty has been set to " . $difficulty . " by " . $sender->getName());
 			return true;
 		}
     }

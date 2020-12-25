@@ -52,10 +52,10 @@ use pocketmine\inventory\{
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 
 class WorldListener implements Listener {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		$this->core = $core;
+	public function __construct(World $manager) {
+		$this->manager = $manager;
 	}
 
 	public function onPlayerBedEnter(PlayerBedEnterEvent $event) {
@@ -67,7 +67,7 @@ class WorldListener implements Listener {
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.playerbedenter")) {
 					if(!$area->sleep()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Sleep in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot Sleep in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -84,7 +84,7 @@ class WorldListener implements Listener {
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.playerchat")) {
 					if(!$area->sendChat()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Chat in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot Chat in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -104,7 +104,7 @@ class WorldListener implements Listener {
 
 					if(substr($command, 0, 1) === "/") {
 						if(in_array($command, $area->getBlockedCommands())) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot use " . $command . " in the Area: " . $area->getName());
+							$player->sendMessage(Core::ERROR_PREFIX . "You cannot use " . $command . " in the Area: " . $area->getName());
 							$event->setCancelled();
 						}
 					}
@@ -122,7 +122,7 @@ class WorldListener implements Listener {
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.playerdropitem")) {
 					if(!$area->itemDrop()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Drop Items in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot Drop Items in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -156,19 +156,19 @@ class WorldListener implements Listener {
 				if(!$player->hasPermission("core.world.area.playerinteract")) {
 					if(!$area->usable()) {
 						if(in_array($event->getBlock()->getId(), Entity::USABLES)) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot Interact with " . $event->getBlock()->getName() . " in the Area: " . $area->getName());
+							$player->sendMessage(Core::ERROR_PREFIX . "You cannot Interact with " . $event->getBlock()->getName() . " in the Area: " . $area->getName());
 							$event->setCancelled();
 						}
 					}
 					if(!$area->consume()) {
 						if(in_array($event->getBlock()->getId(), Entity::CONSUMABLES)) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot Use " . $event->getItem()->getName() . " in the Area: " . $area->getName());
+							$player->sendMessage(Core::ERROR_PREFIX . "You cannot Use " . $event->getItem()->getName() . " in the Area: " . $area->getName());
 							$event->setCancelled();
 						}
 					}
 					if(!$area->editable()) {
 						if(in_array($event->getBlock()->getId(), Entity::OTHER)) {
-							$player->sendMessage($this->core->getErrorPrefix() . "You cannot Edit the Area: " . $area->getName());
+							$player->sendMessage(Core::ERROR_PREFIX . "You cannot Edit the Area: " . $area->getName());
 							$event->setCancelled();
 						}
 					}
@@ -201,7 +201,7 @@ class WorldListener implements Listener {
 			return;
 		}
 		if($event instanceof EntityDamageByEntityEvent) {
-			$area = $this->core->getWorld()->getAreaFromPosition($entity);
+			$area = $this->manager->getAreaFromPosition($entity);
 			$damager = $event->getDamager();
 
 			if($damager instanceof CorePlayer) {
@@ -212,13 +212,13 @@ class WorldListener implements Listener {
 					if(!$damager->hasPermission("core.world.area.entitydamage")) {
 						if($entity instanceof CorePlayer) {
 							if(!$area->pvp()) {
-								$damager->sendMessage($this->core->getErrorPrefix() . "You cannot PvP in the Area: " . $area->getName());
+								$damager->sendMessage(Core::ERROR_PREFIX . "You cannot PvP in the Area: " . $area->getName());
 								$event->setCancelled();
 							}
 						}
 						if($entity instanceof Entity) {
 							if(!$area->entityDamage()) {
-								$damager->sendMessage($this->core->getErrorPrefix() . "You cannot damage Entities in the Area: " . $area->getName());
+								$damager->sendMessage(Core::ERROR_PREFIX . "You cannot damage Entities in the Area: " . $area->getName());
 								$event->setCancelled();
 							}
 						}
@@ -230,7 +230,7 @@ class WorldListener implements Listener {
 
 	public function onEntityExplode(EntityExplodeEvent $event) {
 		foreach($event->getBlockList() as $block) {
-			$area = $this->core->getWorld()->getAreaFromPosition($block);
+			$area = $this->manager->getAreaFromPosition($block);
 
 			if(!is_null($area)) {
 				if(!$area->explosion()) {
@@ -245,12 +245,12 @@ class WorldListener implements Listener {
 		$player = $entity->shootingEntity;
 
 		if($player instanceof CorePlayer) {
-			$area = $this->core->getWorld()->getAreaFromPosition($entity);
+			$area = $this->manager->getAreaFromPosition($entity);
 
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.projectilelaunch")) {
 					if(!$area->projectile()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot use Projectiles in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot use Projectiles in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -263,12 +263,12 @@ class WorldListener implements Listener {
 		$player = $entity->shootingEntity;
 
 		if($player instanceof CorePlayer) {
-			$area = $this->core->getWorld()->getAreaFromPosition($entity);
+			$area = $this->manager->getAreaFromPosition($entity);
 
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.projectilelaunch")) {
 					if(!$area->projectile()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot use Projectiles in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot use Projectiles in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -280,12 +280,12 @@ class WorldListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
+			$area = $this->manager->getAreaFromPosition($event->getBlock());
 
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.blockbreak")) {
 					if(!$area->editable()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Break Blocks in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot Break Blocks in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -297,12 +297,12 @@ class WorldListener implements Listener {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$area = $this->core->getWorld()->getAreaFromPosition($event->getBlock());
+			$area = $this->manager->getAreaFromPosition($event->getBlock());
 
 			if(!is_null($area)) {
 				if(!$player->hasPermission("core.world.area.blockplace")) {
 					if(!$area->editable()) {
-						$player->sendMessage($this->core->getErrorPrefix() . "You cannot Place Blocks in the Area: " . $area->getName());
+						$player->sendMessage(Core::ERROR_PREFIX . "You cannot Place Blocks in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -319,7 +319,7 @@ class WorldListener implements Listener {
 			if($area->getName() !== "") {
 				if(!$viewer->hasPermission("core.world.area.inventorypickuparrow")) {
 					if(!$area->itemPickup()) {
-						$viewer->sendMessage($this->core->getErrorPrefix() . "You cannot Pickup Items in the Area: " . $area->getName());
+						$viewer->sendMessage(Core::ERROR_PREFIX . "You cannot Pickup Items in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -336,7 +336,7 @@ class WorldListener implements Listener {
 			if(!is_null($area)) {
 				if(!$viewer->hasPermission("core.world.area.inventorypickupitem")) {
 					if(!$area->itemPickup()) {
-						$viewer->sendMessage($this->core->getErrorPrefix() . "You cannot Pickup Items in the Area: " . $area->getName());
+						$viewer->sendMessage(Core::ERROR_PREFIX . "You cannot Pickup Items in the Area: " . $area->getName());
 						$event->setCancelled();
 					}
 				}
@@ -359,7 +359,7 @@ class WorldListener implements Listener {
 								$inventory = $action->getInventory();
 
 								if($inventory instanceof PlayerInventory or $inventory instanceof PlayerCursorInventory) {
-									$source->sendMessage($this->core->getErrorPrefix() . "You cannot do Transactions in your Inventory in the Area: " . $area->getName());
+									$source->sendMessage(Core::ERROR_PREFIX . "You cannot do Transactions in your Inventory in the Area: " . $area->getName());
 									$event->setCancelled();
 								}
 							}
@@ -372,7 +372,7 @@ class WorldListener implements Listener {
 
 	public function onChunkLoad(ChunkLoadEvent $event) {
 		$chunk = $event->getChunk();
-		$area = $this->core->getWorld()->getAreaFromPosition(new Position($chunk->getX(), $chunk->getMaxY(), $chunk->getZ()));
+		$area = $this->manager->getAreaFromPosition(new Position($chunk->getX(), $chunk->getMaxY(), $chunk->getZ()));
 
 		if(!is_null($area)) {
 			if(!$area->entitySpawn()) {

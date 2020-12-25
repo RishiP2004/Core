@@ -35,27 +35,25 @@ class Vote extends AsyncTask {
 		$player = $server->getPlayer($this->username);
 
 		if($player instanceof CorePlayer) {
-			$core = Core::getInstance();
-
-			if($player === null or $core === null) {
+			if($player === null or Core::getInstance() === null) {
 				return;
 			}
 			switch($result) {
 				case "0":
-					$core->getVote()->removeFromQueue($player->getCoreUser());
-					$player->sendMessage($core->getErrorPrefix() . "You have not Voted yet");
+					\core\vote\Vote::getInstance()->removeFromQueue($player->getCoreUser());
+					$player->sendMessage(Core::ERROR_PREFIX . "You have not Voted yet");
 				return;
 				case "1":
-					$core->getVote()->removeFromQueue($player->getCoreUser());
+					\core\vote\Vote::getInstance()->removeFromQueue($player->getCoreUser());
 					$player->claimVote();
 				return;
 				case "2":
-					$core->getVote()->removeFromQueue($player->getCoreUser());
-					$player->sendMessage($core->getErrorPrefix() . "You have already Voted today");
+					\core\vote\Vote::getInstance()->removeFromQueue($player->getCoreUser());
+					$player->sendMessage(Core::ERROR_PREFIX . "You have already Voted today");
 				return;
 				default:
-					$core->getVote()->removeFromQueue($player->getCoreUser());
-					$player->sendMessage($core->getErrorPrefix() . "An error occurred whilst trying to Vote");
+					\core\vote\Vote::getInstance()->removeFromQueue($player->getCoreUser());
+					$player->sendMessage(Core::ERROR_PREFIX . "An error occurred whilst trying to Vote");
 				return;
 			}
 		}

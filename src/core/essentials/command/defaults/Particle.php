@@ -7,10 +7,14 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use core\utils\{
     PocketMine,
     Entity
 };
+
+use pocketmine\Server;
 
 use pocketmine\command\{
     PluginCommand,
@@ -24,12 +28,12 @@ use pocketmine\level\Level;
 use pocketmine\utils\Random;
 
 class Particle extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("particle", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("particle", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.particle");
         $this->setUsage("<name> [x] [y] [z] [xd] [yd] [zd] [count] [data]");
@@ -38,11 +42,11 @@ class Particle extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1 && !$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /particle " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /particle " . $this->getUsage());
             return false;
         }
         if($sender instanceof CorePlayer && count($args) < 1) {
@@ -50,7 +54,7 @@ class Particle extends PluginCommand {
 
             $position = new Vector3(PocketMine::getRelativeDouble($sender->getX(), $sender, $args[1]), PocketMine::getRelativeDouble($sender->getY(), $sender, $args[2], 0, Level::Y_MAX), PocketMine::getRelativeDouble($sender->getZ(), $sender, $args[3]));
         } else {
-            $level = $this->core->getServer()->getLevelManager()->getDefaultLevel();
+            $level = Server::getInstance()->getLevelManager()->getDefaultLevel();
             $position = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
         }
         $name = strtolower($args[0]);
@@ -62,10 +66,10 @@ class Particle extends PluginCommand {
         $particle = Entity::getParticle($name, $data);
 
         if($particle === null) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $name . " is not a valid Particle");
+            $sender->sendMessage(Core::ERROR_PREFIX . $name . " is not a valid Particle");
             return true;
         }
-        $sender->sendMessage($this->core->getPrefix() . "Playing Particle " . $name . " for " . $count . " times");
+        $sender->sendMessage(Core::PREFIX . "Playing Particle " . $name . " for " . $count . " times");
 
         $random = new Random((int) (microtime(true) * 1000) + mt_rand());
 

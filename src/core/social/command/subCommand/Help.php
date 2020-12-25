@@ -6,6 +6,8 @@ namespace core\social\command\subCommand;
 
 use core\Core;
 
+use core\social\Social;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
@@ -13,11 +15,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 
 class Help extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Social $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.social.twitter.help");
@@ -40,7 +42,7 @@ class Help extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "TwitterSend Help:");
+        $sender->sendMessage(Core::PREFIX  . "TwitterSend Help:");
         $sender->sendMessage(TextFormat::GRAY . "/twitter help");
         $sender->sendMessage(TextFormat::GRAY . "/twitter follow <username>");
         $sender->sendMessage(TextFormat::GRAY . "/twitter directmessage <user> <message>");

@@ -7,18 +7,20 @@ namespace core\stats\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\stats\Stats;
+
 use pocketmine\command\{
 	PluginCommand,
 	CommandSender
 };
 
 class CurrencyChange extends PluginCommand {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		parent::__construct("currencychange", $core);
+	public function __construct(Stats $manager) {
+		parent::__construct("currencychange", Core::getInstance());
 
-		$this->core = $core;
+		$this->manager = $manager;
 
 		$this->setPermission("core.stats.command.servers");
 		$this->setAliases(["currencyc", "curc"]);
@@ -27,19 +29,19 @@ class CurrencyChange extends PluginCommand {
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
 		if(!$sender instanceof CorePlayer) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
 			return false;
 		}
 		if(!$sender->hasPermission($this->getPermission())) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 			return false;
 		}
 		if(!$sender instanceof CorePlayer) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
 			return false;
 		} else {
 			$sender->sendCurrencyChangeForm();
-			$sender->sendMessage($this->core->getPrefix() . "Opened Currency Change menu");
+			$sender->sendMessage(Core::PREFIX . "Opened Currency Change menu");
 			return true;
 		}
 	}

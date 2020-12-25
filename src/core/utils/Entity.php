@@ -5,10 +5,7 @@ declare(strict_types = 1);
 namespace core\utils;
 
 use core\Core;
-use core\mcpe\block\{
-    Portal,
-    EndPortal
-};
+
 use pocketmine\entity\{
 	Effect,
 	EffectInstance,
@@ -274,30 +271,6 @@ class Entity extends \pocketmine\entity\Entity {
         $level->addChunkPacket($chunkX, $chunkZ, $pk2);
     }
 
-    public static function isInsideOfPortal(Entity $entity) : bool {
-		if($entity->level === null) {
-			return false;
-		}
-        $block = $entity->getLevel()->getBlock($entity->floor());
-
-        if($block instanceof Portal) {
-            return true;
-        }
-        return false;
-    }
-
-    public static function isInsideOfEndPortal(Entity $entity) : bool {
-		if($entity->level === null) {
-			return false;
-		}
-        $block = $entity->getLevel()->getBlock($entity);
-
-        if($block instanceof EndPortal) {
-            return true;
-        }
-        return false;
-    }
-
     public static function checkSnowGolemStructure(Block $head) : array {
         $level = $head->getLevel();
         $block1 = ($level->getBlock($head->subtract(0, 1, 0))->getId() === Block::SNOW_BLOCK);
@@ -462,14 +435,5 @@ class Entity extends \pocketmine\entity\Entity {
 
 	public static function getPotionColor(int $effectID) : Color {
 		return Potion::getPotionEffectsById($effectID)[0]->getColor();
-	}
-
-	public static function nameToId(string $name) : ?int {
-    	foreach(Core::getInstance()->getMCPE()->getRegisteredEntities() as $entity) {
-    		if(strtolower($name) === strtolower($entity->getName())) {
-    			return constant($entity . "::NETWORK_ID");
-    		}
-    	}
-    	return null;
 	}
 }

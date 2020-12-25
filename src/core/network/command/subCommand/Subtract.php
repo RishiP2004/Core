@@ -6,16 +6,18 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
+use core\network\Network;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
 
 class Subtract extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Network $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.network.subcommand.subtract");
@@ -42,11 +44,11 @@ class Subtract extends SubCommand {
             return false;
         }
         if(!is_numeric($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not Numeric");
+            $sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not Numeric");
             return false;
         } else {
-            $this->core->getNetwork()->getTimer()->subtractTime((int) $args[0]);
-            $sender->sendMessage($this->core->getPrefix() . "Subtracted " . $args[0] . " seconds from Restart timer");
+            $this->manager->getTimer()->subtractTime((int) $args[0]);
+            $sender->sendMessage(Core::PREFIX . "Subtracted " . $args[0] . " seconds from Restart timer");
             return true;
         }
     }

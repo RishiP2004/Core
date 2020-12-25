@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace core;
 
-use core\utils\Level;
-
 use form\event\ServerSettingsRequestEvent;
 
 use pocketmine\event\Listener;
@@ -51,11 +49,7 @@ use pocketmine\event\inventory\{
 
 use pocketmine\inventory\PlayerInventory;
 
-use pocketmine\network\mcpe\protocol\{
-	ServerSettingsRequestPacket,
-	StartGamePacket
-};
-use pocketmine\network\mcpe\protocol\types\SpawnSettings;
+use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 
 class CoreListener implements Listener {
     private $core;
@@ -84,7 +78,7 @@ class CoreListener implements Listener {
         if($player instanceof CorePlayer) {
             if(!$player->canChat()) {
                 $event->setCancelled(true);
-                $player->sendMessage($this->core->getErrorPrefix() . "You are currently in Chat cool down. Upgrade your Rank to reduce this cool down!");
+                $player->sendMessage($this->core::ERROR_PREFIX . "You are currently in Chat cool down. Upgrade your Rank to reduce this cool down!");
             } else {
 				$format = str_replace([
 					"{DISPLAY_NAME}",
@@ -147,11 +141,6 @@ class CoreListener implements Listener {
 		if($player instanceof CorePlayer) {
 			if(!$player->isInitialized()) {
 				$event->setCancelled();
-			}
-			if($player->isFishing()) {
-				if($event->getSlot() !== $player->lastHeldSlot) {
-					$player->setFishing(false);
-				}
 			}
 			$player->lastHeldSlot = $event->getSlot();
 		}
@@ -293,17 +282,6 @@ class CoreListener implements Listener {
 					$player->sendSetting($form);
 				}
 			}
-		}
-	}
-
-	public function onDataPacketSend(DataPacketSendEvent $event) {
-		$pk = $event->getPacket();
-		$player = $event->getPlayer();
-
-		switch(true) {
-			case $pk instanceof StartGamePacket:
-				$pk->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", Level::getDimension($player->getLevel()));
-			break;
 		}
 	}
 

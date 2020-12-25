@@ -6,6 +6,8 @@ namespace core\stats\command;
 
 use core\Core;
 
+use core\stats\Stats;
+
 use core\stats\rank\Rank;
 
 use pocketmine\command\{
@@ -16,12 +18,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class RankInformation extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("rankinformation", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("rankinformation", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setAliases(["rankinfo"]);
         $this->setPermission("core.stats.command.rankinformation");
@@ -31,20 +33,20 @@ class RankInformation extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /rankinformation " . $this->getUsage());
+			$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /rankinformation " . $this->getUsage());
             return false;
         }
-        $rank = $this->core->getStats()->getRank($args[0]);
+        $rank = $this->manager->getRank($args[0]);
 
         if(!$rank instanceof Rank) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Rank");
+            $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Rank");
             return false;
         } else {
-            $sender->sendMessage($this->core->getPrefix() . "Rank Information about " . $rank->getName() . ":");
+            $sender->sendMessage(Core::PREFIX . "Rank Information about " . $rank->getName() . ":");
             $sender->sendMessage(TextFormat::GRAY . "Chat Format: " . $rank->getChatFormat());
             $sender->sendMessage(TextFormat::GRAY . "NameTag Format: " . $rank->getNameTagFormat());
 						

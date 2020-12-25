@@ -7,7 +7,7 @@ namespace core\utils;
 use pocketmine\command\CommandSender;
 
 abstract class SubCommand {
-    public abstract function canUse(CommandSender $sender) : bool;
+	public abstract function canUse(CommandSender $sender) : bool;
 
     public abstract function getUsage() : string;
 

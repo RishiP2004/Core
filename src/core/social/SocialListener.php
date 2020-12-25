@@ -13,10 +13,10 @@ use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
 
 class SocialListener implements Listener, Access {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		$this->core = $core;
+	public function __construct(Social $manager) {
+		$this->manager = $manager;
 	}
 
 	public function onPlayerChat(PlayerChatEvent $event) {
@@ -28,37 +28,37 @@ class SocialListener implements Listener, Access {
 
 		if($subTwitter === self::PREFIX["twitter"]) {
 			if(!$player->hasPermission("core.social.twitter.tweet")) {
-				$player->sendMessage($this->core->getErrorPrefix() . "You cannot Tweet to Twitter");
+				$player->sendMessage(Core::ERROR_PREFIX . "You cannot Tweet to Twitter");
 				$event->setCancelled();
 				return;
 			}
 			if(empty(self::KEY && self::SECRET && self::TOKEN && self::TOKEN_SECRET)) {
-				$player->sendMessage($this->core->getErrorPrefix() . "Tweeting is currently Disabled");
+				$player->sendMessage(Core::ERROR_PREFIX . "Tweeting is currently Disabled");
 				$event->setCancelled();
 				return;
 			} else {
-				$this->core->getSocial()->postTweet($message);
+				$this->manager->postTweet($message);
 				$event->setCancelled();
-				$player->sendMessage($this->core->getErrorPrefix() . "Posted Tweet: " . $message);
+				$player->sendMessage(Core::ERROR_PREFIX . "Posted Tweet: " . $message);
 				return;
 			}
 		} else if($subDiscord === self::PREFIX["discord"]) {
 			if(!$player->hasPermission("core.social.discord.tweet")) {
-				$player->sendMessage($this->core->getErrorPrefix() . "You cannot Tweet to Twitter");
+				$player->sendMessage(Core::ERROR_PREFIX . "You cannot Tweet to Twitter");
 				$event->setCancelled();
 				return;
 			}
 			if(empty(self::WEB_HOOK_URL)) {
-				$player->sendMessage($this->core->getErrorPrefix() . "Discord Messaging is currently Disabled");
+				$player->sendMessage(Core::ERROR_PREFIX . "Discord Messaging is currently Disabled");
 				$event->setCancelled();
 				return;
 			} else {
 				$msg = new Message();
 
 				$msg->setContent($message);
-				$this->core->getSocial()->sendToDiscord($msg);
+				$this->manager->sendToDiscord($msg);
 				$event->setCancelled();
-				$player->sendMessage($this->core->getErrorPrefix() . "Posted Message to Discord: " . $message);
+				$player->sendMessage(Core::ERROR_PREFIX . "Posted Message to Discord: " . $message);
 				return;
 			}
 		}

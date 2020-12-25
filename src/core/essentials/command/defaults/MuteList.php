@@ -6,6 +6,8 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
 use core\essentials\permission\MuteEntry;
 
 use pocketmine\command\{
@@ -16,12 +18,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class MuteList extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("mutelist", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("mutelist", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.mutelist");
         $this->setUsage("<players : ips>");
@@ -30,30 +32,30 @@ class MuteList extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /mutelist " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /mutelist " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {
                 case "players":
-                    $list = $this->core->getEssentials()->getNameMutes()->getEntries();
+                    $list = $this->manager->getNameMutes()->getEntries();
                     $message = implode(", ", array_map(function(MuteEntry $entry) {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Muted Players (x" . count($list)  . "):");
+                    $sender->sendMessage(Core::PREFIX . "Muted Players (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
                 case "ips":
-                    $list = $this->core->getEssentials()->getIpMutes()->getEntries();
+                    $list = $this->manager->getIpMutes()->getEntries();
                     $message = implode(", ", array_map(function(MuteEntry $entry) {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Muted IPs (x" . count($list)  . "):");
+                    $sender->sendMessage(Core::PREFIX . "Muted IPs (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
             }

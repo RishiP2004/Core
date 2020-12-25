@@ -7,18 +7,21 @@ namespace core\broadcast\command\subCommand;
 use core\Core;
 use core\CorePlayer;
 
+use core\broadcast\Broadcast;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
+use pocketmine\Server;
 
 class SendMessage extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Broadcast $manager) {
+		$this->manager = $manager;
+	}
 
-    public function canUse(CommandSender $sender) : bool {
+	public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.broadcast.subcommand.sendmessage");
     }
 
@@ -43,11 +46,11 @@ class SendMessage extends SubCommand {
             return false;
         } else {
             if($sender instanceof CommandSender) {
-                $this->core->getServer()->broadcastMessage($this->core->getBroadcast()->broadcastByConsole($sender, $args[0]));
-                $sender->sendMessage($this->core->getPrefix() . "Sent Message: " . $args[0] . " to everyone");
+                Server::getInstance()->broadcastMessage($this->manager->broadcastByConsole($sender, $args[0]));
+                $sender->sendMessage(Core::PREFIX . "Sent Message: " . $args[0] . " to everyone");
             } else if($sender instanceof CorePlayer) {
-                $this->core->getServer()->broadcastMessage($sender->broadcast($args[0]));
-                $sender->sendMessage($this->core->getPrefix() . "Sent Message: " . $args[0] . " to everyone");
+                Server::getInstance()->broadcastMessage($sender->broadcast($args[0]));
+                $sender->sendMessage(Core::PREFIX . "Sent Message: " . $args[0] . " to everyone");
             }
             return true;
         }

@@ -4,32 +4,37 @@ declare(strict_types = 1);
 
 namespace core\vote;
 
-use core\Core;
 use core\CoreUser;
+
+use core\utils\Manager;
 
 use core\vote\task\TopVoters;
 
-class Vote implements VoteData {
-    private $core;
+class Vote extends Manager implements VoteData {
+    public static $instance = null;
     
     public $queue = [], $lists = [], $topVoters = [];
 
     private $runs = 0;
     
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function init() {
+        self::$instance = $this;
 
         if(!empty(self::API_KEY)) {
-			$core->getServer()->getCommandMap()->register("vote", new \vote\command\Vote($core));
+			$this->registerCommand(\vote\command\Vote::class, new \vote\command\Vote($this));
 		}
     }
 
-    public function tick() : void {
+    public static function getInstance() : self {
+		return self::$instance;
+	}
+
+	public function tick() : void {
     	$this->runs++;
 
     	if(!empty(self::API_KEY)) {
     		if($this->runs % self::VOTE_UPDATE === 0) {
-				$this->core->getServer()->getAsyncPool()->submitTask(new TopVoters(self::API_KEY, self::TOP_VOTERS_LIMIT));
+				$this->registerAsyncTank(new TopVoters(self::API_KEY, self::TOP_VOTERS_LIMIT));
 			}
 		}
 	}

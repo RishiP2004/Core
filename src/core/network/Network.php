@@ -6,6 +6,13 @@ namespace core\network;
 
 use core\Core;
 
+use core\stats\Stats;
+
+use core\utils\{
+	Manager,
+	Math
+};
+
 use core\network\server\{
     Server,
     Factions,
@@ -20,10 +27,8 @@ use core\network\thread\{
 	Restore
 };
 
-use core\utils\Math;
-
-class Network implements Networking {
-    private $core;
+class Network extends Manager implements Networking {
+	public static $instance = null;
 
     private $timer;
 
@@ -35,18 +40,22 @@ class Network implements Networking {
 
     private $runs = 0;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function init() {
+    	self::$instance = $this;
         $this->timer = new Timer();
 
         $this->initServer(new Factions());
         $this->initServer(new Lobby());
-        $core->getServer()->getCommandMap()->register("backup", new Backup($core));
-        $core->getServer()->getCommandMap()->register("restarter", new Restarter($core));
-        $core->getServer()->getPluginManager()->registerEvents(new NetworkListener($core), $core);
+        $this->registerCommand(Backup::class, new Backup($this));
+        $this->registerCommand(Restarter::class, new Restarter($this));
+        $this->registerListener(new NetworkListener($this), Core::getInstance());
     }
 
-    public function getTimer() : Timer {
+    public static function getInstance() : self {
+		return self::$instance;
+	}
+
+	public function getTimer() : Timer {
         return $this->timer;
     }
 
@@ -70,7 +79,7 @@ class Network implements Networking {
 		if(is_int(self::SERVER_SAVE)) {
 			if($this->runs === self::SERVER_SAVE * 60) {
 				$this->compress();
-				$this->core->getStats()->saveUsers();
+				Stats::getInstance()->saveUsers();
 			}
 		}
 		if(self::RESTART_ON_OVERLOAD) {
@@ -92,11 +101,11 @@ class Network implements Networking {
 	}
 
 	public function compress() {
-		new Compress(realpath($this->core->getDataFolder()), realpath($this->core->getDataFolder() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'));
+		new Compress(realpath(Core::getInstance()->getDataFolder()), realpath(Core::getInstance()->getDataFolder() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'));
 	}
 
 	public function restore() {
-		new Restore(realpath($this->core->getDataFolder()), realpath($this->core->getDataFolder() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'));
+		new Restore(realpath(Core::getInstance()->getDataFolder()), realpath(Core::getInstance()->getDataFolder() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..'));
 		$this->getTimer()->initiateRestart(Timer::NORMAL);
 	}
 
@@ -131,7 +140,7 @@ class Network implements Networking {
     public function getTotalMaxSlots() : int {
         foreach($this->getServers() as $server) {
             if($server instanceof Server) {
-                return $this->core->getServer()->getMaxPlayers() + $server->getMaxSlots();
+                return \pocketmine\Server::getInstance()->getMaxPlayers() + $server->getMaxSlots();
             }
         }
         return 0;
@@ -140,7 +149,7 @@ class Network implements Networking {
     public function getTotalOnlinePlayers() : array {
         foreach($this->getServers() as $server) {
             if($server instanceof Server) {
-                return array_merge($server->getOnlinePlayers(), $this->core->getServer()->getOnlinePlayers());
+                return array_merge($server->getOnlinePlayers(), \pocketmine\Server::getInstance()->getOnlinePlayers());
             }
         }
         return [];

@@ -7,18 +7,24 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use core\stats\Stats;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
-    PluginCommand,
-    CommandSender
+	PluginCommand,
+	CommandSender
 };
 
 class UnblockIp extends PluginCommand {
-	private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("unblock-ip", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("unblock-ip", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.unblock-ip");
         $this->setUsage("<player : ip>");
@@ -27,16 +33,16 @@ class UnblockIp extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /unblock-ip " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /unblock-ip " . $this->getUsage());
             return false;
         }
-		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+		Stats::getInstance()->getCoreUser($args[0], function($user) use ($sender, $args) {
 			if(is_null($user) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player or Ip");
+				$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player or Ip");
 				return false;
 			}
 			$ip = $args[0];
@@ -44,21 +50,21 @@ class UnblockIp extends PluginCommand {
 
 			if($user) {
 				$ip = $user->getIp();
-				$player = $this->core->getServer()->getPlayer($user->getName());
+				$player = Server::getInstance()->getPlayer($user->getName());
 			}
-			$blockList = $this->core->getEssentials()->getIpBlocks();
+			$blockList = $this->manager->getIpBlocks();
 
 			if(!$blockList->isBanned($ip)) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $ip . " is not Blocked");
+				$sender->sendMessage(Core::ERROR_PREFIX . $ip . " is not Blocked");
 				return false;
 			} else {
 				$blockList->remove($ip);
 
 				if($player instanceof CorePlayer) {
-					$player->sendMessage($this->core->getPrefix() . "You have been Un-Ip Blocked By: " . $sender->getName());
+					$player->sendMessage(Core::PREFIX . "You have been Un-Ip Blocked By: " . $sender->getName());
 				}
-				$sender->sendMessage($this->core->getPrefix() . "You have Un-Ip Blocked " . $user->getName());
-				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Un-Ip Blocked by " . $sender->getName());
+				$sender->sendMessage(Core::PREFIX . "You have Un-Ip Blocked " . $user->getName());
+				Server::getInstance()->broadcastMessage(Core::PREFIX . $user->getName() . " has been Un-Ip Blocked by " . $sender->getName());
 				return true;
 			}
         });

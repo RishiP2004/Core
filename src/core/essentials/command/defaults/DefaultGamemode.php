@@ -6,6 +6,8 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -14,12 +16,12 @@ use pocketmine\command\{
 use pocketmine\Server;
 
 class DefaultGamemode extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("defaultgamemode", $core);
+	public function __construct(Essentials $manager) {
+        parent::__construct("defaultgamemode", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.defaultgamemode");
         $this->setUsage("<gamemode>");
@@ -28,23 +30,23 @@ class DefaultGamemode extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /defaultgamemode " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /defaultgamemode " . $this->getUsage());
             return false;
         }
         if(Server::getGamemodeFromString($args[0]) === -1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Unknown Gamemode");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Unknown Gamemode");
             return false;
         }
-        if($this->core->getServer()->getDefaultGamemode() === $args[0]) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is already the Default Gamemode");
+        if(Server::getInstance()->getDefaultGamemode() === $args[0]) {
+            $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is already the Default Gamemode");
             return false;
         } else {
-            $this->core->getServer()->setConfigInt("gamemode", $args[0]);
-            $sender->sendMessage($this->core->getPrefix() . "Set Default Gamemode to " . $args[0]);
+            Server::getInstance()->setConfigInt("gamemode", $args[0]);
+            $sender->sendMessage(Core::PREFIX . "Set Default Gamemode to " . $args[0]);
             return true;
         }
     }

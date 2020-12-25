@@ -24,7 +24,7 @@ class LobbyGreetings extends FloatingText {
     }
 
 	public function getText() : string {
-        return Lobby::getInstance()->getPrefix() . "Welcome to the Athena Lobby!\n" . TextFormat::GRAY . "There are currently {TOTAL_ONLINE_PLAYERS}/{TOTAL_MAX_SLOTS} Online!\n" . TextFormat::GRAY . "Pick a server, or just hang around in the Lobby";
+        return Lobby::PREFIX . "Welcome to the Athena Lobby!\n" . TextFormat::GRAY . "There are currently {TOTAL_ONLINE_PLAYERS}/{TOTAL_MAX_SLOTS} Online!\n" . TextFormat::GRAY . "Pick a server, or just hang around in the Lobby";
     }
 
 	public function getUpdateTime() : ?int {

@@ -6,6 +6,8 @@ namespace core\social\command;
 
 use core\Core;
 
+use core\social\Social;
+
 use core\utils\SubCommand;
 
 use core\social\command\subCommand\{
@@ -21,21 +23,21 @@ use pocketmine\command\{
 };
 
 class Twitter extends PluginCommand {
-    private $core;
+    private $manager;
 
     private $subCommands = [], $commandObjects = [];
 
-    public function __construct(Core $core) {
-        parent::__construct("twitter", $core);
+    public function __construct(Social $manager) {
+        parent::__construct("twitter", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.social.twitter");
         $this->setDescription("twitter Command");
-        $this->loadSubCommand(new DirectMessage($core));
-        $this->loadSubCommand(new Follow($core));
-        $this->loadSubCommand(new Help($core));
-        $this->loadSubCommand(new Tweet($core));
+        $this->loadSubCommand(new DirectMessage($this));
+        $this->loadSubCommand(new Follow($this));
+        $this->loadSubCommand(new Help($this));
+        $this->loadSubCommand(new Tweet($this));
     }
 
     private function loadSubCommand(SubCommand $subCommand) {
@@ -50,26 +52,26 @@ class Twitter extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(!isset($args[0])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /twitter help");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /twitter help");
             return false;
         }
         $subCommand = array_shift($args);
 
         if(!isset($this->subCommands[$subCommand])) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /twitter help");
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /twitter help");
             return false;
         }
         $command = $this->commandObjects[$this->subCommands[$subCommand]];
 
         if(!$command->canUse($sender)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
         } else {
             if(!$command->execute($sender, $args)) {
-                $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /twitter " . $command->getName() . " " . $command->getUsage());
+                $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /twitter " . $command->getName() . " " . $command->getUsage());
                 return false;
             } else {
                 return true;

@@ -7,6 +7,8 @@ namespace core\essence;
 use core\Core;
 use core\CorePlayer;
 
+use core\utils\Manager;
+
 use core\essence\floatingText\{
     FloatingText,
     LobbyGreetings,
@@ -22,15 +24,17 @@ use core\essence\npc\{
     Lobby
 };
 
-class Essence implements EssenceData {
-    private $core;
+use pocketmine\Server;
+
+class Essence extends Manager implements EssenceData {
+    public static $instance = null;
 
     private $NPCs = [], $floatingTexts = [];
 
     private $runs = 0;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function init() {
+    	self::$instance = $this;
 
         $this->initFloatingText(new LobbyGreetings());
         $this->initFloatingText(new Parkour());
@@ -39,8 +43,12 @@ class Essence implements EssenceData {
         $this->initNPC(new Athie());
         $this->initNPC(new Factions());
         $this->initNPC(new Lobby());
-		$core->getServer()->getPluginManager()->registerEvents(new EssenceListener($core), $core);
+		$this->registerListener(new EssenceListener($this), Core::getInstance());
     }
+
+	public static function getInstance() : self {
+    	return self::$instance;
+	}
 
 	public function tick() : void {
 		$this->runs++;
@@ -53,7 +61,7 @@ class Essence implements EssenceData {
 			}
 		}
 		foreach($this->getNPCs() as $npc) {	
-			foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+			foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 				if($onlinePlayer instanceof CorePlayer) {
 					if($npc->isSpawnedTo($onlinePlayer)) {
 						if($npc->getMoveTime() !== 0) {

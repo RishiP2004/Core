@@ -5,7 +5,12 @@ declare(strict_types = 1);
 namespace core\essence\floatingtext;
 
 use core\Core;
-use core\vote\VoteData;
+
+use core\vote\{
+	Vote,
+	VoteData
+};
+
 use lobby\Lobby;
 
 use pocketmine\Server;
@@ -29,10 +34,10 @@ class TopVoter extends FloatingText {
 		if(!empty(VoteData::API_KEY)) {
 			return "";
 		}
-		$voters = Core::getInstance()->getVote()->getTopVoters();
+		$voters = Vote::getInstance()->getTopVoters();
 		$i = 1;
 
-		$text = Lobby::getInstance()->getPrefix() . "Top Voters this Month:";
+		$text = Lobby::PREFIX . "Top Voters this Month:";
 
 		foreach($voters as $vote) {
 			$text .= TextFormat::GRAY . "#" . $i . ". " . $vote["nickname"] . ": " . $vote["votes"];

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace core\anticheat\command\subCommand;
 
+use core\anticheat\AntiCheat;
 use core\Core;
 
 use core\utils\SubCommand;
@@ -13,13 +14,13 @@ use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 
 class Help extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(AntiCheat $manager) {
+		$this->manager = $manager;
+	}
 
-    public function canUse(CommandSender $sender) : bool {
+	public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.cheat.subcommand.help");
     }
 
@@ -32,7 +33,7 @@ class Help extends SubCommand {
     }
 
     public function getDescription() : string {
-        return "Help about Cheat";
+        return "Help about Cheats";
     }
 
     public function getAliases() : array {
@@ -40,7 +41,7 @@ class Help extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Cheat Help:");
+        $sender->sendMessage(Core::PREFIX . "Cheats Help:");
         $sender->sendMessage(TextFormat::GRAY . "/cheat help");
         $sender->sendMessage(TextFormat::GRAY . "/cheat report <player> <cheat>");
         $sender->sendMessage(TextFormat::GRAY . "/cheat history <add : remove : set> <player> <cheat> <amount>");

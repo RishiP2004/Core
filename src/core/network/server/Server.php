@@ -32,7 +32,7 @@ abstract class Server {
     public function __construct(string $name) {
         $this->name = $name;
         
-		$this->query();
+		//$this->query();
     }
 
     public final function getName() : string {
@@ -54,7 +54,7 @@ abstract class Server {
                 $this->online = true;
             }
         } catch(MinecraftQueryException $exception) {
-            Core::getInstance()->getServer()->getLogger()->error(Core::getInstance()->getErrorPrefix() . $exception->getMessage());
+            Core::getInstance()->getServer()->getLogger()->error(Core::ERROR_PREFIX . $exception->getMessage());
         }
     }
 
@@ -69,8 +69,8 @@ abstract class Server {
     public function removeHud(int $type, CorePlayer $player) {
 		switch($type) {
 			case CorePlayer::SCOREBOARD:
-				if(ScoreboardManager::getId(Core::getInstance()->getPrefix() . $this->getName()) !== null) {
-					$scoreboard = new Scoreboard(Core::getInstance()->getPrefix() . $this->getName(), ScoreboardAction::MODIFY);
+				if(ScoreboardManager::getId(Core::PREFIX . $this->getName()) !== null) {
+					$scoreboard = new Scoreboard(Core::PREFIX . $this->getName(), ScoreboardAction::MODIFY);
 				}
 				$scoreboard->removeDisplay($player);
 			break;

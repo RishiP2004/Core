@@ -6,20 +6,21 @@ namespace core\network\command;
 
 use core\Core;
 
-use core\network\BackThread;
+use core\network\Network;
 
 use pocketmine\command\{
 	PluginCommand,
 	CommandSender
 };
+use pocketmine\Server;
 
 class Backup extends PluginCommand {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		parent::__construct("backup", $core);
+	public function __construct(Network $manager) {
+		parent::__construct("backup", Core::getInstance());
 
-		$this->core = $core;
+		$this->manager = $manager;
 
 		$this->setPermission("core.network.command.backup");
 		$this->setUsage("[restore]");
@@ -28,22 +29,22 @@ class Backup extends PluginCommand {
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
 		if(!$sender->hasPermission($this->getPermission())) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 			return false;
 		} else {
 			if(isset($args[1]) && strtolower($args[1]) === "restore") {
 				if(!$sender->hasPermission($this->getPermission() . ".restore")) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use Restore the Server");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use Restore the Server");
 					return false;
 				}
-				$this->core->getNetwork()->restore();
-				$sender->sendMessage($this->core->getPrefix() . "Restored the Server");
-				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " Restored the Server. Restarting...");
+				$this->manager->restore();
+				$sender->sendMessage(Core::PREFIX . "Restored the Server");
+				Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " Restored the Server. Restarting...");
 				return true;
 			}
-			$this->core->getNetwork()->compress();
-			$sender->sendMessage($this->core->getPrefix() . "Server backed up");
-			$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $sender->getName() . " has been Oped by " . $sender->getName());
+			$this->manager->compress();
+			$sender->sendMessage(Core::PREFIX . "Server backed up");
+			Server::getInstance()->broadcastMessage(Core::PREFIX . $sender->getName() . " has been Oped by " . $sender->getName());
 			return true;
 		}
 	}

@@ -6,16 +6,18 @@ namespace core\social\command\subCommand;
 
 use core\Core;
 
+use core\social\Social;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
 
 class Tweet extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Social $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.social.twitter.tweet");
@@ -42,11 +44,11 @@ class Tweet extends SubCommand {
             return false;
         }
         if(strlen(implode(" ", $args)) > 280) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "The Tweet is Over the Max Limit: 280");
+            $sender->sendMessage(Core::ERROR_PREFIX . "The Tweet is Over the Max Limit: 280");
             return false;
         } else {
-            $this->core->getSocial()->postTweet(implode(" ", $args));
-            $sender->sendMessage($this->core->getPrefix() . "Tweet: " . $args[0] . " Posted");
+            $this->manager->postTweet(implode(" ", $args));
+            $sender->sendMessage(Core::PREFIX . "Tweet: " . $args[0] . " Posted");
             return true;
         }
     }

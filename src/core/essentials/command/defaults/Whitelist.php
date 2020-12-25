@@ -6,6 +6,12 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
+use core\network\Network;
+
+use core\stats\Stats;
+
 use core\network\server\Server;
 
 use pocketmine\command\{
@@ -18,12 +24,12 @@ use pocketmine\utils\TextFormat;
 use pocketmine\permission\Permission;
 
 class Whitelist extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("whitelist", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("whitelist", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.whitelist");
         $this->setUsage("<on : off : list : add : remove>");
@@ -32,110 +38,110 @@ class Whitelist extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /whitelist " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /whitelist " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {
                 case "on":
 					if(!isset($args[1])) {
-						$sender->sendMessage($this->core->getPrefix() . "Usage: /whitelist on <server : all>");
+						$sender->sendMessage(Core::PREFIX . "Usage: /whitelist on <server : all>");
 						return false;
 					} 
-					$server = $this->core->getNetwork()->getServer($args[1]);
+					$server = Network::getInstance()->getServer($args[1]);
 					
 					if(is_null($server) && strtolower($args[1]) !== "all") {
-						$sender->sendMessage($this->core->getPrefix() . $args[1] . " is not a valid Athena Server");
+						$sender->sendMessage(Core::PREFIX . $args[1] . " is not a valid Athena Server");
 						return false;
 					}
 					if(strtolower($args[1]) === "all") {
-						foreach($this->core->getNetwork()->getServers() as $server) {
+						foreach(Network::getInstance()->getServers() as $server) {
 							if($server instanceof Server) {
 								$server->setWhitelisted();
 							}
 						}
-						$sender->sendMessage($this->core->getPrefix() . "Turned the Whitelist On for all Servers");
+						$sender->sendMessage(Core::PREFIX . "Turned the Whitelist On for all Servers");
 						return true;
 					} else {
 						if($server->isWhitelisted()) {
-							$sender->sendMessage($this->core->getPrefix() . $server->getName() . " is already Whitelisted");
+							$sender->sendMessage(Core::PREFIX . $server->getName() . " is already Whitelisted");
 							return false;
 						} else {
 							$server->setWhitelisted(true);
-							$sender->sendMessage($this->core->getPrefix() . "Turned the Whitelist On for the Server " . $server->getName());
+							$sender->sendMessage(Core::PREFIX . "Turned the Whitelist On for the Server " . $server->getName());
 							return true;
 						}
 					}
                 break;
                 case "off":
 					if(!isset($args[1])) {
-						$sender->sendMessage($this->core->getPrefix() . "Usage: /whitelist off <server : all>");
+						$sender->sendMessage(Core::PREFIX . "Usage: /whitelist off <server : all>");
 						return false;
 					} 
-					$server = $this->core->getNetwork()->getServer($args[1]);
+					$server = Network::getInstance()->getServer($args[1]);
 					
 					if(is_null($server) && strtolower($args[1]) !== "all") {
-						$sender->sendMessage($this->core->getPrefix() . $args[1] . " is not a valid Athena Server");
+						$sender->sendMessage(Core::PREFIX . $args[1] . " is not a valid Athena Server");
 						return false;
 					}
 					if(strtolower($args[1]) === "all") {
-						foreach($this->core->getNetwork()->getServers() as $server) {
+						foreach(Network::getInstance()->getServers() as $server) {
 							if($server instanceof Server) {
 								$server->setWhitelisted(false);
 							}
 						}
-						$sender->sendMessage($this->core->getPrefix() . "Turned the Whitelist Off for all Servers");
+						$sender->sendMessage(Core::PREFIX . "Turned the Whitelist Off for all Servers");
 						return true;
 					} else {
 						if(!$server->isWhitelisted()) {
-							$sender->sendMessage($this->core->getPrefix() . $server->getName() . " is already not Whitelisted");
+							$sender->sendMessage(Core::PREFIX . $server->getName() . " is already not Whitelisted");
 							return false;
 						} else {
 							$server->setWhitelisted(false);
-							$sender->sendMessage($this->core->getPrefix() . "Turned the Whitelist Off for the Server " . $server->getName());
+							$sender->sendMessage(Core::PREFIX . "Turned the Whitelist Off for the Server " . $server->getName());
 							return true;
 						}
 					}
                 break;
                 case "list":
 					if(!isset($args[1])) {
-						$sender->sendMessage($this->core->getPrefix() . "Usage: /whitelist off <server : all>");
+						$sender->sendMessage(Core::PREFIX . "Usage: /whitelist off <server : all>");
 						return false;
 					} 
-					$server = $this->core->getNetwork()->getServer($args[1]);
+					$server = Network::getInstance()->getServer($args[1]);
 					
 					if(is_null($server) && strtolower($args[1]) !== "all") {
-						$sender->sendMessage($this->core->getPrefix() . $args[1] . " is not a valid Athena Server");
+						$sender->sendMessage(Core::PREFIX . $args[1] . " is not a valid Athena Server");
 						return false;
 					}
 					if(strtolower($args[1]) === "all") {
 						$users = [];
 
-						$this->core->getStats()->getAllCoreUsers(function($users) use ($sender) {
+						Stats::getInstance()->getAllCoreUsers(function($users) use ($sender) {
 							foreach($users as $user) {
 								if($user->hasPermission("core.network.whitelist")) {
 									$users[] = $user->getName();
 								}
 							}
 							$message = \implode($users, ", ");
-							$sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($users)  . ":");
+							$sender->sendMessage(Core::PREFIX . "Whitelisted Players " . count($users)  . ":");
 							$sender->sendMessage(TextFormat::GRAY . $message);
 							return true;
 						});
 					} else {
 						$users = [];
 
-						$this->core->getStats()->getAllCoreUsers(function($users) use ($sender, $server) {
+						Stats::getInstance()->getAllCoreUsers(function($users) use ($sender, $server) {
 							foreach($users as $user) {
 								if($user->hasPermission("core.network. " . $server->getName() . " . whitelist")) {
 									$users[] = $user->getName();
 								}
 							}
 							$message = \implode($users, ", ");
-							$sender->sendMessage($this->core->getPrefix() . "Whitelisted Players " . count($users)  . ":");
+							$sender->sendMessage(Core::PREFIX . "Whitelisted Players " . count($users)  . ":");
 							$sender->sendMessage(TextFormat::GRAY . $message);
 							return true;
 						});
@@ -143,39 +149,39 @@ class Whitelist extends PluginCommand {
                 break;
                 case "add":
 					if(!isset($args[1])) {	
-						$sender->sendMessage($this->core->getPrefix() . "Usage: /whitelist add <player> <server : all>");
+						$sender->sendMessage(Core::PREFIX . "Usage: /whitelist add <player> <server : all>");
 						return false;
 					} 
-					$this->core->getStats()->getCoreUser($args[1], function($user) use ($sender, $args) {
+					Stats::getInstance()->getCoreUser($args[1], function($user) use ($sender, $args) {
 						if(is_null($user)) {
-							$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+							$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 							return false;
 						}
-						$server = $this->core->getNetwork()->getServer($args[2]);
+						$server = Network::getInstance()->getServer($args[2]);
 					
 						if(is_null($server) && strtolower($args[2]) !== "all") {
-							$sender->sendMessage($this->core->getPrefix() . $args[2] . " is not a valid Athena Server");
+							$sender->sendMessage(Core::PREFIX . $args[2] . " is not a valid Athena Server");
 							return false;
 						}
 						if(strtolower($args[2]) === "all") {
-							foreach($this->core->getNetwork()->getServers() as $server) {
+							foreach(Network::getInstance()->getServers() as $server) {
 								if($server instanceof Server) {
 									$perm = new Permission("core.network." . $server->getName() . ".whitelist");
 									
 									$user->addPermission($perm);
 								}
 							}
-							$sender->sendMessage($this->core->getPrefix() . "Added " . $user->getName() . " to Whitelist for all Servers");
+							$sender->sendMessage(Core::PREFIX . "Added " . $user->getName() . " to Whitelist for all Servers");
 							return true;
 						} else {
 							if($user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-								$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is already Whitelisted to the Server " . $server->getName());
+								$sender->sendMessage(Core::PREFIX . $user->getName() . " is already Whitelisted to the Server " . $server->getName());
 								return false;
 							}
 							$perm = new Permission("core.network." . $server->getName() . ".whitelist");
 							
 							$user->addPermission($perm);
-							$sender->sendMessage($this->core->getPrefix() . "Added " . $user->getName() . " to the Whitelist for the Server " . $server->getName());
+							$sender->sendMessage(Core::PREFIX . "Added " . $user->getName() . " to the Whitelist for the Server " . $server->getName());
 							return true;
 						}
 					});
@@ -183,39 +189,39 @@ class Whitelist extends PluginCommand {
                 break;
                 case "remove":
 					if(!isset($args[1])) {	
-						$sender->sendMessage($this->core->getPrefix() . "Usage: /whitelist remove <player> <server : all>");
+						$sender->sendMessage(Core::PREFIX . "Usage: /whitelist remove <player> <server : all>");
 						return false;
 					} 
-					$this->core->getStats()->getCoreUser($args[1], function($user) use ($sender, $args) {
+					Stats::getInstance()->getCoreUser($args[1], function($user) use ($sender, $args) {
 						if(is_null($user)) {
-							$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+							$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 							return false;
 						}
-						$server = $this->core->getNetwork()->getServer($args[2]);
+						$server = Network::getInstance()->getServer($args[2]);
 					
 						if(is_null($server) && strtolower($args[2]) !== "all") {
-							$sender->sendMessage($this->core->getPrefix() . $args[2] . " is not a valid Athena Server");
+							$sender->sendMessage(Core::ERROR_PREFIX . $args[2] . " is not a valid Athena Server");
 							return false;
 						}
 						if(strtolower($args[2]) === "all") {
-							foreach($this->core->getNetwork()->getServers() as $server) {
+							foreach(Network::getInstance()->getServers() as $server) {
 								if($server instanceof Server) {
 									$perm = new Permission("core.network." . $server->getName() . ".whitelist");
 									
 									$user->removePermission($perm);
 								}
 							}
-							$sender->sendMessage($this->core->getPrefix() . "Removed " . $user->getName() . " from Whitelist for all Servers");
+							$sender->sendMessage(Core::PREFIX . "Removed " . $user->getName() . " from Whitelist for all Servers");
 							return true;
 						} else {
 							if(!$user->hasPermission("core.network." . $server->getName() . ".whitelist")) {
-								$sender->sendMessage($this->core->getPrefix() . $user->getName() . " is already not Whitelisted to the Server " . $server->getName());
+								$sender->sendMessage(Core::PREFIX . $user->getName() . " is already not Whitelisted to the Server " . $server->getName());
 								return false;
 							}
 							$perm = new Permission("core.network." . $server->getName() . ".whitelist");
 							
 							$user->removePermission($perm);
-							$sender->sendMessage($this->core->getPrefix() . "Removed " . $user->getName() . " from Whitelist for the Server " . $server->getName());
+							$sender->sendMessage(Core::PREFIX . "Removed " . $user->getName() . " from Whitelist for the Server " . $server->getName());
 							return true;
 						}
 					});

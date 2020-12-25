@@ -6,18 +6,22 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
 
 class Save extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("save", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("save", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.save");
         $this->setUsage("[on : off]");
@@ -26,18 +30,18 @@ class Save extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
             if(isset($args[0])) {
                 switch(strtolower($args[0])) {
                     case "on":
-                        $this->core->getServer()->setAutoSave(true);
-                        $sender->sendMessage($this->core->getPrefix() . "Auto Save Enabled");
+                        Server::getInstance()->setAutoSave(true);
+                        $sender->sendMessage(Core::PREFIX . "Auto Save Enabled");
                     break;
                     case "off":
-                        $this->core->getServer()->setAutoSave(false);
-                        $sender->sendMessage($this->core->getPrefix() . "Auto Save Disabled");
+                        Server::getInstance()->setAutoSave(false);
+                        $sender->sendMessage(Core::PREFIX . "Auto Save Disabled");
                     break;
                 }
             }
@@ -47,7 +51,7 @@ class Save extends PluginCommand {
             foreach($sender->getServer()->getLevels() as $level) {
                 $level->save(true);
             }
-            $sender->sendMessage($this->core->getPrefix() . "Saved everything");
+            $sender->sendMessage(Core::PREFIX . "Saved everything");
             return true;
         }
     }

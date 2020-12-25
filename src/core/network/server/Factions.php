@@ -9,6 +9,8 @@ use core\CorePlayer;
 
 use factions\FactionsPlayer;
 
+use core\network\Network;
+
 use core\stats\Statistics;
 
 use scoreboard\{
@@ -43,10 +45,10 @@ class Factions extends Server {
 	public function addHud(int $type, CorePlayer $player) {
 		switch($type) {
 			case CorePlayer::SCOREBOARD:
-				if(ScoreboardManager::getId(TextFormat::BOLD . Core::getInstance()->getPrefix()) === null) {
-					$scoreboard = new Scoreboard(Core::getInstance()->getPrefix() . $this->getName(), ScoreboardAction::CREATE);
+				if(ScoreboardManager::getId(TextFormat::BOLD . Core::PREFIX) === null) {
+					$scoreboard = new Scoreboard(Core::PREFIX . $this->getName(), ScoreboardAction::CREATE);
 				} else {
-					$scoreboard = new Scoreboard(Core::getInstance()->getPrefix() . $this->getName(), ScoreboardAction::MODIFY);
+					$scoreboard = new Scoreboard(Core::PREFIX . $this->getName(), ScoreboardAction::MODIFY);
 				}
 				$players = [];
 
@@ -57,7 +59,7 @@ class Factions extends Server {
 				$scoreboard->addDisplay($player);
 				$scoreboard->setLine(1, TextFormat::GRAY . "------------");
 				$scoreboard->setLine(2, TextFormat::GREEN . "Player Counts:");
-				$scoreboard->setLine(3, TextFormat::GOLD . "     Total: " . count(Core::getInstance()->getNetwork()->getTotalOnlinePlayers()) . "/" . Core::getInstance()->getNetwork()->getTotalMaxSlots());
+				$scoreboard->setLine(3, TextFormat::GOLD . "     Total: " . count(Network::getInstance()->getTotalOnlinePlayers()) . "/" . Network::getInstance()->getTotalMaxSlots());
 				$scoreboard->setLine(4, TextFormat::GOLD . "     " . $this->getName() . ": " . count($this->getOnlinePlayers()) . "/" . $this->getMaxSlots());
 				$scoreboard->setLine(5, TextFormat::GRAY . "------------");
 				$scoreboard->setLine(6, TextFormat::GREEN . "Your Coins: " . Statistics::UNITS["coins"] . $player->getCoreUser()->getCoins());
@@ -69,17 +71,17 @@ class Factions extends Server {
 				//TODO: Faction, etc
 			break;
 			case CorePlayer::POPUP:
-				$msg = Core::getInstance()->getPrefix() . "Welcome to the " . $this->getName() . "\n";
+				$msg = Core::PREFIX . "Welcome to the " . $this->getName() . "\n";
 
 				if($player instanceof FactionsPlayer) {
 					if($player->isCombatTagged()) {
-						$msg .= Core::getInstance()->getErrorPrefix() . "You are Combat Tagged for " . $player->getCombatTagTime() . " seconds\n";
+						$msg .= Core::ERROR_PREFIX . "You are Combat Tagged for " . $player->getCombatTagTime() . " seconds\n";
 					}
 					if($player->isInCooldown($player::COOLDOWN_GAPPLE)) {
-						$msg .= Core::getInstance()->getErrorPrefix() . "You are in Gapple Cooldown for " . $player->getCooldownTime($player::COOLDOWN_GAPPLE) . " seconds\n";
+						$msg .= Core::ERROR_PREFIX . "You are in Gapple Cooldown for " . $player->getCooldownTime($player::COOLDOWN_GAPPLE) . " seconds\n";
 					}
 					if($player->isInCooldown($player::COOLDOWN_ENDER_PEARL)) {
-						$msg .= Core::getInstance()->getErrorPrefix() . "You are in Ender Pearl Cooldown for " . $player->getCooldownTime($player::COOLDOWN_GAPPLE) . " seconds\n";
+						$msg .= Core::ERROR_PREFIX . "You are in Ender Pearl Cooldown for " . $player->getCooldownTime($player::COOLDOWN_GAPPLE) . " seconds\n";
 					}
 				}
 				$player->sendPopup($msg);

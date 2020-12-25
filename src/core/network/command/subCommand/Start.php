@@ -6,16 +6,18 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
+use core\network\Network;
+
 use core\utils\SubCommand;
 
 use pocketmine\command\CommandSender;
 
 class Start extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Network $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.network.subcommand.start");
@@ -38,12 +40,12 @@ class Start extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        if(!$this->core->getNetwork()->getTimer()->isPaused()) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Timer is already not paused");
+        if(!$this->manager->getTimer()->isPaused()) {
+            $sender->sendMessage(Core::ERROR_PREFIX . "Timer is already not paused");
             return false;
         } else {
-            $this->core->getNetwork()->getTimer()->setPaused(false);
-            $sender->sendMessage($this->core->getPrefix() . "Timer is no longer paused");
+            $this->manager->getTimer()->setPaused(false);
+            $sender->sendMessage(Core::PREFIX . "Timer is no longer paused");
             return true;
         }
     }

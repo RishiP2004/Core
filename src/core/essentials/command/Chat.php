@@ -7,20 +7,22 @@ namespace core\essentials\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
 	PluginCommand,
 	CommandSender
 };
-
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 class Chat extends PluginCommand {
-	private $core;
+	private $manager;
 
-	public function __construct(Core $core) {
-		parent::__construct("chat", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("chat", Core::getInstance());
 
-		$this->core = $core;
+		$this->manager = $manager;
 
 		$this->setPermission("core.essentials.command.chat");
 		$this->setUsage("<on : off : list : check>");
@@ -29,17 +31,17 @@ class Chat extends PluginCommand {
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
 		if(!$sender->hasPermission($this->getPermission())) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+			$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 			return false;
 		}
 		if(count($args) < 1) {
-			$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /chat " . $this->getUsage());
+			$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /chat " . $this->getUsage());
 			return false;
 		}
 		switch(strtolower($args[0])) {
 			case "on":
 				if(count($args) < 3) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /chat on <type> [player]");
+					$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /chat on <type> [player]");
 					return false;
 				}
 				switch(strtolower($args[1])) {
@@ -53,90 +55,90 @@ class Chat extends PluginCommand {
 						$type = CorePlayer::VIP;
 					break;
 					default:
-						$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Type");
+						$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Type");
 						return false;
 					break;
 				}
 				if($type === CorePlayer::NORMAL) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "Normal is the default Chat Type");
+					$sender->sendMessage(Core::ERROR_PREFIX . "Normal is the default Chat Type");
 					return false;
 				}
 				if(isset($args[2])) {
-					$player = $this->core->getServer()->getPlayer($args[2]);
+					$player = Server::getInstance()->getPlayer($args[2]);
 
 					if(!$sender->hasPermission($this->getPermission() . "." . $type . ".other")) {
-						$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for " . ucfirst($type) . " Chat for Others");
+						$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission for " . ucfirst($type) . " Chat for Others");
 						return false;
 					}
 					if(!$player instanceof CorePlayer) {
-						$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Player");
+						$sender->sendMessage(Core::ERROR_PREFIX . $args[2] . " is not a valid Player");
 						return false;
 					}
 					if($player->getChatType() === $type) {
-						$sender->sendMessage($this->core->getErrorPrefix() . $player->getName() . " is already in " . ucfirst($type) . " Chat");
+						$sender->sendMessage(Core::ERROR_PREFIX . $player->getName() . " is already in " . ucfirst($type) . " Chat");
 						return false;
 					} else {
-						$sender->sendMessage($this->core->getErrorPrefix() . "Set " . $player->getName() . "'s Chat Type to " . ucfirst($type));
+						$sender->sendMessage(Core::PREFIX . "Set " . $player->getName() . "'s Chat Type to " . ucfirst($type));
 						$player->setChatType($type);
-						$player->sendMessage($this->core->getErrorPrefix() . $sender->getName() . " set your Chat Type to " . ucfirst($type));
+						$player->sendMessage(Core::PREFIX . $sender->getName() . " set your Chat Type to " . ucfirst($type));
 						return true;
 					}
 				}
 				if(!$sender instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this command");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this command");
 					return false;
 				}
 				if(!$sender->hasPermission($this->getPermission() . "." . $type)) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for " . ucfirst($type) . " Chat");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission for " . ucfirst($type) . " Chat");
 					return false;
 				}
 				if($sender->getChatType() === CorePlayer::STAFF) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You are already in Staff Chat");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You are already in Staff Chat");
 					return false;
 				} else {
 					$sender->setChatType($type);
-					$sender->sendMessage($this->core->getErrorPrefix() . "Set your Chat Type to " . ucfirst($type));
+					$sender->sendMessage(Core::PREFIX . "Set your Chat Type to " . ucfirst($type));
 					return true;
 				}
 				break;
 			case "off":
 				if(count($args) < 1) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /chat off [player]");
+					$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /chat off [player]");
 					return false;
 				}
 				if(isset($args[1])) {
-					$player = $this->core->getServer()->getPlayer($args[1]);
+					$player = Server::getInstance()->getPlayer($args[1]);
 
 					if(!$player instanceof CorePlayer) {
-						$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Player");
+						$sender->sendMessage(Core::ERROR_PREFIX . $args[2] . " is not a valid Player");
 						return false;
 					}
 					if($player->getChatType() === CorePlayer::NORMAL) {
-						$sender->sendMessage($this->core->getErrorPrefix() . $player->getName() . " is already in Normal Chat");
+						$sender->sendMessage(Core::ERROR_PREFIX . $player->getName() . " is already in Normal Chat");
 						return false;
 					} else {
-						$sender->sendMessage($this->core->getErrorPrefix() . "Reset " . $player->getName() . "'s Chat Type to Normal");
+						$sender->sendMessage(Core::PREFIX . "Reset " . $player->getName() . "'s Chat Type to Normal");
 						$player->setChatType(CorePlayer::NORMAL);
-						$player->sendMessage($this->core->getErrorPrefix() . $sender->getName() . " reset your Chat Type to Normal");
+						$player->sendMessage(Core::PREFIX . $sender->getName() . " reset your Chat Type to Normal");
 						return true;
 					}
 				}
 				if(!$sender instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this command");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this command");
 					return false;
 				}
 				if($sender->getChatType() === CorePlayer::NORMAL) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You are already in Normal Chat");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You are already in Normal Chat");
 					return false;
 				} else {
 					$sender->setChatType(CorePlayer::NORMAL);
-					$sender->sendMessage($this->core->getErrorPrefix() . "Reset your Chat Type to Normal");
+					$sender->sendMessage(Core::ERROR_PREFIX . "Reset your Chat Type to Normal");
 					return true;
 				}
 				break;
 			case "list":
 				if(!$sender->hasPermission($this->getPermission() . ".list")) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for Listing players in the Chat Type");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission for Listing players in the Chat Type");
 					return false;
 				}
 				$types = [CorePlayer::STAFF, CorePlayer::NORMAL, CorePlayer::VIP];
@@ -144,11 +146,11 @@ class Chat extends PluginCommand {
 				if(isset($args[1])) {
 					switch(strtolower($args[1])) {
 						case CorePlayer::STAFF:
-							$sender->sendMessage($this->core->getPrefix() . "Players in Staff Chat:");
+							$sender->sendMessage(Core::PREFIX . "Players in Staff Chat:");
 
 							$typ[] = CorePlayer::STAFF;
 
-							foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+							foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 								if($onlinePlayer instanceof CorePlayer) {
 									$typ[CorePlayer::STAFF] = $onlinePlayer->getName();
 								}
@@ -156,11 +158,11 @@ class Chat extends PluginCommand {
 							$sender->sendMessage(TextFormat::GRAY . implode(", ", $typ[0]));
 						break;
 						case CorePlayer::NORMAL:
-							$sender->sendMessage($this->core->getPrefix() . "Players in Normal Chat:");
+							$sender->sendMessage(Core::PREFIX . "Players in Normal Chat:");
 
 							$typ[] = CorePlayer::NORMAL;
 
-							foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+							foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 								if($onlinePlayer instanceof CorePlayer) {
 									$typ[CorePlayer::NORMAL] = $onlinePlayer->getName();
 								}
@@ -168,11 +170,11 @@ class Chat extends PluginCommand {
 							$sender->sendMessage(TextFormat::GRAY . implode(", ", $typ[1]));
 						break;
 						case CorePlayer::VIP:
-							$sender->sendMessage($this->core->getPrefix() . "Players in VIP Chat:");
+							$sender->sendMessage(Core::PREFIX . "Players in VIP Chat:");
 
 							$typ[] = CorePlayer::VIP;
 
-							foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+							foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 								if($onlinePlayer instanceof CorePlayer) {
 									$typ[CorePlayer::VIP] = $onlinePlayer->getName();
 								}
@@ -180,14 +182,14 @@ class Chat extends PluginCommand {
 							$sender->sendMessage(TextFormat::GRAY . implode(", ", $typ[1]));
 						break;
 						default:
-							$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Type");
+							$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Type");
 							return false;
 						break;
 					}
 				}
-				$sender->sendMessage($this->core->getPrefix() . "All Chat type Lists:");
+				$sender->sendMessage(Core::PREFIX . "All Chat type Lists:");
 
-				foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+				foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 					if($onlinePlayer instanceof CorePlayer) {
 						foreach($types as $type) {
 							if($onlinePlayer->getChatType() === $type) {
@@ -207,7 +209,7 @@ class Chat extends PluginCommand {
 				break;
 			case "say":
 				if(count($args) < 2) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /chat say <type> <message>");
+					$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /chat say <type> <message>");
 					return false;
 				}
 				if(isset($args[1])) {
@@ -225,20 +227,20 @@ class Chat extends PluginCommand {
 							$type = "all";
 						break;
 						default:
-							$sender->sendMessage($this->core->getErrorPrefix() . $args[1] . " is not a valid Type");
+							$sender->sendMessage(Core::ERROR_PREFIX . $args[1] . " is not a valid Type");
 							return false;
 						break;
 					}
 				}
 				if(!$sender instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+					$sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
 					return false;
 				} else {
 					if(!$sender->hasPermission($this->getPermission() . "." . $type)) {
-						$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for Sending messages");
+						$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission for Sending messages");
 						return false;
 					}
-					foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+					foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 						if($onlinePlayer instanceof CorePlayer) {
 							if($onlinePlayer->getChatType() === $type) {
 								$onlinePlayer->sendMessage($sender->getCoreUser()->getRank()->getChatFormat() . implode(" ", $args[2]));
@@ -252,25 +254,25 @@ class Chat extends PluginCommand {
 			break;
 			case "check":
 				if(count($args) < 1) {
-					$sender->sendMessage($this->core->getErrorPrefix() . "Usage: /chat check [player]");
+					$sender->sendMessage(Core::ERROR_PREFIX . "Usage: /chat check [player]");
 					return false;
 				}
 				if(isset($args[1])) {
-					$player = $this->core->getServer()->getPlayer($args[1]);
+					$player = Server::getInstance()->getPlayer($args[1]);
 
 					if(!$player instanceof CorePlayer) {
-						$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Player");
+						$sender->sendMessage(Core::ERROR_PREFIX . $args[2] . " is not a valid Player");
 						return false;
 					} else {
-						$sender->sendMessage($this->core->getPrefix() . $player->getName() . " is in " . ucfirst($player->getChatType()) . " Chat");
+						$sender->sendMessage(Core::PREFIX . $player->getName() . " is in " . ucfirst($player->getChatType()) . " Chat");
 						return true;
 					}
 				}
 				if(!$sender instanceof CorePlayer) {
-					$sender->sendMessage($this->core->getErrorPrefix() . $args[2] . " is not a valid Player");
+					$sender->sendMessage(Core::ERROR_PREFIX . $args[2] . " is not a valid Player");
 					return false;
 				} else {
-					$sender->sendMessage($this->core->getPrefix() . "You are in " . ucfirst($sender->getChatType()) . " Chat");
+					$sender->sendMessage(Core::PREFIX . "You are in " . ucfirst($sender->getChatType()) . " Chat");
 					return true;
 				}
 			break;

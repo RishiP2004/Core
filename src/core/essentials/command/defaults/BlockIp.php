@@ -7,7 +7,13 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use core\stats\Stats;
+
 use core\utils\Math;
+
+use pocketmine\Server;
 
 use pocketmine\command\{
     PluginCommand,
@@ -15,12 +21,12 @@ use pocketmine\command\{
 };
 
 class BlockIp extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("block-ip", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("block-ip", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.block-ip");
         $this->setUsage("<player : ip> [time] [reason]");
@@ -29,16 +35,16 @@ class BlockIp extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /block-ip " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /block-ip " . $this->getUsage());
             return false;
         }
-		$this->core->getStats()->getCoreUser($args[0], function($user) use ($sender, $args) {
+		Stats::getInstance()->getCoreUser($args[0], function($user) use ($sender, $args) {
 			if(is_null($user) or !preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player or Ip");
+				$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player or Ip");
 				return false;
 			}
 			$ip = $args[0];
@@ -46,12 +52,12 @@ class BlockIp extends PluginCommand {
 
 			if($user) {
 				$ip = $user->getIp();
-				$player = $this->core->getServer()->getPlayer($user->getName());
+				$player = Server::getInstance()->getPlayer($user->getName());
 			}
-			$blockList = $this->core->getEssentials()->getIpBlocks();
+			$blockList = $this->manager->getIpBlocks();
 
 			if($blockList->isBanned($ip)) {
-				$sender->sendMessage($this->core->getErrorPrefix() . $ip . " is already Ip-Blocked");
+				$sender->sendMessage(Core::ERROR_PREFIX . $ip . " is already Ip-Blocked");
 				return false;
 			} else {
 				$expires = null;
@@ -69,10 +75,10 @@ class BlockIp extends PluginCommand {
 				$blockList->addBan($ip, $reason, $expires, $sender->getName());
 
 				if($player instanceof CorePlayer) {
-					$player->sendMessage($this->core->getPrefix() . "You have been Ip-Blocked By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+					$player->sendMessage(Core::PREFIX . "You have been Ip-Blocked By: " . $sender->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
 				}
-				$sender->sendMessage($this->core->getPrefix() . "You have Ip-Blocked " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
-				$this->core->getServer()->broadcastMessage($this->core->getPrefix() . $user->getName() . " has been Ip-Blocked by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
+				$sender->sendMessage(Core::PREFIX . "You have Ip-Blocked " . $user->getName() . " for the Reason: " . $reason . ". Expires: " . $expire);
+				Server::getInstance()->broadcastMessage(Core::PREFIX . $user->getName() . " has been Ip-Blocked by " . $sender->getName() . " for the Reason: "  . $reason . ". Expires: " . $expire);
 				return true;
 			}
         });

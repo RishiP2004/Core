@@ -7,7 +7,11 @@ namespace core\essentials\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use core\utils\Entity;
+
+use pocketmine\Server;
 
 use pocketmine\command\{
     PluginCommand,
@@ -15,12 +19,12 @@ use pocketmine\command\{
 };
 
 class Jump extends PluginCommand {
-    private $core;
+    private $manager;
     
-    public function __construct(Core $core) {
-        parent::__construct("jump", $core);
+    public function __construct(Essentials $manager) {
+        parent::__construct("jump", Core::getInstance());
        
-        $this->core = $core;
+        $this->manager = $manager;
        
         $this->setPermission("core.essentials.command.jump");
         $this->setUsage("[player]");
@@ -29,28 +33,28 @@ class Jump extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
             return false;
         }
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }	
         if(isset($args[0])) {
 			if(!$sender->hasPermission($this->getPermission() . ".other")) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+				$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 				return false;
 			}
-            $player = $this->core->getServer()->getPlayer($args[0]);
+            $player = Server::getInstance()->getPlayer($args[0]);
 
             if(!$player instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
+                $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not Online");
                 return false;
             }
             $block = $player->getTargetBlock(100, Entity::NON_SOLID_BLOCKS);
 
 			if($block === null) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
+				$sender->sendMessage(Core::ERROR_PREFIX . "There isn't a Reachable Block to Jump too");
 				return false;
             } else {
 				if(!$player->getLevel()->getBlock($block->add(0, 2))->isSolid()) {
@@ -70,19 +74,19 @@ class Jump extends PluginCommand {
 				if(!$block->getSide($side)->isSolid()){
 					$player->teleport($block);
 				}
-				$sender->sendMessage($this->core->getPrefix() . "Jumped " . $player->getName() . " to the Facing Block");
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Jumped you to your Facing Block");
+				$sender->sendMessage(Core::PREFIX . "Jumped " . $player->getName() . " to the Facing Block");
+				$player->sendMessage(Core::PREFIX . $sender->getName() . " Jumped you to your Facing Block");
                 return true;
             }
         }
         if(!$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
             return false;
 		}
 		$block = $sender->getTargetBlock(100, Entity::NON_SOLID_BLOCKS);
 			
 		if($block === null) {
-			$sender->sendMessage($this->core->getInstance()->getErrorPrefix() . "There isn't a Reachable Block to Jump too");
+			$sender->sendMessage(Core::ERROR_PREFIX . "There isn't a Reachable Block to Jump too");
 			return false;
         } else {
 			if(!$sender->getLevel()->getBlock($block->add(0, 2))->isSolid()) {
@@ -102,7 +106,7 @@ class Jump extends PluginCommand {
 			if(!$block->getSide($side)->isSolid()) {
 				$sender->teleport($block);
 			}
-			$sender->sendMessage($this->core->getPrefix() . "Jumped to the Facing Block");
+			$sender->sendMessage(Core::PREFIX . "Jumped to the Facing Block");
 			return true;
         }
     }

@@ -6,6 +6,8 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
 use core\essentials\permission\BanEntry;
 
 use pocketmine\command\{
@@ -16,12 +18,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class BanList extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("banlist", $core);
+	public function __construct(Essentials $manager) {
+        parent::__construct("banlist", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.banlist");
         $this->setUsage("<players : ips>");
@@ -30,30 +32,30 @@ class BanList extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /banlist " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /banlist " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {
                 case "players":
-                    $list = $this->core->getEssentials()->getNameBans()->getEntries();
+                    $list = $this->manager->getNameBans()->getEntries();
                     $message = implode(", ", array_map(function(BanEntry $entry) {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Banned Players (x" . count($list)  . "):");
+                    $sender->sendMessage(Core::PREFIX . "Banned Players (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
                 case "ips":
-                    $list = $this->core->getEssentials()->getIPBans()->getEntries();
+                    $list = $this->manager->getIPBans()->getEntries();
                     $message = implode(", ", array_map(function(BanEntry $entry) {
                         return $entry->getName();
                     }, $list));
 
-                    $sender->sendMessage($this->core->getPrefix() . "Banned Ips (x" . count($list)  . "):");
+                    $sender->sendMessage(Core::PREFIX . "Banned Ips (x" . count($list)  . "):");
                     $sender->sendMessage(TextFormat::GRAY . $message);
                 break;
             }

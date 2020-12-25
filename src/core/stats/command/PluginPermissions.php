@@ -6,6 +6,8 @@ namespace core\stats\command;
 
 use core\Core;
 
+use core\stats\Stats;
+
 use core\utils\PocketMine;
 
 use pocketmine\command\{
@@ -14,17 +16,19 @@ use pocketmine\command\{
     ConsoleCommandSender
 };
 
+use pocketmine\Server;
+
 use pocketmine\plugin\PluginBase;
 
 use pocketmine\permission\Permission;
 
 class PluginPermissions extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("pluginpermissions", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("pluginpermissions", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setAliases(["pluginperm", "pp"]);
         $this->setPermission("core.stats.command.pluginpermissions");
@@ -34,23 +38,23 @@ class PluginPermissions extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /pluginpermissions " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /pluginpermissions " . $this->getUsage());
             return false;
         }
-        $plugin = (strtolower($args[0]) === "pocketmine" or strtolower($args[0]) === "pmmp") ? "pocketmine" : $this->core->getServer()->getPluginManager()->getPlugin($args[0]);
+        $plugin = (strtolower($args[0]) === "pocketmine" or strtolower($args[0]) === "pmmp") ? "pocketmine" : Server::getInstance()->getPluginManager()->getPlugin($args[0]);
 
         if($plugin === null) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Plugin");
+            $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Plugin");
             return false;
         }
         $permissions = ($plugin instanceof PluginBase) ? $plugin->getDescription()->getPermissions() : PocketMine::getPocketMinePermissions();
 
         if(empty($permissions)) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $plugin->getName() . " does not have any Permissions");
+            $sender->sendMessage(Core::ERROR_PREFIX . $plugin->getName() . " does not have any Permissions");
             return false;
         } else {
             $pageHeight = $sender instanceof ConsoleCommandSender ? 48 : 6;
@@ -64,11 +68,11 @@ class PluginPermissions extends PluginCommand {
             } else {
                 $pageNumber = $args[1];
             }
-            $sender->sendMessage($this->core->getPrefix() . "List of all Plugin Permissions from " . ($plugin instanceof PluginBase) ? $plugin : "PocketMine-MP (" . $pageNumber . " / " . $maxPageNumber . ") :");
+            $sender->sendMessage(Core::PREFIX . "List of all Plugin Permissions from " . ($plugin instanceof PluginBase) ? $plugin : "PocketMine-MP (" . $pageNumber . " / " . $maxPageNumber . ") :");
 
             foreach($chunkedPermissions[$pageNumber - 1] as $permission) {
                 if($permission instanceof Permission) {
-                    $sender->sendMessage($this->core->getPrefix() . '- ' . $permission->getName());
+                    $sender->sendMessage(Core::PREFIX . '- ' . $permission->getName());
                 }
             }
             return true;

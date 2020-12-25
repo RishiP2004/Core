@@ -7,7 +7,11 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use core\utils\PocketMine;
+
+use pocketmine\Server;
 
 use pocketmine\command\{
     PluginCommand,
@@ -17,12 +21,12 @@ use pocketmine\command\{
 use pocketmine\math\Vector3;
 
 class Teleport extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("teleport", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("teleport", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.teleport");
         $this->setUsage("[target : all] <player : x> <y> <z> [<y-rot> <x-rot>]");
@@ -31,11 +35,11 @@ class Teleport extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 4) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /teleport " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /teleport " . $this->getUsage());
             return false;
         }
         $target = null;
@@ -45,23 +49,23 @@ class Teleport extends PluginCommand {
             if($sender instanceof CorePlayer) {
                 $target = $sender;
             } else {
-                $sender->sendMessage($this->core->getErrorPrefix() . "Provide a Player");
+                $sender->sendMessage(Core::ERROR_PREFIX . "Provide a Player");
                 return false;
             }
             if(count($args) === 1) {
                 if($args[0] === "all") {
 					if(!$sender->hasPermission($this->getPermission() . ".all")) {
-						$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for Teleporting all");
+						$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission for Teleporting all");
 						return false;
 					}
-                    foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+                    foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
                         $target = $onlinePlayer;
                     }
                 } else {
                     $target = $sender->getServer()->getPlayer($args[0]);
 
                     if($target === null) {
-                        $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+                        $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
                         return false;
                     }
                 }
@@ -70,7 +74,7 @@ class Teleport extends PluginCommand {
             $target = $sender->getServer()->getPlayer($args[0]);
 
             if($target === null) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+                $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
                 return false;
             }
             if(count($args) === 2) {
@@ -78,17 +82,17 @@ class Teleport extends PluginCommand {
 
                 if($args[0] === "all") {
 					if(!$sender->hasPermission($this->getPermission() . ".all")) {
-						$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission for Teleporting all");
+						$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission for Teleporting all");
 						return false;
 					}
-                    foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+                    foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
                         $target = $onlinePlayer;
                     }
                 } else {
                     $target = $sender->getServer()->getPlayer($args[0]);
 
                     if($target === null) {
-                        $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not a valid Player");
+                        $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
                         return false;
                     }
                 }
@@ -96,8 +100,8 @@ class Teleport extends PluginCommand {
         }
         if(count($args) < 3) {
             $origin->teleport($target);
-            $origin->sendMessage($this->core->getPrefix() . "Teleported to " . $target->getName());
-            $target->sendMessage($this->core->getPrefix() . $sender->getName() . " Teleported to you");
+            $origin->sendMessage(Core::PREFIX . "Teleported to " . $target->getName());
+            $target->sendMessage(Core::PREFIX . $sender->getName() . " Teleported to you");
             return true;
         } else if($target->getLevel() !== null) {
             if(count($args) === 4 or \count($args) === 6) {
@@ -116,7 +120,7 @@ class Teleport extends PluginCommand {
                 $pitch = (float) $args[$pos++];
             }
             $target->teleport(new Vector3($x, $y, $z), $yaw, $pitch);
-            $target->sendMessage($this->core->getPrefix() . "Teleported to X: " . round($x, 2) . " Y: " . round($y, 2) . " Z: " . round($z, 2));
+            $target->sendMessage(Core::PREFIX . "Teleported to X: " . round($x, 2) . " Y: " . round($y, 2) . " Z: " . round($z, 2));
             return true;
         }
         return true;

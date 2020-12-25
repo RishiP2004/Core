@@ -7,6 +7,8 @@ namespace core\essentials\permission;
 use core\Core;
 use core\CoreUser;
 
+use core\stats\Stats;
+
 use core\essentials\Essentials;
 
 use pocketmine\permission\BanEntry;
@@ -63,7 +65,7 @@ class BlockList extends \pocketmine\permission\BanList {
 
         $this->list[$entry->getName()] = $entry;
 
-        Core::getInstance()->getStats()->getCoreUser($target, function($user) use($source, $reason, $expires) {
+        Stats::getInstance()->getCoreUser($target, function($user) use($source, $reason, $expires) {
 			Core::getInstance()->getDatabase()->executeInsert("sentences.register", [
 				"xuid" => $user->getXuid(),
 				"registerDate" => date("m:d:y h:A"),
@@ -79,7 +81,7 @@ class BlockList extends \pocketmine\permission\BanList {
     }
 
     public function remove(string $name) {
-		Core::getInstance()->getStats()->getCoreUser($name, function($user) use ($name) {
+		Stats::getInstance()->getCoreUser($name, function($user) use ($name) {
 			Core::getInstance()->getDatabase()->executeChange("sentences.delete", [
 				"xuid" => $user->getXuid(),
 				"listType" => $this->type,

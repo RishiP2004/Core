@@ -7,7 +7,11 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+use core\network\Network;
 use core\network\server\Lobby;
+
+use pocketmine\Server;
 
 use pocketmine\command\{
     PluginCommand,
@@ -17,12 +21,12 @@ use pocketmine\command\{
 use pocketmine\level\Location;
 
 class Spawn extends PluginCommand {
-    private $core;
-    
-    public function __construct(Core $core) {
-        parent::__construct("spawn", $core);
-       
-        $this->core = $core;
+	private $manager;
+
+	public function __construct(Essentials $manager) {
+		parent::__construct("spawn", Core::getInstance());
+
+		$this->manager = $manager;
        
         $this->setPermission("core.essentials.defaults.command.spawn");
         $this->setUsage("[player]");
@@ -32,43 +36,43 @@ class Spawn extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(isset($args[0])) {
 			if(!$sender->hasPermission($this->getPermission() . ".other")) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+				$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
 				return false;
 			}
-            $player = $this->core->getServer()->getPlayer($args[0]);
+            $player = Server::getInstance()->getPlayer($args[0]);
 
             if(!$player instanceof CorePlayer) {
-                $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
+                $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not Online");
                 return false;
             } else {
             	if(($this->getName() === "lobby" or $this->getName() === "hub") && !$player->getCoreUser()->getServer() instanceof Lobby) {
-            		$player->transfer($this->core->getNetwork()->getServer("Lobby")->getIp(), $this->core->getNetwork()->getServer("Lobby")->getPort());
-					$sender->sendMessage($this->core->getPrefix() . "Sent " . $player->getName() . " to the Hub");
-					$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Sent you to the Hub");
+            		$player->transfer(Network::getInstance()->getServer("Lobby")->getIp(), Network::getInstance()->getServer("Lobby")->getPort());
+					$sender->sendMessage(Core::PREFIX . "Sent " . $player->getName() . " to the Hub");
+					$player->sendMessage(Core::PREFIX . $sender->getName() . " Sent you to the Hub");
 					return true;
 				}
-            	$player->teleport(Location::fromObject($this->core->getServer()->getDefaultLevel()->getSpawnLocation(), $this->core->getServer()->getDefaultLevel()));
-				$sender->sendMessage($this->core->getPrefix() . "Teleported " . $player->getName() . " to Spawn");
-				$player->sendMessage($this->core->getPrefix() . $sender->getName() . " Teleported you to Spawn");
+            	$player->teleport(Location::fromObject(Server::getInstance()->getDefaultLevel()->getSpawnLocation(), Server::getInstance()->getDefaultLevel()));
+				$sender->sendMessage(Core::PREFIX . "Teleported " . $player->getName() . " to Spawn");
+				$player->sendMessage(Core::PREFIX . $sender->getName() . " Teleported you to Spawn");
                 return true;
             }
         }
         if(!$sender instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You must be a Player to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
             return false;
         } else {
 			if(($this->getName() === "lobby" or $this->getName() === "hub") && !$sender->getCoreUser()->getServer() instanceof Lobby) {
-				$sender->transfer($this->core->getNetwork()->getServer("Lobby")->getIp(), $this->core->getNetwork()->getServer("Lobby")->getPort());
-				$sender->sendMessage($this->core->getPrefix() . "Transferred to the Hub");
+				$sender->transfer(Network::getInstance()->getServer("Lobby")->getIp(), Network::getInstance()->getServer("Lobby")->getPort());
+				$sender->sendMessage(Core::PREFIX . "Transferred to the Hub");
 				return true;
 			}
-			$sender->teleport(Location::fromObject($this->core->getServer()->getDefaultLevel()->getSpawnLocation(), $this->core->getServer()->getDefaultLevel()));
-			$sender->sendMessage($this->core->getPrefix() . "Teleported to Spawn");
+			$sender->teleport(Location::fromObject(Server::getInstance()->getDefaultLevel()->getSpawnLocation(), Server::getInstance()->getDefaultLevel()));
+			$sender->sendMessage(Core::PREFIX . "Teleported to Spawn");
 			return true;
         }
     }

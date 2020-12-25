@@ -8,18 +8,20 @@ use core\Core;
 
 use core\utils\SubCommand;
 
+use core\broadcast\Broadcast;
+
 use pocketmine\command\CommandSender;
 
 use pocketmine\utils\TextFormat;
 
 class Help extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Broadcast $manager) {
+		$this->manager = $manager;
+	}
 
-    public function canUse(CommandSender $sender) : bool {
+	public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.broadcast.subcommand.help");
     }
 
@@ -40,7 +42,7 @@ class Help extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Broadcast Help:");
+        $sender->sendMessage(Core::PREFIX . "Broadcast Help:");
         $sender->sendMessage(TextFormat::GRAY . "/broadcast help");
         $sender->sendMessage(TextFormat::GRAY . "/broadcast sendmessage <message>");
         $sender->sendMessage(TextFormat::GRAY . "/broadcast sendpopup <popup>");

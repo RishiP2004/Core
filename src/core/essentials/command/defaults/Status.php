@@ -6,6 +6,10 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -17,12 +21,12 @@ use pocketmine\utils\{
 };
 
 class Status extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("status", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("status", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.status");
         $this->setDescription("Check the Server's Status");
@@ -30,13 +34,13 @@ class Status extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
             $rUsage = Utils::getRealMemoryUsage();
             $mUsage = Utils::getMemoryUsage(true);
 
-            $sender->sendMessage($this->core->getPrefix() . "Server status:");
+            $sender->sendMessage(Core::PREFIX . "Server status:");
 
             $time = \microtime(\true) - \pocketmine\START_TIME;
             $seconds = \floor($time % 60);
@@ -58,10 +62,10 @@ class Status extends PluginCommand {
             $uptime = ($minutes !== null ? ($hours !== null ? ($days !== null ? $days . " days " : "") . $hours . " hours " : "") . $minutes . " minutes " : "") . $seconds . " seconds";
 
             $sender->sendMessage(TextFormat::GRAY . "Uptime: " . $uptime);
-            $sender->sendMessage(TextFormat::GRAY . "Current TPS: " . $this->core->getServer()->getTicksPerSecond() . "(" . $this->core->getServer()->getTickUsage() . "%)");
-            $sender->sendMessage(TextFormat::GRAY . "Average TPS: " . $this->core->getServer()->getTicksPerSecondAverage() . "(" . $this->core->getServer()->getTickUsageAverage() . "%)");
-            $sender->sendMessage(TextFormat::GRAY . "Network Upload: " . round($this->core->getServer()->getNetwork()->getUpload() / 1024, 2) . " kB/s");
-            $sender->sendMessage(TextFormat::GRAY . "Network Download: " . round($this->core->getServer()->getNetwork()->getDownload() / 1024, 2) . " kB/s");
+            $sender->sendMessage(TextFormat::GRAY . "Current TPS: " . Server::getInstance()->getTicksPerSecond() . "(" . Server::getInstance()->getTickUsage() . "%)");
+            $sender->sendMessage(TextFormat::GRAY . "Average TPS: " . Server::getInstance()->getTicksPerSecondAverage() . "(" . Server::getInstance()->getTickUsageAverage() . "%)");
+            $sender->sendMessage(TextFormat::GRAY . "Network Upload: " . round(Server::getInstance()->getNetwork()->getUpload() / 1024, 2) . " kB/s");
+            $sender->sendMessage(TextFormat::GRAY . "Network Download: " . round(Server::getInstance()->getNetwork()->getDownload() / 1024, 2) . " kB/s");
             $sender->sendMessage(TextFormat::GRAY . "Thread Count: " . Utils::getThreadCount());
             $sender->sendMessage(TextFormat::GRAY . "Main Thread Memory: " . number_format(round(($mUsage[0] / 1024) / 1024, 2)) . " MB");
             $sender->sendMessage(TextFormat::GRAY . "Total Memory: " . number_format(round(($mUsage[1] / 1024) / 1024, 2)) . " MB");
@@ -69,10 +73,10 @@ class Status extends PluginCommand {
             $sender->sendMessage(TextFormat::GRAY . "Heap Memory: " . number_format(round(($rUsage[0] / 1024) / 1024, 2)) . " MB");
             $sender->sendMessage(TextFormat::GRAY . "Maximum Memory (System): " . number_format(round(($mUsage[2] / 1024) / 1024, 2)) . " MB");
 
-            if($this->core->getServer()->getProperty("memory.global-limit") > 0) {
-                $sender->sendMessage(TextFormat::GRAY . "Maximum Memory (Manager): " . number_format(round($this->core->getServer()->getProperty("memory.global-limit"), 2)) . " MB");
+            if(Server::getInstance()->getProperty("memory.global-limit") > 0) {
+                $sender->sendMessage(TextFormat::GRAY . "Maximum Memory (Manager): " . number_format(round(Server::getInstance()->getProperty("memory.global-limit"), 2)) . " MB");
             }
-            foreach($this->core->getServer()->getLevels() as $level) {
+            foreach(Server::getInstance()->getLevels() as $level) {
                 $levelName = $level->getFolderName() !== $level->getName() ? " (" . $level->getName() . ")" : "";
                 $timeColor = $level->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
 

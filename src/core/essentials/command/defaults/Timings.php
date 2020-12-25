@@ -7,6 +7,8 @@ namespace core\essentials\command\defaults;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -19,12 +21,12 @@ use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\Server;
 
 class Timings extends PluginCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("timings", $core);
+	public function __construct(Essentials $manager) {
+		parent::__construct("timings", Core::getInstance());
 
-        $this->core = $core;
+		$this->manager = $manager;
 
         $this->setPermission("core.essentials.defaults.command.timings");
         $this->setUsage("<reload : on : off : paste>");
@@ -33,28 +35,28 @@ class Timings extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 1) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /timings " . $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /timings " . $this->getUsage());
             return false;
         } else {
             switch(strtolower($args[0])) {
                 case "reload":
                     TimingsHandler::reload();
-                    $sender->sendMessage($this->core->getPrefix() . "Timings Reloaded");
+                    $sender->sendMessage(Core::PREFIX . "Timings Reloaded");
                 break;
                 case "on":
                     TimingsHandler::setEnabled(true);
-                    $sender->sendMessage($this->core->getPrefix() . "Timings Enabled");
+                    $sender->sendMessage(Core::PREFIX . "Timings Enabled");
                 break;
                 case "off":
                     TimingsHandler::setEnabled(false);
-                    $sender->sendMessage($this->core->getPrefix() . "Timings Disabled");
+                    $sender->sendMessage(Core::PREFIX . "Timings Disabled");
                 break;
                 case "paste":
-                    $sampleTime = \microtime(true) - $this->core->getEssentials()->timingStart;
+                    $sampleTime = \microtime(true) - $this->manager->timingStart;
                     $index = 0;
                     $timingFolder = $sender->getServer()->getDataPath() . "timings/";
 
@@ -113,16 +115,16 @@ class Timings extends PluginCommand {
                                     }
                                 }
                                 if(!isset($pasteId)) {
-                                    $sender->sendMessage(Core::getInstance()->getPrefix() . "Timings Error");
+                                    $sender->sendMessage(Core::ERROR_PREFIX . "Timings Error");
                                 } else {
-                                    $sender->sendMessage(Core::getInstance()->getPrefix() . "Timings Uploaded to " . "http://paste.ubuntu.com/" . $pasteId . "/");
-                                    $sender->sendMessage(Core::getInstance()->getPrefix() . "Timings Read: " . "http://" . $sender->getServer()->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . \urlencode($pasteId));
+                                    $sender->sendMessage(Core::PREFIX. "Timings Uploaded to " . "http://paste.ubuntu.com/" . $pasteId . "/");
+                                    $sender->sendMessage(Core::PREFIX . "Timings Read: " . "http://" . $sender->getServer()->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . \urlencode($pasteId));
                                 }
                             }
                         });
                     } else {
                         fclose($fileTimings);
-                        $sender->sendMessage($this->core->getPrefix() . "Timings Written to " . $timings);
+                        $sender->sendMessage(Core::PREFIX . "Timings Written to " . $timings);
                     }
                 break;
             }

@@ -6,6 +6,8 @@ namespace core\social;
 
 use core\Core;
 
+use core\utils\Manager;
+
 use core\social\command\Discord;
 
 use CortexP\DiscordWebHookAPI\{
@@ -14,19 +16,24 @@ use CortexP\DiscordWebHookAPI\{
 };
 use twitter\Twitter;
 
-class Social implements Access {
-    private $core;
-
-    public function __construct(Core $core) {
-        $this->core = $core;
-
+class Social extends Manager implements Access {
+	public static $instance = null;
+	
+    public function init() {
+    	self::$instance = $this;
+    	
 		if(!empty(self::WEB_HOOK_URL)) {
-			$this->core->getServer()->getCommandMap()->register(Discord::class, new Discord($core));
+			$this->registerCommand(Discord::class, new Discord($this));
 		}
 		if(!empty(self::KEY && self::SECRET && self::TOKEN && self::TOKEN_SECRET)) {
-			$this->core->getServer()->getCommandMap()->register(\core\social\command\Twitter::class, new \core\social\command\Twitter($this->core));
+			$this->registerCommand(\core\social\command\Twitter::class, new \core\social\command\Twitter($this));
 		}
+		$this->registerListener(new SocialListener($this), Core::getInstance());
     }
+    
+    public static function getInstance() : self {
+		return self::$instance;
+	}
 
 	public function sendToDiscord(Message $message) {
     	if(!empty($this))

@@ -6,6 +6,8 @@ namespace core\network\command\subCommand;
 
 use core\Core;
 
+use core\network\Network;
+
 use core\utils\{
     SubCommand,
     Math
@@ -14,11 +16,11 @@ use core\utils\{
 use pocketmine\command\CommandSender;
 
 class Time extends SubCommand {
-    private $core;
+	private $manager;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
-    }
+	public function __construct(Network $manager) {
+		$this->manager = $manager;
+	}
 
     public function canUse(CommandSender $sender) : bool {
         return $sender->hasPermission("core.network.subcommand.time");
@@ -41,7 +43,7 @@ class Time extends SubCommand {
     }
 
     public function execute(CommandSender $sender, array $args) : bool {
-        $sender->sendMessage($this->core->getPrefix() . "Time remaining until Restart: " . Math::getFormattedTime($this->core->getNetwork()->getTimer()->getTime()));
+        $sender->sendMessage(Core::PREFIX . "Time remaining until Restart: " . Math::getFormattedTime($this->manager->getTimer()->getTime()));
         return true;
     }
 }

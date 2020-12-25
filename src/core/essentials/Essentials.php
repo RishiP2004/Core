@@ -7,6 +7,8 @@ namespace core\essentials;
 use core\Core;
 use core\CorePlayer;
 
+use core\utils\Manager;
+
 use core\essentials\command\{
 	Chat,
     ClearInventory,
@@ -52,7 +54,6 @@ use core\essentials\command\defaults\{
     Spawn,
     Status,
     Stop,
-    Summon,
     Teleport,
     Tell,
     Time,
@@ -69,8 +70,10 @@ use core\essentials\command\defaults\{
 
 use pocketmine\command\Command;
 
-class Essentials {
-    private $core;
+use pocketmine\Server;
+
+class Essentials extends Manager {
+	public static $instance = null;
 
     public $timingStart = 0;
 
@@ -81,20 +84,20 @@ class Essentials {
     const BLOCK = 1;
     const MUTE = 2;
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function init() {
+    	self::$instance = $this;
 
-        $this->core->getDatabase()->executeGeneric("sentences.init");
+        Core::getInstance()->getDatabase()->executeGeneric("sentences.init");
 
-		$core->getServer()->getCommandMap()->register(Chat::class, new Chat($this->core));
-        $core->getServer()->getCommandMap()->register(ClearInventory::class, new ClearInventory($this->core));
-        $core->getServer()->getCommandMap()->register(Fly::class, new Fly($this->core));
-        $core->getServer()->getCommandMap()->register(Hud::class, new Hud($this->core));
-        $core->getServer()->getCommandMap()->register(Jump::class, new Jump($this->core));
-		$core->getServer()->getCommandMap()->register(Location::class, new Location($this->core));
-        $core->getServer()->getCommandMap()->register(Ping::class, new Ping($this->core));
-        $core->getServer()->getCommandMap()->register(Sudo::class, new Sudo($this->core));
-        $core->getServer()->getCommandMap()->register(World::class, new World($this->core));
+        $this->registerCommand(Chat::class, new Chat($this));
+		$this->registerCommand(ClearInventory::class, new ClearInventory($this));
+		$this->registerCommand(Fly::class, new Fly($this));
+		$this->registerCommand(Hud::class, new Hud($this));
+		$this->registerCommand(Jump::class, new Jump($this));
+		$this->registerCommand(Location::class, new Location($this));
+		$this->registerCommand(Ping::class, new Ping($this));
+		$this->registerCommand(Sudo::class, new Sudo($this));
+		$this->registerCommand(World::class, new World($this));
 
         $commands = [
             "ban",
@@ -140,7 +143,7 @@ class Essentials {
         ];
 
         foreach($commands as $command) {
-            $commandMap = $this->core->getServer()->getCommandMap();
+            $commandMap = Server::getInstance()->getCommandMap();
             $command = $commandMap->getCommand($command);
 
             if($command instanceof Command) {
@@ -150,56 +153,60 @@ class Essentials {
 		foreach([$this->getNameBans(), $this->getIpBans(), $this->getNameBlocks(), $this->getIpBlocks(), $this->getNameMutes(), $this->getIpMutes()] as $type) {
 			$type->load();
 		}
-        $core->getServer()->getCommandMap()->register(Ban::class, new Ban($this->core));
-        $core->getServer()->getCommandMap()->register(BanIp::class, new BanIp($this->core));
-        $core->getServer()->getCommandMap()->register(BanList::class, new BanList($this->core));
-        $core->getServer()->getCommandMap()->register(Block::class, new Block($this->core));
-        $core->getServer()->getCommandMap()->register(BlockIp::class, new BlockIp($this->core));
-        $core->getServer()->getCommandMap()->register(BlockList::class, new BlockList($this->core));
-        $core->getServer()->getCommandMap()->register(DefaultGamemode::class, new DefaultGamemode($this->core));
-        $core->getServer()->getCommandMap()->register(Deop::class, new Deop($this->core));
-        $core->getServer()->getCommandMap()->register(Difficulty::class, new Difficulty($this->core));
-        $core->getServer()->getCommandMap()->register(DumpMemory::class, new DumpMemory($this->core));
-        $core->getServer()->getCommandMap()->register(Effect::class, new Effect($this->core));
-        $core->getServer()->getCommandMap()->register(Enchant::class, new Enchant($this->core));
-        $core->getServer()->getCommandMap()->register(Gamemode::class, new Gamemode($this->core));
-        $core->getServer()->getCommandMap()->register(Help::class, new Help($this->core));
-        $core->getServer()->getCommandMap()->register(Information::class, new Information($this->core));
-        $core->getServer()->getCommandMap()->register(Item::class, new Item($this->core));
-        $core->getServer()->getCommandMap()->register(Kick::class, new Kick($this->core));
-        $core->getServer()->getCommandMap()->register(Kill::class, new Kill($this->core));
-        $core->getServer()->getCommandMap()->register(Lists::class, new Lists($this->core));
-        $core->getServer()->getCommandMap()->register(Mute::class, new Mute($this->core));
-        $core->getServer()->getCommandMap()->register(MuteIp::class, new MuteIp($this->core));
-        $core->getServer()->getCommandMap()->register(MuteList::class, new MuteList($this->core));
-        $core->getServer()->getCommandMap()->register(Op::class, new Op($this->core));
-        $core->getServer()->getCommandMap()->register(Particle::class, new Particle($this->core));
-        $core->getServer()->getCommandMap()->register(Plugins::class, new Plugins($this->core));
-        $core->getServer()->getCommandMap()->register(Reload::class, new Reload($this->core));
-        $core->getServer()->getCommandMap()->register(Save::class, new Save($this->core));
-        $core->getServer()->getCommandMap()->register(SetSpawn::class, new SetSpawn($this->core));
-        $core->getServer()->getCommandMap()->register(Spawn::class, new Spawn($this->core));
-        $core->getServer()->getCommandMap()->register(Scoreboard::class, new Scoreboard($this->core));
-        $core->getServer()->getCommandMap()->register(Status::class, new Status($this->core));
-        $core->getServer()->getCommandMap()->register(Stop::class, new Stop($this->core));
-        $core->getServer()->getCommandMap()->register(Summon::class, new Summon($this->core));
-        $core->getServer()->getCommandMap()->register(Teleport::class, new Teleport($this->core));
-        $core->getServer()->getCommandMap()->register(Tell::class, new Tell($this->core));
-        $core->getServer()->getCommandMap()->register(Time::class, new Time($this->core));
-        $core->getServer()->getCommandMap()->register(Timings::class, new Timings($this->core));
-        $core->getServer()->getCommandMap()->register(Transfer::class, new Transfer($this->core));
-        $core->getServer()->getCommandMap()->register(Unban::class, new Unban($this->core));
-        $core->getServer()->getCommandMap()->register(UnbanIp::class, new UnbanIp($this->core));
-        $core->getServer()->getCommandMap()->register(Unblock::class, new Unblock($this->core));
-        $core->getServer()->getCommandMap()->register(UnblockIp::class, new UnblockIp($this->core));
-        $core->getServer()->getCommandMap()->register(Unmute::class, new Unmute($this->core));
-        $core->getServer()->getCommandMap()->register(UnmuteIp::class, new UnmuteIp($this->core));
-        $core->getServer()->getCommandMap()->register(Whitelist::class, new Whitelist($this->core));
-		$core->getServer()->getPluginManager()->registerEvents(new EssentialsListener($core), $core);
+		$this->registerCommand(Ban::class, new Ban($this));
+		$this->registerCommand(BanIp::class, new BanIp($this));
+		$this->registerCommand(BanList::class, new BanList($this));
+		$this->registerCommand(Block::class, new Block($this));
+		$this->registerCommand(BlockIp::class, new BlockIp($this));
+		$this->registerCommand(BlockList::class, new BlockList($this));
+		$this->registerCommand(DefaultGamemode::class, new DefaultGamemode($this));
+		$this->registerCommand(Deop::class, new Deop($this));
+		$this->registerCommand(Difficulty::class, new Difficulty($this));
+		$this->registerCommand(DumpMemory::class, new DumpMemory($this));
+		$this->registerCommand(Effect::class, new Effect($this));
+		$this->registerCommand(Enchant::class, new Enchant($this));
+		$this->registerCommand(Gamemode::class, new Gamemode($this));
+		$this->registerCommand(Help::class, new Help($this));
+		$this->registerCommand(Information::class, new Information($this));
+		$this->registerCommand(Item::class, new Item($this));
+		$this->registerCommand(Kick::class, new Kick($this));
+		$this->registerCommand(Kill::class, new Kill($this));
+		$this->registerCommand(Lists::class, new Lists($this));
+		$this->registerCommand(Mute::class, new Mute($this));
+		$this->registerCommand(MuteIp::class, new MuteIp($this));
+		$this->registerCommand(MuteList::class, new MuteList($this));
+		$this->registerCommand(Op::class, new Op($this));
+		$this->registerCommand(Particle::class, new Particle($this));
+		$this->registerCommand(Plugins::class, new Plugins($this));
+		$this->registerCommand(Reload::class, new Reload($this));
+		$this->registerCommand(Save::class, new Save($this));
+		$this->registerCommand(SetSpawn::class, new SetSpawn($this));
+		$this->registerCommand(Spawn::class, new Spawn($this));
+		$this->registerCommand(Scoreboard::class, new Scoreboard($this));
+		$this->registerCommand(Status::class, new Status($this));
+		$this->registerCommand(Stop::class, new Stop($this));
+		$this->registerCommand(Teleport::class, new Teleport($this));
+		$this->registerCommand(Tell::class, new Tell($this));
+		$this->registerCommand(Time::class, new Time($this));
+		$this->registerCommand(Timings::class, new Timings($this));
+		$this->registerCommand(Transfer::class, new Transfer($this));
+		$this->registerCommand(Unban::class, new Unban($this));
+		$this->registerCommand(UnbanIp::class, new UnbanIp($this));
+		$this->registerCommand(Unblock::class, new Unblock($this));
+		$this->registerCommand(UnblockIp::class, new UnblockIp($this));
+		$this->registerCommand(Unmute::class, new Unmute($this));
+		$this->registerCommand(UnmuteIp::class, new UnmuteIp($this));
+		$this->registerCommand(Whitelist::class, new Whitelist($this));
+
+		$this->registerListener(new EssentialsListener($this), Core::getInstance());
     }
 
-    public function tick() : void {
-    	foreach($this->core->getServer()->getOnlinePlayers() as $onlinePlayer) {
+	public static function getInstance() : self {
+		return self::$instance;
+	}
+
+	public function tick() : void {
+    	foreach(Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
 			if($onlinePlayer instanceof CorePlayer) {
 				if($onlinePlayer->hasHud($onlinePlayer::SCOREBOARD)) {
 					$onlinePlayer->setHud($onlinePlayer::SCOREBOARD, false);

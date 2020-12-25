@@ -4,8 +4,9 @@ declare(strict_types = 1);
 
 namespace core\essence\floatingtext;
 
-use core\Core;
 use core\CorePlayer;
+
+use core\network\Network;
 
 use pocketmine\level\Position;
 use pocketmine\level\particle\FloatingTextParticle;
@@ -40,8 +41,8 @@ abstract class FloatingText {
             "{TOTAL_ONLINE_PLAYERS}",
             "{TOTAL_MAX_SLOTS}"
         ], [
-            count(Core::getInstance()->getNetwork()->getTotalOnlinePlayers()),
-            Core::getInstance()->getNetwork()->getTotalMaxSlots()
+            count(Network::getInstance()->getTotalOnlinePlayers()),
+            Network::getInstance()->getTotalMaxSlots()
         ], $this->getText());
         $this->particle = new FloatingTextParticle($this->getPosition()->asVector3()->add(0.5, 0, 0.5), "", $text);
 

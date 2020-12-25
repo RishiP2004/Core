@@ -7,6 +7,10 @@ namespace core\essentials\command;
 use core\Core;
 use core\CorePlayer;
 
+use core\essentials\Essentials;
+
+use pocketmine\Server;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender
@@ -15,12 +19,12 @@ use pocketmine\command\{
 use pocketmine\event\player\PlayerChatEvent;
 
 class Sudo extends PluginCommand {
-    private $core;
+    private $manager;
 
-    public function __construct(Core $core) {
-        parent::__construct("sudo", $core);
+    public function __construct(Essentials $manager) {
+        parent::__construct("sudo", Core::getInstance());
 
-        $this->core = $core;
+        $this->manager = $manager;
 
         $this->setPermission("core.essentials.command.sudo");
         $this->setUsage("<player> <command line : chat; chat message>");
@@ -29,31 +33,31 @@ class Sudo extends PluginCommand {
 
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }
         if(count($args) < 2) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "Usage: /sudo " .  $this->getUsage());
+            $sender->sendMessage(Core::ERROR_PREFIX . "Usage: /sudo " .  $this->getUsage());
             return false;
         }
-        $player = $this->core->getServer()->getPlayer($args[0]);
+        $player = Server::getInstance()->getPlayer($args[0]);
 
         if(!$player instanceof CorePlayer) {
-            $sender->sendMessage($this->core->getErrorPrefix() . $args[0] . " is not Online");
+            $sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not Online");
             return false;
         } else {
 			$arg = implode(" ", $args);
 			
 			if(substr($arg, 0, 2) === "chat;") {
-				$this->core->getServer()->getPluginManager()->callEvent($event = new PlayerChatEvent($player, substr($arg, 2)));
+				Server::getInstance()->getPluginManager()->callEvent($event = new PlayerChatEvent($player, substr($arg, 2)));
 				
 				if(!$event->isCancelled()) {
-					$this->core->getServer()->broadcastMessage($this->core->getServer()->getLanguage()->translateString($event->getFormat(), [$event->getPlayer()->getDisplayName(), $event->getMessage()]), $event->getRecipients());
-					$sender->sendMessage($this->core->getPrefix() . "Sent Message: " . $args[1] . " as the Player " . $player->getName());
+					Server::getInstance()->broadcastMessage(Server::getInstance()->getLanguage()->translateString($event->getFormat(), [$event->getPlayer()->getDisplayName(), $event->getMessage()]), $event->getRecipients());
+					$sender->sendMessage(Core::PREFIX . "Sent Message: " . $args[1] . " as the Player " . $player->getName());
 				}
 			} else {
-				$this->core->getServer()->dispatchCommand($player, $arg);
-				$sender->sendMessage($this->core->getPrefix() . "Sent Command: " . $args[1] . " as the Player " . $player->getName());
+				Server::getInstance()->dispatchCommand($player, $arg);
+				$sender->sendMessage(Core::PREFIX. "Sent Command: " . $args[1] . " as the Player " . $player->getName());
 			}
 			return true;
         }

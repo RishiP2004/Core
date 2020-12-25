@@ -6,6 +6,8 @@ namespace core\essentials\command\defaults;
 
 use core\Core;
 
+use core\essentials\Essentials;
+
 use pocketmine\command\{
     PluginCommand,
     CommandSender,
@@ -15,12 +17,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Help extends PluginCommand {
-    private $core;
+    private $manager;
     
-    public function __construct(Core $core) {
-        parent::__construct("help", $core);
+    public function __construct(Essentials $manager) {
+        parent::__construct("help", Core::getInstance());
        
-        $this->core = $core;
+        $this->manager = $manager;
        
         $this->setPermission("core.essentials.defaults.command.help");
         $this->setUsage("[page]");
@@ -29,7 +31,7 @@ class Help extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         }	
 		if(count($args) === 0) {
@@ -65,7 +67,7 @@ class Help extends PluginCommand {
 			if($pageNumber < 1) {
 				$pageNumber = 1;
 			}
-			$sender->sendMessage($this->core->getPrefix() . "Help (" . $pageNumber . "/" . count($commands) . ")");
+			$sender->sendMessage(Core::PREFIX . "Help (" . $pageNumber . "/" . count($commands) . ")");
 			
 			if(isset($commands[$pageNumber - 1])) {
 				foreach($commands[$pageNumber - 1] as $command) {
@@ -77,11 +79,11 @@ class Help extends PluginCommand {
 			$cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($command));
 
 			if(!$cmd instanceof Command) {
-				$sender->sendMessage($this->core->getErrorPrefix() . "No Help for the Command: " . strtolower($command));
+				$sender->sendMessage(Core::ERROR_PREFIX . "No Help for the Command: " . strtolower($command));
 				return false;
 			} else {
 				if($cmd->testPermissionSilent($sender)) {
-					$message = $this->core->getErrorPrefix() . "Help for Command: /" . $cmd->getName();
+					$message = Core::ERROR_PREFIX . "Help for Command: /" . $cmd->getName();
 					$message .= TextFormat::GRAY . "Description: " . $cmd->getDescription() . "\n";
 					$message .= TextFormat::GRAY . "Usage: " . implode("\n", explode("\n", $cmd->getUsage())) . "\n";
 					$sender->sendMessage($message);

@@ -4,16 +4,9 @@ declare(strict_types = 1);
 
 namespace core\anticheat;
 
-use core\Core;
 use core\CorePlayer;
 
 use core\anticheat\cheat\AutoClicker;
-
-use core\mcpe\entity\{
-	AnimalBase,
-	MonsterBase
-};
-use core\mcpe\entity\object\ItemEntity;
 
 use pocketmine\event\Listener;
 
@@ -30,18 +23,18 @@ use pocketmine\entity\{
 	Monster
 };
 
-class AntiCheatListener implements Listener, Cheats {
-	private $core;
+class AntiCheatListener implements Listener {
+	private $manager;
 
-	public function __construct(Core $core) {
-		$this->core = $core;
+	public function __construct(AntiCheat $manager) {
+		$this->manager = $manager;
 	}
 
 	public function onPlayerInteract(PlayerInteractEvent $event) {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$autoClicker = $this->core->getAntiCheat()->getCheat(AutoClicker::AUTO_CLICKER);
+			$autoClicker = $this->manager->getCheat(AutoClicker::AUTO_CLICKER);
 
 			$autoClicker->set($player);
 			$autoClicker->onRun();
@@ -50,7 +43,6 @@ class AntiCheatListener implements Listener, Cheats {
 
 	public function onEntitySpawn(EntitySpawnEvent $event) {
 		$entity = $event->getEntity();
-		$data = $this->core->getAntiCheat();
 
 		if($entity instanceof Human) {
 			return;
@@ -58,28 +50,28 @@ class AntiCheatListener implements Listener, Cheats {
 		$despawn = null;
 		$uuid = uniqid();
 
-		if($entity instanceof AnimalBase or $entity instanceof Animal) {
-			$data->ids[$entity->getId()] = $uuid;
-			$data->animals[$uuid] = $entity;
+		if($entity instanceof Animal) {
+			$this->manager->ids[$entity->getId()] = $uuid;
+			$this->manager->animals[$uuid] = $entity;
 
-			if(count($data->animals) > self::MAX_ENTITIES["animals"]) {
-				$despawn = array_shift($data->animals);
+			if(count($this->manager->animals) > $this->manager::MAX_ENTITIES["animals"]) {
+				$despawn = array_shift($this->manager->animals);
 			}
 		}
-		if($entity instanceof MonsterBase or $entity instanceof Monster) {
-			$data->ids[$entity->getId()] = $uuid;
-			$data->monsters[$uuid] = $entity;
+		if($entity instanceof Monster) {
+			$this->manager->ids[$entity->getId()] = $uuid;
+			$this->manager->monsters[$uuid] = $entity;
 
-			if(count($data->monsters) > self::MAX_ENTITIES["monsters"]) {
-				$despawn = array_shift($data->monsters);
+			if(count($this->manager->monsters) > $this->manager::MAX_ENTITIES["monsters"]) {
+				$despawn = array_shift($this->manager->monsters);
 			}
 		}
-		if($entity instanceof ItemEntity or $entity instanceof \pocketmine\entity\object\ItemEntity) {
-			$data->ids[$entity->getId()] = $uuid;
-			$data->itemEntities[$uuid] = $entity;
+		if($entity instanceof \pocketmine\entity\object\ItemEntity) {
+			$this->manager->ids[$entity->getId()] = $uuid;
+			$this->manager->itemEntities[$uuid] = $entity;
 
-			if(count($data->itemEntities) > self::MAX_ENTITIES["items"]) {
-				$despawn = array_shift($data->itemEntities);
+			if(count($this->manager->itemEntities) > $this->manager::MAX_ENTITIES["items"]) {
+				$despawn = array_shift($this->manager->itemEntities);
 			}
 		}
 		if($despawn === null) {
@@ -93,25 +85,24 @@ class AntiCheatListener implements Listener, Cheats {
 
 	public function onEntityDespawn(EntityDespawnEvent $event) {
 		$entity = $event->getEntity();
-		$data = $this->core->getAntiCheat();
 
-		if(!isset($data->ids[$entity->getId()])) {
+		if(!isset($this->manager->ids[$entity->getId()])) {
 			return;
 		}
-		$uuid = $data->ids[$entity->getId()];
+		$uuid = $this->manager->ids[$entity->getId()];
 
-		unset($data->ids[$entity->getId()]);
+		unset($this->manager->ids[$entity->getId()]);
 
-		if(isset($data->animals[$uuid])) {
-			unset($data->animals[$uuid]);
+		if(isset($this->amanager->nimals[$uuid])) {
+			unset($this->manager->animals[$uuid]);
 			return;
 		}
-		if(isset($data->monsters[$uuid])) {
-			unset($data->monsters[$uuid]);
+		if(isset($this->manager->monsters[$uuid])) {
+			unset($this->manager->monsters[$uuid]);
 			return;
 		}
-		if(isset($data->itemEntities[$uuid])) {
-			unset($data->itemEntities[$uuid]);
+		if(isset($this->manager->itemEntities[$uuid])) {
+			unset($this->manager->itemEntities[$uuid]);
 			return;
 		}
 	}

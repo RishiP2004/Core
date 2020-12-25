@@ -6,6 +6,8 @@ namespace core\stats\command;
 
 use core\Core;
 
+use core\stats\Stats;
+
 use core\stats\rank\Rank;
 
 use pocketmine\command\{
@@ -16,12 +18,12 @@ use pocketmine\command\{
 use pocketmine\utils\TextFormat;
 
 class Ranks extends PluginCommand {
-    private $core;
+    private $manager;
     
-    public function __construct(Core $core) {
-        parent::__construct("ranks", $core);
+    public function __construct(Stats $manager) {
+        parent::__construct("ranks", Core::getInstance());
         
-        $this->core = $core;
+        $this->manager = $manager;
         
         $this->setPermission("core.stats.command.ranks");
         $this->setDescription("Check all the Ranks");
@@ -29,12 +31,12 @@ class Ranks extends PluginCommand {
     
     public function execute(CommandSender $sender, string $commandLabel, array $args) : bool {
         if(!$sender->hasPermission($this->getPermission())) {
-            $sender->sendMessage($this->core->getErrorPrefix() . "You do not have Permission to use this Command");
+            $sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
             return false;
         } else {
-            $sender->sendMessage($this->core->getPrefix() . "Ranks:");
+            $sender->sendMessage(Core::PREFIX . "Ranks:");
             
-            foreach($this->core->getStats()->getRanks() as $rank) {
+            foreach($this->manager->getRanks() as $rank) {
                 if($rank instanceof Rank) {
                     $sender->sendMessage(TextFormat::GRAY . "- " . $rank->getName() . ": " . TextFormat::YELLOW . $rank->getValue());
                 }

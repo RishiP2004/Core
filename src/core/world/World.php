@@ -6,6 +6,8 @@ namespace core\world;
 
 use core\Core;
 
+use core\utils\Manager;
+
 use core\world\area\{
     Area,
     Lobby,
@@ -15,23 +17,27 @@ use core\world\area\{
 
 use pocketmine\level\Position;
 
-class World {
-    private $core;
+class World extends Manager {
+    public static $instance = null;
 
     public $areas = [];
 
     public $players = [], $muted = [];
 
-    public function __construct(Core $core) {
-        $this->core = $core;
+    public function init() {
+    	self::$instance = $this;
 
         $this->initArea(new Lobby());
         $this->initArea(new Factions());
         $this->initArea(new FactionsWarzone());
-		$core->getServer()->getPluginManager()->registerEvents(new WorldListener($core), $core);
+		$this->registerListener(new WorldListener($this), Core::getInstance());
     }
 
-    public function initArea(Area $area) {
+    public static function getInstance() : self {
+    	return self::$instance;
+	}
+
+	public function initArea(Area $area) {
         $this->areas[$area->getName()] = $area;
     }
     /**
