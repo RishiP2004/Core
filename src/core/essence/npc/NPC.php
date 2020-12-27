@@ -125,7 +125,7 @@ abstract class NPC {
         $packet->uuid = $this->getUUID();
         $nameTag = $this->getNameTag();
 
-        if($this->getName() === "Factions" or $this->getName() === "Lobby") {
+        if($this->getName() === "Survival" or $this->getName() === "Lobby") {
             $server = Network::getInstance()->getServer($this->getName());
 
             if(!$server->isOnline()) {

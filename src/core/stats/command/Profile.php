@@ -40,15 +40,14 @@ class Profile extends PluginCommand {
         if(isset($args[0])) {
 			if(strtolower($args[0]) === "simple" or strtolower($args[0]) === "s") {
 				if(!isset($args[1])) {
-					$msg = Core::PREFIX . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"] . $sender->getCoreUser()->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
+					$msg = Core::PREFIX . "Your Global Profile:\n" . TextFormat::GRAY . "Rank: " . $sender->getCoreUser()->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::COIN_UNIT . $sender->getCoreUser()->getCoins() . $sender->getCoreUser()->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $sender->getCoreUser()->getServer()->getName();
 				} else {
 					switch(strtolower($args[1])) {
 						case "global":
 						break;
-						case "factions":
-						case "faction":
-						case "fac":
-							$msg = Core::PREFIX . "Your Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+						case "survival":
+						case "surv":
+							$msg = Core::PREFIX . "Your Survival Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 						break;
 						case "lobby":
 						case "hub":
@@ -63,6 +62,10 @@ class Profile extends PluginCommand {
 				return true;
 			}
 			$this->manager->getCoreUser($args[0], function($user) use ($sender, $args) {
+				if(!$sender->hasPermission($this->getPermission() . ".other")) {
+					$sender->sendMessage(Core::ERROR_PREFIX . "You do not have Permission to use this Command");
+					return false;
+				}
 				if(is_null($user)) {
 					$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 					return false;
@@ -79,15 +82,14 @@ class Profile extends PluginCommand {
 						if(!is_null($user->getServer())) {
 							$server = $user->getServer()->getName();
 						}
-						$msg = Core::PREFIX . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"]. $user->getCoins() . "\n" . TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $user->getBalance() . "\n" . TextFormat::GRAY . "Server: " . $server;
+						$msg = Core::PREFIX . $user->getName() . "'s Global Profile:\n" . TextFormat::GRAY . "Rank: " . $user->getRank()->getFormat() . "\n" . TextFormat::GRAY . "Coins: " . Statistics::COIN_UNIT . $user->getCoins() . "\n" . TextFormat::GRAY . "Server: " . $server;
 					} else {
 						switch(strtolower($args[1])) {
 							case "global":
 							break;
-							case "factions":
-							case "faction":
-							case "fac":
-								$msg = Core::PREFIX . $user->getName() . "'s Factions Profile:\n" . TextFormat::GRAY . "Coming Soon!";
+							case "survival":
+							case "surv":
+								$msg = Core::PREFIX . $user->getName() . "'s Survival Profile:\n" . TextFormat::GRAY . "Coming Soon!";
 							break;
 							case "lobby":
 							case "hub":

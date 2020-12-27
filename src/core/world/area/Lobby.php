@@ -45,12 +45,12 @@ class Lobby extends Area {
         return false;
     }
 
-    public function PvP() : bool {
+    public function damage() : bool {
         return false;
     }
 
     public function entityDamage() : bool {
-		return true;
+		return false;
 	}
 
 	public function usable() : bool {

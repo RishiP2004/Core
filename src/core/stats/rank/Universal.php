@@ -26,7 +26,10 @@ class Universal extends Rank {
 	}
 
 	public function getPermissions() : array {
-		return [];
+		return [
+			"core.stats.chat.time",
+			"core.essentials.command.fly"
+		];
 	}
 
     public function getInheritance() : ?Rank {
@@ -38,6 +41,6 @@ class Universal extends Rank {
     }
 
     public function getChatTime() : float {
-    	return 2;
+    	return 1;
     }
 }

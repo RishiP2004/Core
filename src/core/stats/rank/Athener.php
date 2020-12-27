@@ -10,7 +10,7 @@ class Athener extends Rank {
     public function __construct() {
         parent::__construct("Athener");
 
-        $this->setPaidPrice(25);
+        $this->setPaidPrice(30);
     }
 
     public function getFormat() : string {

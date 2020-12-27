@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace core\essence\npc;
 
 use core\Core;
-
+use core\network\Network;
 use core\utils\Entity;
 
 use pocketmine\Server;
@@ -67,8 +67,11 @@ class Lobby extends NPC {
 	}
 
     public function getCommands() : array {
+    	$ip = Network::getInstance()->getServer(\core\network\server\Lobby::class)->getIp();
+		$port = Network::getInstance()->getServer(\core\network\server\Lobby::class)->getPort();
+
         return [
-            "transfer play.athena.me 19132 {PLAYER}"
+            "transfer " . $ip . " " . $port . " {PLAYER}"
         ];
     }
 

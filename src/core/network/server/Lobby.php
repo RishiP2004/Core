@@ -11,6 +11,8 @@ use core\network\Network;
 
 use core\stats\Statistics;
 
+use core\utils\CustomItem;
+
 use scoreboard\{
 	Scoreboard,
 	ScoreboardAction,
@@ -58,14 +60,16 @@ class Lobby extends Server {
 				$scoreboard->setLine(3, TextFormat::GOLD . "     Total: " . count(Network::getInstance()->getTotalOnlinePlayers()) . "/" . Network::getInstance()->getTotalMaxSlots());
 				$scoreboard->setLine(4, TextFormat::GOLD . "     " . $this->getName() . ": " . count($this->getOnlinePlayers()) . "/" . $this->getMaxSlots());
 				$scoreboard->setLine(5, TextFormat::GRAY . "------------");
-				$scoreboard->setLine(6, TextFormat::GREEN . "Your Coins: " . Statistics::UNITS["coins"] . $player->getCoreUser()->getCoins());
-				$scoreboard->setLine(7, TextFormat::GREEN . "Your Balance: " .  Statistics::UNITS["balance"] . $player->getCoreUser()->getBalance());
+				$scoreboard->setLine(6, TextFormat::GREEN . "Your Coins: " . Statistics::COIN_UNIT . $player->getCoreUser()->getCoins());
 				$scoreboard->setLine(8, TextFormat::GREEN . "Your Rank: " . $player->getCoreUser()->getRank()->getFormat());
 				$scoreboard->setLine(9, TextFormat::GRAY . "------------");
 				$scoreboard->setLine(10, TextFormat::DARK_GREEN . "gratonepix.buycraft.net");
 				$scoreboard->addDisplay($player);
 			break;
 			case CorePlayer::POPUP:
+				if($player->getInventory()->getItemInHand() instanceof CustomItem) {
+					return;
+				}
 				$player->sendPopup(Core::PREFIX . "Welcome to the " . $this->getName());
 			break;
 		}

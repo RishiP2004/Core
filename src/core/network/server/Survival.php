@@ -23,15 +23,15 @@ use scoreboard\{
 
 use pocketmine\utils\TextFormat;
 
-class Factions extends Server {
+class Survival extends Server {
     public function __construct() {
-        parent::__construct("Factions");
+        parent::__construct("Survival");
 		
 		$this->setWhitelisted();
     }
 
     public function getIp() : string {
-        return "facs.gratonepix.me";
+        return "surv.gratonepix.me";
     }
 
     public function getPort() : int {
@@ -62,28 +62,16 @@ class Factions extends Server {
 				$scoreboard->setLine(3, TextFormat::GOLD . "     Total: " . count(Network::getInstance()->getTotalOnlinePlayers()) . "/" . Network::getInstance()->getTotalMaxSlots());
 				$scoreboard->setLine(4, TextFormat::GOLD . "     " . $this->getName() . ": " . count($this->getOnlinePlayers()) . "/" . $this->getMaxSlots());
 				$scoreboard->setLine(5, TextFormat::GRAY . "------------");
-				$scoreboard->setLine(6, TextFormat::GREEN . "Your Coins: " . Statistics::UNITS["coins"] . $player->getCoreUser()->getCoins());
-				$scoreboard->setLine(7, TextFormat::GREEN . "Your Balance: " .  Statistics::UNITS["balance"] . $player->getCoreUser()->getBalance());
+				$scoreboard->setLine(6, TextFormat::GREEN . "Your Coins: " . Statistics::COIN_UNIT . $player->getCoreUser()->getCoins());
+				//$scoreboard->setLine(7, TextFormat::GREEN . "Your Balance: " .  Statistics::BALANCE_UNIT . $player->getCoreUser()->getBalance());
 				$scoreboard->setLine(8, TextFormat::GREEN . "Your Rank: " . $player->getCoreUser()->getRank()->getFormat());
 				$scoreboard->setLine(9, TextFormat::GRAY . "------------");
 				$scoreboard->setLine(10, TextFormat::DARK_RED . "gratonepix.buycraft.net");
 				$scoreboard->addDisplay($player);
-				//TODO: Faction, etc
+				//TODO: Survival features
 			break;
 			case CorePlayer::POPUP:
 				$msg = Core::PREFIX . "Welcome to the " . $this->getName() . "\n";
-
-				if($player instanceof FactionsPlayer) {
-					if($player->isCombatTagged()) {
-						$msg .= Core::ERROR_PREFIX . "You are Combat Tagged for " . $player->getCombatTagTime() . " seconds\n";
-					}
-					if($player->isInCooldown($player::COOLDOWN_GAPPLE)) {
-						$msg .= Core::ERROR_PREFIX . "You are in Gapple Cooldown for " . $player->getCooldownTime($player::COOLDOWN_GAPPLE) . " seconds\n";
-					}
-					if($player->isInCooldown($player::COOLDOWN_ENDER_PEARL)) {
-						$msg .= Core::ERROR_PREFIX . "You are in Ender Pearl Cooldown for " . $player->getCooldownTime($player::COOLDOWN_GAPPLE) . " seconds\n";
-					}
-				}
 				$player->sendPopup($msg);
 			break;
 		}

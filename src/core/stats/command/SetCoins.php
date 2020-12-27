@@ -54,7 +54,7 @@ class SetCoins extends PluginCommand {
 				$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 				return false;
 			}
-			if($args[1] > Statistics::MAXIMUMS["coins"]) {
+			if($args[1] > Statistics::MAX_COINS) {
 				$sender->sendMessage(Core::ERROR_PREFIX . $user->getName() . " will have over the Maximum amount of Coins");
 				return false;
 			} else {
@@ -63,9 +63,9 @@ class SetCoins extends PluginCommand {
 				$player = Server::getInstance()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage(Core::PREFIX . $sender->getName() . " set your Coins to " . Statistics::UNITS["coins"] . $args[1]);
+					$player->sendMessage(Core::PREFIX . $sender->getName() . " set your Coins to " . Statistics::COIN_UNIT . $args[1]);
 				}
-				$sender->sendMessage(Core::PREFIX . "Set " . $user->getName() . "'s Coins to " . Statistics::UNITS["coins"] . $args[1]);
+				$sender->sendMessage(Core::PREFIX . "Set " . $user->getName() . "'s Coins to " . Statistics::COIN_UNIT . $args[1]);
 				return true;
 			}
 		});

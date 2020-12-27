@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS stats (
     ip VARCHAR(15),
     locale VARCHAR(6) DEFAULT 'en_us',
 	  coins BIGINT DEFAULT 0,
-	  balance BIGINT DEFAULT 0,
     rank VARCHAR(16) DEFAULT 'Player',
     permissions TEXT,
     cheatHistory TEXT,
@@ -20,6 +19,10 @@ CREATE TABLE IF NOT EXISTS stats (
 -- # { get
 -- # 	:key string
 SELECT * FROM stats WHERE xuid = :key OR username = :key;
+-- # }
+
+-- # { topCoins
+SELECT coins, username FROM stats;
 -- # }
 
 -- # { getAll
@@ -52,13 +55,12 @@ INSERT INTO stats (
 -- #    :ip string
 -- #    :locale string
 -- #    :coins int
--- #    :balance int
 -- #    :rank string
 -- #    :permissions string
 -- #    :cheatHistory string
 -- #    :server string | null
 -- #    :xuid string
-UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, balance = :balance, rank = :rank, permissions = :permissions, cheatHistory = :cheatHistory, server = :server WHERE xuid = :xuid;
+UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, rank = :rank, permissions = :permissions, cheatHistory = :cheatHistory, server = :server WHERE xuid = :xuid;
 -- # }
 
 -- # { delete

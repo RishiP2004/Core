@@ -23,16 +23,13 @@ use core\world\area\Area;
 
 use form\{
 	CustomFormResponse,
-	Form,
 	MenuForm,
 	CustomForm,
 	ServerSettingsForm
 };
 use form\element\{
 	Button,
-	Dropdown,
 	Image,
-	Input,
 	Label
 };
 
@@ -41,7 +38,6 @@ use pocketmine\Player;
 use pocketmine\network\SourceInterface;
 
 use pocketmine\network\mcpe\protocol\{
-	ActorEventPacket,
 	SetPlayerGameTypePacket,
 	ServerSettingsResponsePacket
 };
@@ -92,10 +88,6 @@ class CorePlayer extends Player {
 
     public function __construct(SourceInterface $interface, string $ip, int $port) {
 		parent::__construct($interface, $ip, $port);
-	}
-
-	public function __destruct() {
-		$this->setFishing(false);
 	}
 
 	public function setCore(Core $core) {
@@ -454,7 +446,7 @@ class CorePlayer extends Player {
 
                 $b2->setId(2);
 
-                $b3 = new Button(TextFormat::GRAY . "Factions", new Image($this->core->getNetwork()->getServer("Factions")->getIcon()));
+                $b3 = new Button(TextFormat::GRAY . "Survival", new Image($this->core->getNetwork()->getServer("Survival")->getIcon()));
 
                 $b3->setId(3);
 
@@ -477,13 +469,13 @@ class CorePlayer extends Player {
 									//$player->sendProfileForm("lobby", $this->user);
 								break;
 								case 3:
-									//$player->sendProfileForm("factions", $this->user);
+									//$player->sendProfileForm("survival", $this->user);
 								break;
 							}
 						}
 					},
 					function(Player $player) : void {
-						$player->sendMessage(Core::getInstance()->getPrefix() . "Closed Profile menu");
+						$player->sendMessage($this->core::PREFIX . "Closed Profile menu");
 					}
 				));
             break;
@@ -492,7 +484,6 @@ class CorePlayer extends Player {
 				$server = $this->getCoreUser()->getServer()->getName();
 				$rank = $this->getCoreUser()->getRank()->getFormat();
 				$coins = $this->getCoreUser()->getCoins();
-				$balance = $this->getCoreUser()->getBalance();
 				
 				if(!is_null($user)) {
 					if(!is_null($user->getServer())) {
@@ -502,18 +493,15 @@ class CorePlayer extends Player {
 					}
 					$rank = $user->getRank()->getFormat();
 					$coins = $user->getCoins();
-					$balance = $user->getBalance();
 					$profile = $user->getName() . "'s Profile";
 				} 
                 $l1 = new Label(TextFormat::GRAY . "Rank: " . $rank);
-                $l2 = new Label(TextFormat::GRAY . "Coins: " . Statistics::UNITS["coins"] . $coins);
-                $l3 = new Label(TextFormat::GRAY . "Balance: " . Statistics::UNITS["balance"] . $balance);
+                $l2 = new Label(TextFormat::GRAY . "Coins: " . Statistics::COIN_UNIT . $coins);
                 $l4 = new Label(TextFormat::GRAY . "Server: " . $server);
 
                 $data = [
                 	$l1,
 					$l2,
-					$l3,
 					$l4
                 ];
 				
@@ -525,77 +513,6 @@ class CorePlayer extends Player {
             break;
         }
     }
-
-    public function sendCurrencyChangeForm() {
-		$e1 = new Label(TextFormat::GRAY . "Your Coins: " . Statistics::UNITS["coins"] . $this->getCoreUser()->getCoins());
-
-		$e1->setValue(1);
-
-		$e2 = new Label(TextFormat::GRAY . "Your Balance: " . Statistics::UNITS["balance"] . $this->getCoreUser()->getBalance());
-
-		$e2->setValue(2);
-
-		$e3 = new Label(TextFormat::GRAY . "Value of a Coin (Transferred): " . Statistics::COIN_VALUE);
-
-		$e3->setValue(3);
-
-		$e4 = new Dropdown(TextFormat::GRAY . "Currency Type To Change Too", ["Coins", "Balance"]);
-
-		$e4->setValue(4);
-
-		$e5 = new Input(TextFormat::GRAY . "Amount to Exchange", "100");
-
-		$e5->setValue(5);
-
-		$elements = [
-			$e1,
-			$e2,
-			$e3,
-			$e4,
-			$e5
-		];
-
-		$this->sendForm(new CustomForm(TextFormat::GOLD . "Currency Exchange", $elements,
-			function(Player $player, CustomFormResponse $data) : void {
-				if($player instanceof CorePlayer) {
-					$type = $data->getDropdown()->getSelectedOption();
-					$amount = $data->getInput()->getValue();
-
-					if(!is_int((int) $amount)) {
-						$player->sendMessage($this->core::ERROR_PREFIX . "Not a valid Type or valid Amount inputted");
-						return;
-					}
-					$user = $player->getCoreUser();
-
-					if($type === "Coins") {
-						if($amount < Statistics::COIN_VALUE) {
-							$player->sendMessage($this->core::ERROR_PREFIX . "Amount must be greater than 1000 to switch to Coins");
-							return;
-						}
-						if($user->getBalance() < $amount) {
-							$player->sendMessage($this->core::ERROR_PREFIX . "You do not have enough Balance");
-							return;
-						}
-						$user->setCoins($amount / Statistics::COIN_VALUE);
-						$user->setBalance($user->getBalance() - $amount);
-						$player->sendMessage("Transferred " . $amount . " Balance to Coins");
-					}
-					if($type === "Balance") {
-						if($user->getCoins() < $amount) {
-							$player->sendMessage($this->core::ERROR_PREFIX . "You do not have enough Balance");
-							return;
-						}
-						$user->setBalance($user->getBalance() * Statistics::COIN_VALUE);
-						$user->setCoins($user->getCoins() - $amount);
-						$player->sendMessage("Transferred " . $amount . " Coins to Balance");
-					}
-				}
-			},
-			function(Player $player) : void {
-				$player->sendMessage($this->core::PREFIX . "Closed Currency Change menu");
-			}
-		));
-	}
 
 	public function getServerSettingsForm(string $server = "lobby") : ServerSettingsForm {
 		$elements = [
@@ -617,7 +534,7 @@ class CorePlayer extends Player {
 					new Label(TextFormat::GRAY . "Coming Soon!")
 				];
 				$image = new Image("http://icons.iconarchive.com/icons/double-j-design/diagram-free/128/settings-icon.png");
-				$form = new ServerSettingsForm($this->core::PREFIX . "Athena Factions Settings", $elements, $image,
+				$form = new ServerSettingsForm($this->core::PREFIX . "Athena Survival Settings", $elements, $image,
 					function(Player $player, CustomFormResponse $response) : void {
 
 					}

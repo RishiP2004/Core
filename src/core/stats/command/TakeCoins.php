@@ -63,9 +63,9 @@ class TakeCoins extends PluginCommand {
 				$player = Server::getInstance()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage(Core::PREFIX . $sender->getName() . " Took " . Statistics::UNITS["coins"] . $args[1] . " from you");
+					$player->sendMessage(Core::PREFIX . $sender->getName() . " Took " . Statistics::COIN_UNIT . $args[1] . " from you");
 				}
-				$sender->sendMessage(Core::PREFIX . "Took away " . Statistics::UNITS["coins"] . $args[1] . " from " . $user->getName());
+				$sender->sendMessage(Core::PREFIX . "Took away " . Statistics::COIN_UNIT . $args[1] . " from " . $user->getName());
 				return true;
 			}
         });

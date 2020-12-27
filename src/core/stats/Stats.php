@@ -25,19 +25,14 @@ use core\stats\rank\{
     Universal,
     YouTuber
 };
-use core\stats\task\{
-	TopEconomy
-};
+
 use core\stats\command\{
 	Accounts,
 	AddPlayerPermission,
 	BuyRank,
-	CurrencyChange,
 	DeleteAccount,
-	GiveBalance,
 	GiveCoins,
 	ListPlayerPermissions,
-	PayBalance,
 	PayCoins,
 	PluginPermissions,
 	Profile,
@@ -45,18 +40,12 @@ use core\stats\command\{
 	Ranks,
 	RemovePlayerPermission,
 	Servers,
-	SetBalance,
 	SetCoins,
 	SetRank,
-	TakeBalance,
 	TakeCoins,
-	TopBalance,
 	TopCoins,
 	UserInformation
 };
-
-use pocketmine\command\CommandSender;
-
 use pocketmine\entity\Skin;
 
 class Stats extends \core\utils\Manager implements Statistics {
@@ -101,12 +90,9 @@ class Stats extends \core\utils\Manager implements Statistics {
 		$this->registerCommand(Accounts::class, new Accounts($this));
 		$this->registerCommand(AddPlayerPermission::class, new AddPlayerPermission($this));
 		$this->registerCommand(BuyRank::class, new BuyRank($this));
-		$this->registerCommand(CurrencyChange::class, new CurrencyChange($this));
 		$this->registerCommand(DeleteAccount::class, new DeleteAccount($this));
-		$this->registerCommand(GiveBalance::class, new GiveBalance($this));
 		$this->registerCommand(GiveCoins::class, new GiveCoins($this));
 		$this->registerCommand(ListPlayerPermissions::class, new ListPlayerPermissions($this));
-		$this->registerCommand(PayBalance::class, new PayBalance($this));
 		$this->registerCommand(PayCoins::class, new PayCoins($this));
 		$this->registerCommand(PluginPermissions::class, new PluginPermissions($this));
 		$this->registerCommand(Profile::class, new Profile($this));
@@ -114,12 +100,9 @@ class Stats extends \core\utils\Manager implements Statistics {
 		$this->registerCommand(Ranks::class, new Ranks($this));
 		$this->registerCommand(RemovePlayerPermission::class, new RemovePlayerPermission($this));
 		$this->registerCommand(Servers::class, new Servers($this));
-		$this->registerCommand(SetBalance::class, new SetBalance($this));
 		$this->registerCommand(SetCoins::class, new SetCoins($this));
 		$this->registerCommand(SetRank::class, new SetRank($this));
-		$this->registerCommand(TakeBalance::class, new TakeBalance($this));
 		$this->registerCommand(TakeCoins::class, new TakeCoins($this));
-		$this->registerCommand(TopBalance::class, new TopBalance($this));
 		$this->registerCommand(TopCoins::class, new TopCoins($this));
 		$this->registerCommand(UserInformation::class, new UserInformation($this));
     }
@@ -186,23 +169,32 @@ class Stats extends \core\utils\Manager implements Statistics {
         return round($transparentPixels * 100 / max(1, $pixels));
     }
 
-	public function sendTopEconomy(string $unit, CommandSender $sender, int $page, array $ops, array $banned) {
-		$this->getAllCoreUsers(function($users) use($unit, $sender, $page, $ops, $banned) {
-			if(count($users) === 0) {
-				$sender->sendMessage(Core::ERROR_PREFIX . "No Accounts registered");
-				return;
+	public function getAllCoins(callable $callback) : void {
+		Core::getInstance()->getDatabase()->executeSelect("stats.topCoins", [], function(array $rows) use($callback) {
+			$arr = [];
+
+			foreach($rows as [
+					"username" => $name,
+					"coins" => $coins,
+			]) {
+				$arr = [
+					$name => $coins
+				];
 			}
-			$allEconomy = [];
-			
-			foreach($users as $user) {
-				if($unit === "coins") {
-					$allEconomy[$user->getName()] = $user->getCoins();
-				} else if($unit === "balance") {
-					$allEconomy[$user->getName()] = $user->getBalance();
-				}
-			}
-			$this->registerAsyncTank(new TopEconomy($sender->getName(), $unit, $allEconomy, $page, self::ADD_OPS, $ops, self::ADD_BANNED, $banned));
+			$callback($arr);
 		});
+	}
+	//TODO: Banned Players, OPs
+    public function getTopCoins(int $pageSize, int $page) : array {
+		$this->getAllCoins(function($coins) use($pageSize, $page) {
+			asort($coins);
+			$coins = array_chunk($coins, $pageSize, true); //DEFAULT SIZE SHOWN IS 5
+
+			$page = min(count($coins), max(1, $page));
+
+			return $coins[$page - 1] ?? [];
+		});
+		return [];
 	}
 
     public function initRank(Rank $rank) {

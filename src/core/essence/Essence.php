@@ -16,12 +16,11 @@ use core\essence\floatingText\{
 	TopVoter,
 	TopVoter2
 };
-
 use core\essence\npc\{
-    NPC,
-    Athie,
-    Factions,
-    Lobby
+	NPC,
+	Athie,
+	Lobby,
+	Survival
 };
 
 use pocketmine\Server;
@@ -41,7 +40,7 @@ class Essence extends Manager implements EssenceData {
 		$this->initFloatingText(new TopVoter());
 		//$this->initFloatingText(new TopVoter2());
         $this->initNPC(new Athie());
-        $this->initNPC(new Factions());
+        $this->initNPC(new Survival());
         $this->initNPC(new Lobby());
 		$this->registerListener(new EssenceListener($this), Core::getInstance());
     }

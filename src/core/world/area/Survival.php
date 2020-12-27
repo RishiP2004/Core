@@ -8,9 +8,9 @@ use pocketmine\Server;
 
 use pocketmine\level\Position;
 
-class FactionsWarzone extends Area {
+class Survival extends Area {
     public function __construct() {
-        parent::__construct("Survival Warzone");
+        parent::__construct("Survival");
     }
 
     public function getPosition1() : Position {
@@ -46,7 +46,7 @@ class FactionsWarzone extends Area {
     }
 
     public function damage() : bool {
-        return true;
+        return false;
     }
 
     public function entityDamage() : bool {
@@ -54,7 +54,7 @@ class FactionsWarzone extends Area {
 	}
 
 	public function usable() : bool {
-        return true;
+        return false;
     }
 
     public function consume() : bool {
@@ -62,7 +62,7 @@ class FactionsWarzone extends Area {
     }
 
     public function projectile() : bool {
-        return true;
+        return false;
     }
 
     public function itemDrop() : bool {
@@ -78,7 +78,7 @@ class FactionsWarzone extends Area {
     }
 
     public function exhaust() : bool {
-        return true;
+        return false;
     }
 
     public function explosion() : bool {
@@ -114,6 +114,6 @@ class FactionsWarzone extends Area {
     }
 
     public function entitySpawn() : bool {
-		return true;
+		return false;
 	}
 }

@@ -6,16 +6,16 @@ namespace core\stats\command;
 
 use core\Core;
 
-use core\stats\Stats;
-
-use core\essentials\Essentials;
-
-use pocketmine\Server;
+use core\stats\{
+	Stats,
+	Statistics
+};
 
 use pocketmine\command\{
     PluginCommand,
     CommandSender
 };
+use pocketmine\utils\TextFormat;
 
 class TopCoins extends PluginCommand {
     private $manager;
@@ -36,29 +36,19 @@ class TopCoins extends PluginCommand {
             return false;
         } else {
 			$page = $args[0] ?? 1;
-			$banned = [];
-			$ops = [];
-			
-			if(!empty(Essentials::getInstance()->getNameBans()->getEntries())) {
-				foreach(Essentials::getInstance()->getNameBans()->getEntries() as $entry) {
-					$this->manager->getCoreUser($entry->getName(), function($user) use ($banned) {
-						if(!is_null($user)) {
-							$banned[] = $user;
-						}
-					});
-				}
+			$top = $this->manager->getTopCoins(5, $page);
+
+			if(empty($top)) {
+				$sender->sendMessage(Core::ERROR_PREFIX . "No Accounts registered");
+				return false;
 			}
-			if(!empty(Server::getInstance()->getOps()->getAll())) {
-				foreach(Server::getInstance()->getOps()->getAll() as $op) {
-					$this->manager->getCoreUser((string) $op, function($user) use ($banned) {
-						if(!is_null($user)) {
-							$ops[] = $user;
-						}
-					});
-				}
+			$message = Core::PREFIX . "Top Coins (Page: " . $page . ")";
+
+			for($i = 0; $i < count($top); ++$i) {
+				$message .= TextFormat::EOL . TextFormat::GOLD . "$i + 1" . TextFormat::GRAY . array_keys($top)[$i] . ": " . TextFormat::GREEN . Statistics::COIN_UNIT . " " . array_values($top)[$i];
 			}
-            $this->manager->sendTopEconomy("coins", $sender, (int) $page, $ops, $banned);
-            return true;
+			$sender->sendMessage($message);
+			return true;
         }
     }
 }

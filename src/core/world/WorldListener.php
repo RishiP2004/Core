@@ -200,20 +200,23 @@ class WorldListener implements Listener {
 		if($event->isCancelled()) {
 			return;
 		}
-		if($event instanceof EntityDamageByEntityEvent) {
-			$area = $this->manager->getAreaFromPosition($entity);
-			$damager = $event->getDamager();
+		$area = $this->manager->getAreaFromPosition($entity);
 
-			if($damager instanceof CorePlayer) {
-				if(!$damager->isInitialized()) {
-					$event->setCancelled();
+		if(!is_null($area)) {
+			if($entity instanceof CorePlayer) {
+				if(!$area->damage()) {
+					$event->setCancelled(true);
 				}
-				if(!is_null($area)) {
+			}
+			if($event instanceof EntityDamageByEntityEvent) {
+				$damager = $event->getDamager();
+
+				if($damager instanceof CorePlayer) {
 					if(!$damager->hasPermission("core.world.area.entitydamage")) {
 						if($entity instanceof CorePlayer) {
-							if(!$area->pvp()) {
+							if(!$area->damage()) {
 								$damager->sendMessage(Core::ERROR_PREFIX . "You cannot PvP in the Area: " . $area->getName());
-								$event->setCancelled();
+								$event->setCancelled(true);
 							}
 						}
 						if($entity instanceof Entity) {

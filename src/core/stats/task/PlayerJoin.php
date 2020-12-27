@@ -38,9 +38,9 @@ class PlayerJoin extends Task {
 				$this->player->addTitle($this->core::PREFIX, TextFormat::GRAY . "Lobby");
 				$this->player->sendMessage(Lobby::PREFIX . "Welcome to the GratonePix Lobby!");
 			break;
-			case "Factions":
-				$this->player->addTitle($this->core::PREFIX, TextFormat::RED . "Factions");
-				$this->player->sendMessage(Factions::PREFIX . "Welcome to GratonePix Factions!");
+			case "Survival":
+				$this->player->addTitle($this->core::PREFIX, TextFormat::RED . "Survival");
+				$this->player->sendMessage(Factions::PREFIX . "Welcome to GratonePix Survival!");
 			break;
 		}
     }

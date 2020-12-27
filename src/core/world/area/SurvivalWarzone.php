@@ -8,7 +8,7 @@ use pocketmine\Server;
 
 use pocketmine\level\Position;
 
-class FactionsWarzone extends Area {
+class SurvivalWarzone extends Area {
     public function __construct() {
         parent::__construct("Survival Warzone");
     }

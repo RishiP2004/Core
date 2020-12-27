@@ -15,7 +15,7 @@ use core\utils\{
 
 use core\network\server\{
     Server,
-    Factions,
+    Survival,
     Lobby
 };
 use core\network\command\{
@@ -44,7 +44,7 @@ class Network extends Manager implements Networking {
     	self::$instance = $this;
         $this->timer = new Timer();
 
-        $this->initServer(new Factions());
+        $this->initServer(new Survival());
         $this->initServer(new Lobby());
         $this->registerCommand(Backup::class, new Backup($this));
         $this->registerCommand(Restarter::class, new Restarter($this));

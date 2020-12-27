@@ -36,7 +36,7 @@ abstract class Area {
 
     public abstract function editable() : bool;
 
-    public abstract function PvP() : bool;
+    public abstract function damage() : bool;
 
     public abstract function entityDamage() : bool;
 

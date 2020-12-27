@@ -10,17 +10,17 @@ use pocketmine\level\Position;
 
 class Factions extends Area {
     public function __construct() {
-        parent::__construct("Factions");
+        parent::__construct("Survival");
     }
 
     public function getPosition1() : Position {
-		$level = Server::getInstance()->getLevelByName("Factions");
+		$level = Server::getInstance()->getLevelByName("Survival");
 
         return new Position(0, 0, 0, $level);
     }
 
     public function getPosition2() : Position {
-		$level = Server::getInstance()->getLevelByName("Factions");
+		$level = Server::getInstance()->getLevelByName("Survival");
 
         return new Position(0, 0, 0, $level);
     }
@@ -45,7 +45,7 @@ class Factions extends Area {
         return false;
     }
 
-    public function PvP() : bool {
+    public function damage() : bool {
         return false;
     }
 

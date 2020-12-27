@@ -123,7 +123,7 @@ class BroadcastListener implements Listener {
 					break;
 			}
 			if(!empty($this->manager::DEATHS[$stringCause])) {
-				$message = $this->manager::JOINS[$stringCause];
+				$message = $this->manager::DEATHS[$stringCause];
 
 				foreach($replaces as $key => $value) {
 					$message = str_replace([

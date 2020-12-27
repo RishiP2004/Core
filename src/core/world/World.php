@@ -11,6 +11,8 @@ use core\utils\Manager;
 use core\world\area\{
     Area,
     Lobby,
+    Survival,
+    SurvivalWarzone,
     Factions,
     FactionsWarzone
 };
@@ -28,8 +30,10 @@ class World extends Manager {
     	self::$instance = $this;
 
         $this->initArea(new Lobby());
-        $this->initArea(new Factions());
-        $this->initArea(new FactionsWarzone());
+        //$this->initArea(new Survival());
+        //$this->initArea(new FactionsWarzone());
+        $this->initArea(new Survival());
+        $this->initArea(new SurvivalWarzone());
 		$this->registerListener(new WorldListener($this), Core::getInstance());
     }
 

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace core\essence\npc;
 
 use core\Core;
-
+use core\network\Network;
 use core\utils\Entity;
 
 use pocketmine\Server;
@@ -18,9 +18,9 @@ use pocketmine\utils\TextFormat;
 
 use pocketmine\item\Item;
 
-class Factions extends NPC {
+class Survival extends NPC {
     public function __construct() {
-        parent::__construct("Factions");
+        parent::__construct("Survival");
     }
 
     public function getPosition() : Position {
@@ -34,11 +34,11 @@ class Factions extends NPC {
     }
 
     public function getNameTag() : string {
-        return TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::RED . " Factions\n" . TextFormat::GRAY . "Online: {ONLINE}\n" . TextFormat::GRAY . "{ONLINE_PLAYERS}{MAX_SLOTS}";
+        return TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::RED . " Survival\n" . TextFormat::GRAY . "Online: {ONLINE}\n" . TextFormat::GRAY . "{ONLINE_PLAYERS}{MAX_SLOTS}";
     }
 
     public function getSkin() : Skin {
-		return Entity::skinFromImage($this->getName(), (Core::getInstance()->getDataFolder() . "/stats/factions.png") ?? Core::getInstance()->getDataFolder() . "/stats/fallback.png");
+		return Entity::skinFromImage($this->getName(), (Core::getInstance()->getDataFolder() . "/stats/survivak.png") ?? Core::getInstance()->getDataFolder() . "/stats/fallback.png");
     }
 
     public function getHeldItem() : Item {
@@ -67,15 +67,18 @@ class Factions extends NPC {
 	}
 
     public function getCommands() : array {
-        return [
-            "transfer play.athena.me 19141 {PLAYER}"
-        ];
+		$ip = Network::getInstance()->getServer(\core\network\server\Survival::class)->getIp();
+		$port = Network::getInstance()->getServer(\core\network\server\Survival::class)->getPort();
+
+		return [
+			"transfer " . $ip . " " . $port . " {PLAYER}"
+		];
     }
 
     public function getMessages() : array {
         return [
-            TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::RED . " Factions" . TextFormat::DARK_GREEN . "> " . TextFormat::GRAY . "Hi {PLAYER}, Factions server is coming soon!",
-            TextFormat::GRAY . "If you want to help test, contact us on TwitterSend (@AthenaBE) or Discord () \n"
+            TextFormat::BOLD . TextFormat::DARK_GRAY . "[NPC]" . TextFormat::RESET . TextFormat::RED . " Survival" . TextFormat::DARK_GREEN . "> " . TextFormat::GRAY . "Hi {PLAYER}, Survival server is coming soon!",
+            TextFormat::GRAY . "If you want to help test, contact us on Twitter! Send (@GratonePix) or our Discord a message!\n"
         ];
     }
 }

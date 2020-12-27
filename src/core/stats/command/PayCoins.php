@@ -58,7 +58,7 @@ class PayCoins extends PluginCommand {
 				$sender->sendMessage(Core::ERROR_PREFIX . $args[0] . " is not a valid Player");
 				return false;
 			}
-			if($user->getCoins() + $args[1] > Statistics::MAXIMUMS["coins"]) {
+			if($user->getCoins() + $args[1] > Statistics::MAX_COINS) {
 				$sender->sendMessage(Core::ERROR_PREFIX . $user->getName() . " will have over the Maximum amount of Coins");
 				return false;
 			}
@@ -72,9 +72,9 @@ class PayCoins extends PluginCommand {
 				$player = Server::getInstance()->getPlayer($user->getName());
 		
 				if($player instanceof CorePlayer) {
-					$player->sendMessage(Core::PREFIX . $sender->getName() . " paid you " . Statistics::UNITS["coins"] . $args[1]);
+					$player->sendMessage(Core::PREFIX . $sender->getName() . " paid you " . Statistics::COIN_UNIT . $args[1]);
 				}
-				$sender->sendMessage(Core::PREFIX . "Paid " . $user->getName() . " " . Statistics::UNITS["coins"] . $args[1]);
+				$sender->sendMessage(Core::PREFIX . "Paid " . $user->getName() . " " . Statistics::COIN_UNIT . $args[1]);
 				return true;
 			}
         });

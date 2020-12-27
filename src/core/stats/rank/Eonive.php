@@ -26,7 +26,10 @@ class Eonive extends Rank {
 	}
 
 	public function getPermissions() : array {
-		return [];
+		return [
+			"lobby.essentials.staffpuncher",
+			"core.essentials.command.chat.vip"
+		];
 	}
 
     public function getInheritance() : Rank {
@@ -38,6 +41,6 @@ class Eonive extends Rank {
     }
 
     public function getChatTime() : float {
-    	return 2.5;
+    	return 2;
     }
 }

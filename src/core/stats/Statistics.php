@@ -17,25 +17,8 @@ interface Statistics {
 
     const ALLOWED_TRANSPARECNY_PERCENTAGE = 5;
 
-    const COIN_VALUE = 1000;
-	
-	const ADD_BANNED = false;
-	const ADD_OPS = true;
-
-    const UNITS = [
-       	"coins" => "©",
-        "balance" => "$"
-    ];
-    const DEFAULTS = [
-        "coins" => 0,
-        "balance" => 0
-    ];
-    const MAXIMUMS = [
-        "coins" => 10000,
-        "balance" => 100000000
-    ];
-    const TOP_SHOWN_PER_PAGE = [
-        "coins" => 5,
-        "balance" => 5
-    ];
+	const COIN_VALUE = 1000;
+    const COIN_UNIT = "©";
+    const DEFAULT_COINS = 0;
+    const MAX_COINS = 10000;
 }

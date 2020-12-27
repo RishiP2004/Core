@@ -290,7 +290,7 @@ class CoreListener implements Listener {
 
     	if($player instanceof CorePlayer) {
     		switch($player->getCoreUser()->getServer()->getName()) {
-				case "Factions":
+				case "Survival":
 					$event->setForm($player->getServerSettingsForm("factions"));
 				break;
 				case "Lobby":

@@ -9,6 +9,8 @@ use core\CorePlayer;
 
 use core\essentials\Essentials;
 
+use core\world\area\Lobby;
+
 use pocketmine\Server;
 
 use pocketmine\command\{
@@ -81,6 +83,10 @@ class Fly extends PluginCommand {
             $sender->sendMessage(Core::ERROR_PREFIX . "You must be a Player to use this Command");
             return false;
         } else {
+        	if(!$sender->getArea() instanceof Lobby && $this->getPermission() . ".admin") {
+				$sender->sendMessage(Core::ERROR_PREFIX . "Cannot Fly in this Server");
+        		return false;
+			}
 			if(isset($args[0])) {
 				$flying = $value;
 			} else {

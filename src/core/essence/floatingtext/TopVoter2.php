@@ -25,7 +25,7 @@ class TopVoter2 extends FloatingText {
     }
 
     public function getPosition() : Position {
-		$level = Server::getInstance()->getLevelByName("Factions");
+		$level = Server::getInstance()->getLevelByName("Survival");
 	
         return new Position(126, 15, 98, $level);
     }

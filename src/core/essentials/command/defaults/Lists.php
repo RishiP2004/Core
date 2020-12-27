@@ -69,9 +69,9 @@ class Lists extends PluginCommand {
 						}
 					break;
 					case "factions":
-					    $sender->sendMessage(Core::PREFIX . "Online Players in Factions:");
+					    $sender->sendMessage(Core::PREFIX . "Online Players in Survival:");
 					    
-						$factions = Network::getInstance()->getServer("Factions");
+						$factions = Network::getInstance()->getServer("Survival");
 						$slots = $factions->getMaxSlots();
 						
 						if(!empty($factions->getOnlinePlayers())) {
