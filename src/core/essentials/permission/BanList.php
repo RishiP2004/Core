@@ -11,6 +11,7 @@ use core\essentials\Essentials;
 
 use core\stats\Stats;
 
+use DateTime;
 use pocketmine\permission\BanEntry;
 
 class BanList extends \pocketmine\permission\BanList {
@@ -33,8 +34,10 @@ class BanList extends \pocketmine\permission\BanList {
             ]) {
 				$entry = new \core\essentials\permission\BanEntry($name);
 
+				$datetime = (new DateTime())->setTimestamp(strtotime($expires));
+
 				$entry->setReason($reason !== null ? $reason : $entry->getReason());
-				$entry->setExpires($expires);
+				$entry->setExpires($datetime);
 				$entry->setSource($source !== null ? $source : $entry->getSource());
 
 				$this->list[$entry->getName()] = $entry;
@@ -56,7 +59,7 @@ class BanList extends \pocketmine\permission\BanList {
         return isset($this->list[$name]);
     }
 
-    public function addBan(string $target, string $reason = null, \DateTime $expires = null, string $source = null) : BanEntry {
+    public function addBan(string $target, string $reason = null, DateTime $expires = null, string $source = null) : BanEntry {
     	$entry = new \core\essentials\permission\BanEntry($target);
 
         $entry->setReason($reason !== null ? $reason : $entry->getReason());
