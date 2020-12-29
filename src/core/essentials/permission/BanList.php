@@ -34,7 +34,7 @@ class BanList extends \pocketmine\permission\BanList {
             ]) {
 				$entry = new \core\essentials\permission\BanEntry($name);
 
-				$datetime = (new DateTime())->setTimestamp(strtotime($expires));
+				$datetime = DateTime::createFromFormat("m-d-Y H:i", $expires);
 
 				$entry->setReason($reason !== null ? $reason : $entry->getReason());
 				$entry->setExpires($datetime);
@@ -79,7 +79,7 @@ class BanList extends \pocketmine\permission\BanList {
 				"username" => $user->getName(),
 				"sentencer" => $source,
 				"reason" => $reason,
-				"expires" => $expires
+				"expires" => $expires->format('m-d-Y H:i')
 			]);
 		});
         return $entry;
