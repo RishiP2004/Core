@@ -55,9 +55,6 @@ class Core extends PluginBase {
         if(!is_dir($concurrentDirectory = $this->getDataFolder()) && !mkdir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
-		if(!is_dir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mcpe") && !mkdir($concurrentDirectory)) {
-			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-		}
         if(!is_dir($concurrentDirectory = $this->getDataFolder() . DIRECTORY_SEPARATOR . "mysql") && !mkdir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }

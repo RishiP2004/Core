@@ -38,7 +38,7 @@ class Survival extends NPC {
     }
 
     public function getSkin() : Skin {
-		return Entity::skinFromImage($this->getName(), (Core::getInstance()->getDataFolder() . "/stats/survivak.png") ?? Core::getInstance()->getDataFolder() . "/stats/fallback.png");
+		return Entity::skinFromImage($this->getName(), (Core::getInstance()->getDataFolder() . "/stats/survival.png") ?? Core::getInstance()->getDataFolder() . "/stats/fallback.png");
     }
 
     public function getHeldItem() : Item {
