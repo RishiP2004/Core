@@ -65,10 +65,10 @@ class BanIp extends PluginCommand {
 				if(isset($args[1]) && $args[1] !== "i") {
 					$expires = Math::expirationStringToTimer($args[1]);
 				}
-				$expire = $expires ?? "Not provided";
-				
+				$expire = $expires === null ? "Not provided" : $expires->format("m-d-Y H:i");
+
 				if(isset($args[2])) {
-					$reason = implode(" ", $args[2]);
+					$reason = implode(" ", array_slice($args, 2));
 				} else {
 					$reason = "Not provided";
 				}

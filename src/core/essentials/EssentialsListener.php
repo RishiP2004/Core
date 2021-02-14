@@ -198,7 +198,7 @@ class EssentialsListener implements Listener {
 					}
 				}
 				$event->setCancelled(true);
-				$player->sendMessage($banMessage);
+				$event->setKickMessage($banMessage);
 			}
 			if($ipBanList->isBanned($player->getName())) {
 				$entries = $ipBanList->getEntries();
@@ -228,7 +228,7 @@ class EssentialsListener implements Listener {
 					}
 				}
 				$event->setCancelled(true);
-				$player->sendMessage($banMessage);
+				$event->setKickMessage($banMessage);
 			}
 		}
 	}

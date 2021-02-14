@@ -274,7 +274,7 @@ class Math extends \pocketmine\math\Math {
         $newDate = new \DateTime();
         $newDate = $newDate->setDate($newYear, $newMonth, $newDay);
         $newDate = $newDate->setTime($newHour, $newMinute, $newSecond);
-        self::$date = $newDate;
+        return $newDate;
     }
 
     public static function expirationTimerToString(\DateTime $from, \DateTime $to) : string {

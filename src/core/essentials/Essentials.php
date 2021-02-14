@@ -77,6 +77,8 @@ class Essentials extends Manager {
 
     public $timingStart = 0;
 
+	private $lists = [];
+
     const IP = "ip";
     const NAME = "name";
 
@@ -222,32 +224,26 @@ class Essentials extends Manager {
 	}
 
     public function getNameBans() : \core\essentials\permission\BanList {
-        $banList = new \core\essentials\permission\BanList(self::NAME);
-        return $banList;
+        return $this->lists["nameBan"] = $this->lists["nameBan"] ?? new \core\essentials\permission\BanList(self::NAME);;
     }
 
     public function getIpBans() : \core\essentials\permission\BanList {
-        $banList = new \core\essentials\permission\BanList(self::IP);
-        return $banList;
+        return $this->lists["ipBan"] = $this->lists["ipBan"] ?? new \core\essentials\permission\BanList(self::IP);
     }
 
     public function getNameBlocks() : \core\essentials\permission\BlockList {
-        $blockList = new \core\essentials\permission\BlockList(self::NAME);
-        return $blockList;
+        return $this->lists["nameBlock"] = $this->lists["nameBlock"] ??  new \core\essentials\permission\BlockList(self::NAME);
     }
 
     public function getIpBlocks() : \core\essentials\permission\BlockList {
-        $blockList = new \core\essentials\permission\BlockList(self::IP);
-        return $blockList;
+        return $this->lists["ipBlock"] = $this->lists["ipBlock"] ?? new \core\essentials\permission\BlockList(self::IP);
     }
 
     public function getNameMutes() : \core\essentials\permission\MuteList {
-        $muteList = new \core\essentials\permission\MuteList(self::NAME);
-        return $muteList;
+        return $this->lists["nameMute"] = $this->lists["nameMute"] ?? new \core\essentials\permission\MuteList(self::NAME);
     }
 
     public function getIpMutes() : \core\essentials\permission\MuteList {
-        $muteList = new \core\essentials\permission\MuteList(self::IP);
-        return $muteList;
+        return $this->lists["ipMute"] = $this->lists["ipMute"] ?? new \core\essentials\permission\MuteList(self::IP);
     }
 }
