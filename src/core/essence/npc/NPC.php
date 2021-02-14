@@ -271,7 +271,7 @@ abstract class NPC {
             $packet = new MoveActorAbsolutePacket();
             $packet->entityRuntimeId = $this->getEID();
             $array = explode(", ", $this->getMovement()[$this->int]);
-            $position = new Position($array[0], $array[1], $array[2], Core::getInstance()->getServer()->getLevelByName($array[3]));
+            $position = new Position((float) $array[0], (float) $array[1], (float) $array[2], Core::getInstance()->getServer()->getLevelByName($array[3]));
             $packet->position = $position;
             $packet->xRot = 0;
             $packet->yRot = 0;
