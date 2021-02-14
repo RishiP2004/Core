@@ -63,7 +63,7 @@ class Ban extends PluginCommand {
 				$expire = $expires ?? "Not provided";
 				
 				if(isset($args[2])) {
-					$reason = implode(" ", $args[2]);
+					$reason = implode(" ", array_slice($args, 2));
 				} else {
 					$reason = "Not provided";
 				}
