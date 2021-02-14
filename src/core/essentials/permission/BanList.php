@@ -56,7 +56,7 @@ class BanList extends \pocketmine\permission\BanList {
     public function isBanned(string $name) : bool {
         $this->removeExpired();
 
-        return isset($this->list[$name]);
+        return isset($this->list[strtolower($name)]);
     }
 
     public function addBan(string $target, string $reason = null, DateTime $expires = null, string $source = null) : BanEntry {
