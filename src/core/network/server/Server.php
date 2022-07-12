@@ -5,14 +5,14 @@ declare(strict_types = 1);
 namespace core\network\server;
 
 use core\Core;
-use core\CorePlayer;
 
-use core\mcpe\{
+use core\player\CorePlayer;
+
+use core\network\mcpe\{
     MinecraftQuery,
     MinecraftQueryException
 };
-
-use core\network\FakePlayer;
+use core\player\FakePlayer;
 
 use scoreboard\{
 	Scoreboard,
@@ -20,18 +20,15 @@ use scoreboard\{
 	ScoreboardAction
 };
 
-abstract class Server {
-    private $name = "";
+abstract class Server {//extends \Thread {
+    private int $maxSlots = 10;
 
-    private $maxSlots = 10;
+    private array $onlinePlayers = [];
 
-    private $onlinePlayers = [];
+    private bool $online = false;
+	private bool $whitelisted = false;
 
-    private $online = false, $whitelisted = false;
-
-    public function __construct(string $name) {
-        $this->name = $name;
-        
+    public function __construct(private string $name = "") {
 		//$this->query();
     }
 
@@ -39,7 +36,7 @@ abstract class Server {
         return $this->name;
     }
 
-    public function query() {
+    public function query() : void {
         $minecraftQuery = new MinecraftQuery($this->getIp(), $this->getPort());
 
         try {
@@ -47,7 +44,18 @@ abstract class Server {
                 $onlinePlayers = [];
 
                 foreach($info as $key => $value) {
-                    $onlinePlayers[$key] = new FakePlayer($value);
+					//FAKE PLAYER
+                    $onlinePlayers[$key] = new class($value) {
+						public function __construct(private string $name = "") {}
+
+						public function getName() : string {
+							return $this->name;
+						}
+
+						public function isOnline() : bool {
+							return false;
+						}
+					};
                 }
                 $this->maxSlots = $info["maxSlots"];
                 $this->onlinePlayers = $onlinePlayers;
@@ -66,7 +74,7 @@ abstract class Server {
 
     public abstract function addHud(int $type, CorePlayer $player);
 
-    public function removeHud(int $type, CorePlayer $player) {
+    public function removeHud(int $type, CorePlayer $player) : void {
 		switch($type) {
 			case CorePlayer::SCOREBOARD:
 				if(ScoreboardManager::getId(Core::PREFIX . $this->getName()) !== null) {

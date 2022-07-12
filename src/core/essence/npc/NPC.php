@@ -5,76 +5,91 @@ declare(strict_types = 1);
 namespace core\essence\npc;
 
 use core\Core;
-use core\CorePlayer;
+
+use core\player\CorePlayer;
 
 use core\essence\EssenceData;
 
-use core\network\Network;
+use core\network\NetworkManager;
 
-use pocketmine\level\Position;
+use pocketmine\item\{
+	ItemFactory,
+	ItemIds
+};
+
+use pocketmine\network\mcpe\convert\{
+	SkinAdapterSingleton,
+	TypeConverter
+};
+
+use pocketmine\network\mcpe\protocol\types\GameMode;
+
+use pocketmine\Server;
 
 use pocketmine\entity\{
-	DataPropertyManager,
+	EntitySizeInfo,
+	Location,
 	Skin,
 	Entity
 };
 
 use pocketmine\item\Item;
 
-use pocketmine\nbt\tag\{
-	CompoundTag,
-	StringTag
-};
-
-use pocketmine\utils\UUID;
-
 use pocketmine\network\mcpe\protocol\{
 	AddPlayerPacket,
+	AdventureSettingsPacket,
 	MobArmorEquipmentPacket,
 	PlayerListPacket,
 	RemoveActorPacket,
 	MovePlayerPacket,
 	MoveActorAbsolutePacket,
 	SetActorDataPacket,
-	AddActorPacket
-};
+	AddActorPacket};
 use pocketmine\network\mcpe\protocol\types\{
-	SkinAdapterSingleton,
+	DeviceOS,
+	entity\EntityMetadataCollection,
+	entity\EntityMetadataFlags,
+	entity\EntityMetadataProperties,
+	entity\MetadataProperty,
+	entity\StringMetadataProperty,
 	PlayerListEntry
 };
 
-use pocketmine\command\ConsoleCommandSender;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+
+use pocketmine\console\ConsoleCommandSender;
+
+use Ramsey\Uuid\Uuid;
 
 abstract class NPC {
-    private $name = "";
+    private array $spawnedTo = [];
 
-    private $spawnedTo = [];
+    private int $int = 0;
 
-    private $int = 0;
-
-	private $id;
+	private int $entityId;
 	private $uuid;
 
-	private $networkProperties;
+	private EntityMetadataCollection $networkProperties;
 
-    public function __construct(string $name) {
-        $this->name = $name;
-		$this->id = Entity::$entityCount++;
-		$this->uuid = UUID::fromRandom();
-		$this->networkProperties = new DataPropertyManager();
+    public function __construct(private string $name = "") {
+		$this->entityId = Entity::nextRuntimeId();
+		$this->uuid = Uuid::uuid4();
+		$this->networkProperties = new EntityMetadataCollection();
     }
 
     public final function getName() : string {
         return $this->name;
     }
 
-    public abstract function getPosition() : Position;
-
-    public abstract function getSize() : float;
+    public abstract function getLocation() : Location;
 
     public abstract function getNameTag() : string;
 
     public abstract function getSkin() : Skin;
+
+	public abstract function getSize() : EntitySizeInfo;
+
+	public abstract function getScale() : float;
 
     public abstract function getHeldItem() : Item;
 
@@ -85,199 +100,139 @@ abstract class NPC {
     public abstract function getMovement() : array;
 
 	public abstract function getMoveTime() : int;
-	
-    public abstract function getCommands() : array;
 
-    public abstract function getMessages() : array;
+	public abstract function onInteract(CorePlayer $player) : void;
 
-    public function getUUID() : UUID {
+    public function getUuid() {
         return $this->uuid;
     }
 
-    public function getEID() : int {
-        return $this->id;
+    public function getEntityId() : int {
+        return $this->entityId;
     }
 
-    public function isSpawnedTo(CorePlayer $player) {
+	//array | CorePlayer
+	public function sendData(CorePlayer $player, ?array $data = null) : void{
+		if(!is_array($player)) {
+			$player = [$player];
+		}
+		$pk = SetActorDataPacket::create($this->getEntityId(), $data ?? $this->getSyncedNetworkData(false), 0);
+
+		foreach($player as $p){
+			$p->getNetworkSession()->sendDataPacket(clone $pk);
+		}
+	}
+
+    public function isSpawnedTo(CorePlayer $player) : bool {
         return isset($this->spawnedTo[$player->getName()]);
     }
 
-    public function spawnTo(CorePlayer $player) {
-		$skin1 = $this->getSkin();
+    public function spawnTo(CorePlayer $player) : void {
+		//needed?
+    	$player->getNetworkSession()->sendDataPacket(AddActorPacket::create($this->getEntityId(), $this->getEntityId(), 'custom:entity', $this->getLocation(), null, $this->getLocation()->pitch, $this->getLocation()->yaw, 0.0, [], $this->getSyncedNetworkData(false), []));
 
-		$nbt = new CompoundTag("Skin");
-		$nbt->setString("name", $this->getName());
-		$nbt->setByte("isCustomSkin", 1);
-		$nbt->setTag(\core\utils\Entity::getSkinCompound($skin1));
+		$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->getUuid(), $this->getEntityId(), $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->getSkin()))]));
 
-		$skinTag = $nbt->getCompoundTag("Skin");
+		$nameTag = $this->getNameTag();
 
-		$skin = new Skin($skinTag->getString("Name"), $skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), $skinTag->getByteArray("CapeData", ""), $skinTag->getString("GeometryName", ""), $skinTag->getByteArray("GeometryData", ""));
+		if($this->getName() === "HCF" or $this->getName() === "Lobby") {
+			$server = NetworkManager::getInstance()->getServer($this->getName());
 
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
+			if(is_null($server)) {
+				return;
+			}
+			if(!$server->isOnline()) {
+				$onlinePlayers = "";
+				$maxSlots = "";
+				$online = "No";
 
-		$pk->entries = [PlayerListEntry::createAdditionEntry($this->getUUID(), $this->getEID(), $this->getName(), SkinAdapterSingleton::get()->toSkinData($skin))];
-		$player->dataPacket($pk);
-
+				if($server->isWhitelisted()) {
+					$online = "Whitelisted";
+				}
+			} else {
+				$onlinePlayers = "Players: " . count($server->getOnlinePlayers()) . "/";
+				$maxSlots = $server->getMaxSlots();
+				$online = "Yes";
+			}
+			$nameTag = str_replace([
+				"{ONLINE_PLAYERS}",
+				"{MAX_SLOTS}",
+				"{ONLINE}"
+			], [
+				$onlinePlayers,
+				$maxSlots,
+				$online
+			], $this->getNameTag());
+		}
+    	$player->getNetworkSession()->sendDataPacket(AddPlayerPacket::create($this->getUuid(), $nameTag, $this->getEntityId(), $this->getEntityId(), "", $this->getLocation()->asVector3(), null, $this->getLocation()->pitch, $this->getLocation()->yaw, 0.0, ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getHeldItem())), GameMode::SURVIVAL, $this->getSyncedNetworkData(false), AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->getEntityId()), [], "", DeviceOS::UNKNOWN));
+		$this->sendData($player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($nameTag)]);
+		$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
+    	/**
+		 * if($this->animation !== ""){
+			PracticeCore::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($player){
+			if($player->isOnline()){
+				$player->getNetworkSession()->sendDataPacket(AnimateEntityPacket::create($this->animation, "", "", 0, "", 0, [$this->getId()]));
+			}
+			}), 40);
+		 */
         $this->spawnedTo[$player->getName()] = true;
-        $packet = new AddPlayerPacket();
-        $packet->uuid = $this->getUUID();
-        $nameTag = $this->getNameTag();
 
-        if($this->getName() === "Survival" or $this->getName() === "Lobby") {
-            $server = Network::getInstance()->getServer($this->getName());
+		$helmet = ItemFactory::getInstance()->get(ItemIds::AIR);
+		$chestplate = ItemFactory::getInstance()->get(ItemIds::AIR);
+		$leggings = ItemFactory::getInstance()->get(ItemIds::AIR);
+		$boots = ItemFactory::getInstance()->get(ItemIds::AIR);
 
-            if(!$server->isOnline()) {
-                $onlinePlayers = "";
-                $maxSlots = "";
-                $online = "No";
-
-                if($server->isWhitelisted()) {
-                    $online = "Whitelisted";
-                }
-            } else {
-                $onlinePlayers = "Players: " . count($server->getOnlinePlayers()) . "/";
-                $maxSlots = $server->getMaxSlots();
-                $online = "Yes";
-            }
-            $nameTag = str_replace([
-                "{ONLINE_PLAYERS}",
-                "{MAX_SLOTS}",
-                "{ONLINE}"
-            ], [
-                $onlinePlayers,
-                $maxSlots,
-                $online
-            ], $this->getNameTag());
-        }
-        $packet->username = $nameTag;
-        $packet->entityRuntimeId = $this->getEID();
-        $packet->position = $this->getPosition()->asVector3();
-        $packet->pitch = $packet->headYaw = $packet->yaw = 0;
-        $packet->item = $this->getHeldItem();
-        $flags = 0;
-        $flags |= 1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG;
-        $flags |= 1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG;
-        $flags |= 1 << Entity::DATA_FLAG_IMMOBILE;
-        $metadata = [
-            Entity::DATA_FLAGS => [
-                Entity::DATA_TYPE_LONG,
-                $flags
-            ],
-            Entity::DATA_NAMETAG => [
-                Entity::DATA_TYPE_STRING,
-                $this->getNameTag()
-            ],
-            Entity::DATA_LEAD_HOLDER_EID => [
-                Entity::DATA_TYPE_LONG,
-                -1
-            ],
-            Entity::DATA_SCALE => [
-                Entity::DATA_TYPE_FLOAT,
-                $this->getSize()
-            ],
-        ];
-        $packet->metadata = $metadata;
-        $player->sendDataPacket($packet);
-
-		$pk1 = new AddActorPacket();
-		$pk1->entityRuntimeId = $this->getEID();
-		$pk1->position = $this->getPosition()->asVector3();
-		$pk1->pitch = $pk1->headYaw = $pk1->yaw = 0;
-		$pk1->metadata = $metadata;
-
-		$player->sendDataPacket($pk);
-
-		$pk2 = new SetActorDataPacket();
-		$pk2->entityRuntimeId = $this->getEId();
-		$pk2->metadata = $metadata;
-		$player->sendDataPacket($pk);
-
-        $maep = new MobArmorEquipmentPacket();
-        $maep->entityRuntimeId = $this->getEID();
-
-        $helmet = 0;
-        $chestplate = 0;
-        $leggings = 0;
-        $boots = 0;
-
-        if(!empty($this->getArmor()["helmet"])) {
-            $helmet = $this->getArmor()["helmet"];
-        }
-        if(!empty($this->getArmor()["chestplate"])) {
-            $chestplate = $this->getArmor()["chestplate"];
-        }
-        if(!empty($this->getArmor()["leggings"])) {
-            $leggings = $this->getArmor()["leggings"];
-        }
-        if(!empty($this->getArmor()["boots"])) {
-            $boots = $this->getArmor()["boots"];
-        }
-        $maep->head = Item::get($helmet);
-		$maep->chest = Item::get($chestplate);
-		$maep->legs = Item::get($leggings);
-		$maep->feet = Item::get($boots);
-
-        $player->sendDataPacket($maep);
-
-		$pk3 = new PlayerListPacket();
-		$pk3->type = PlayerListPacket::TYPE_REMOVE;
-		$pk3->entries = [PlayerListEntry::createRemovalEntry($this->getUUID())];
-		$player->sendDataPacket($pk3);
+		if(!empty($this->getArmor()["helmet"])) {
+			$helmet = $this->getArmor()["helmet"];
+		}
+		if(!empty($this->getArmor()["chestplate"])) {
+			$chestplate = $this->getArmor()["chestplate"];
+		}
+		if(!empty($this->getArmor()["leggings"])) {
+			$leggings = $this->getArmor()["leggings"];
+		}
+		if(!empty($this->getArmor()["boots"])) {
+			$boots = $this->getArmor()["boots"];
+		}
+		$head = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($helmet));
+		$chest = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($chestplate));
+		$legs = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($leggings));
+		$feet = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($boots));
+        $maep = MobArmorEquipmentPacket::create($this->getEntityId(), $head, $chest, $legs, $feet);
+        $player->getNetworkSession()->sendDataPacket($maep);
     }
 
-    public function despawnFrom(CorePlayer $player) {
-        unset($this->spawnedTo[$player->getName()]);
-
-        $packet = new RemoveActorPacket();
-        $packet->entityUniqueId = $this->getEID();
-
-        $player->sendDataPacket($packet);
-    }
-
-    public function rotateTo(CorePlayer $player) {
+    public function rotateTo(CorePlayer $player) : void {
         if($this->rotate()) {
-            $NPCPos = $this->getPosition()->asVector3();
+            $NPCPos = $this->getLocation()->asVector3();
 
-            if($this->isSpawnedTo($player) && $player->distance($NPCPos) <= EssenceData::MAX_DISTANCE) {
-                $x = $NPCPos->x - $player->getX();
-                $y = $NPCPos->y - $player->getY();
-                $z = $NPCPos->z - $player->getZ();
+            if($this->isSpawnedTo($player) && $player->getPosition()->distance($NPCPos) <= EssenceData::MAX_DISTANCE) {
+                $x = $NPCPos->x - $player->getPosition()->getX();
+                $y = $NPCPos->y - $player->getPosition()->getY();
+                $z = $NPCPos->z - $player->getPosition()->getZ();
                 $yaw = asin($x / sqrt($x * $x + $z * $z)) / 3.14 * 180;
                 $pitch = round(asin($y / sqrt($x * $x + $z * $z + $y * $y)) / 3.14 * 180);
 
                 if($z > 0) {
                     $yaw = -$yaw + 180;
                 }
-                $packet = new MovePlayerPacket();
-                $packet->entityRuntimeId = $this->getEID();
-                $packet->position = $this->getPosition()->asVector3()->add(0, 1.62);
-                $packet->yaw = $yaw;
-                $packet->pitch = $pitch;
-                $packet->headYaw = $yaw;
-                $packet->mode = 0;
-                $packet->onGround = true;
+                $packet = MovePlayerPacket::create($this->getEntityId(), $this->getLocation()->add(0, 1.62, 0), $pitch, $yaw, $yaw, MovePlayerPacket::MODE_NORMAL, true, 0, 0, 0, 0);
 
-                $player->sendDataPacket($packet);
+                $player->getNetworkSession()->sendDataPacket($packet);
             }
         }
     }
 
-    public function move(CorePlayer $player) {
+    public function move(CorePlayer $player) : void {
         if(!empty($this->getMovement())) {
 			$this->int++;
-			
-            $packet = new MoveActorAbsolutePacket();
-            $packet->entityRuntimeId = $this->getEID();
-            $array = explode(", ", $this->getMovement()[$this->int]);
-            $position = new Position((float) $array[0], (float) $array[1], (float) $array[2], Core::getInstance()->getServer()->getLevelByName($array[3]));
-            $packet->position = $position;
-            $packet->xRot = 0;
-            $packet->yRot = 0;
-            $packet->zRot = 0;
+			$array = explode(", ", $this->getMovement()[$this->int]);
+			//change yaw and pitch later
+			$position = new Location((float) $array[0], (float) $array[1], (float) $array[2], Core::getInstance()->getServer()->getWorldManager()->getWorldByName($array[3]), 0, 0);
 
-            $player->sendDataPacket($packet);
+			//head yaw?
+			$packet = MoveActorAbsolutePacket::create($this->getEntityId(), $position->asVector3(), $this->getLocation()->getPitch(), $this->getLocation()->getYaw(), 0, 0);
+            $player->getNetworkSession()->sendDataPacket($packet);
 
             if(end($array)) {
                 $this->int--;
@@ -285,28 +240,40 @@ abstract class NPC {
         }
     }
 
-    public function onInteract(CorePlayer $player) {
-        if($this->getMessages() !== []) {
-            foreach($this->getMessages() as $message) {
-                $message = str_replace([
-                    "{PLAYER}",
-                ], [
-                    $player->getName(),
-                ], $message);
+	/**
+	 * @return MetadataProperty[]
+	 */
+	final public function getSyncedNetworkData(bool $dirtyOnly) : array {
+		$this->syncNetworkData();
+		return $dirtyOnly ? $this->networkProperties->getDirty() : $this->networkProperties->getAll();
+	}
 
-                $player->sendMessage($message);
-            }
-        }
-        if($this->getCommands() !== []) {
-            foreach($this->getCommands() as $command) {
-                $command = str_replace([
-                    "{PLAYER}",
-                ], [
-                    $player->getName(),
-                ], $command);
+	public function syncNetworkData() : void {
+		$this->networkProperties->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, 1);
+		$this->networkProperties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->getSize()->getHeight() / $this->getScale());
+		$this->networkProperties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->getSize()->getWidth() / $this->getScale());
+		$this->networkProperties->setFloat(EntityMetadataProperties::SCALE, $this->getScale());
+		$this->networkProperties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
+		$this->networkProperties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
+		$this->networkProperties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);
+		$this->networkProperties->setString(EntityMetadataProperties::NAMETAG, $this->getNameTag());
 
-                Core::getInstance()->getServer()->dispatchCommand(new ConsoleCommandSender(), $command);
-            }
-        }
-    }
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, false);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, true);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::IMMOBILE, false);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::INVISIBLE, false);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::ONFIRE, false);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SNEAKING, false);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, false);
+	}
+
+	public function despawnFrom(CorePlayer $player) : void {
+		unset($this->spawnedTo[$player->getName()]);
+
+		//needed?
+		$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->getEntityId()));
+		
+		$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createAdditionEntry($this->getUuid(), $this->getEntityId(), $this->getName(), \pocketmine\network\mcpe\convert\SkinAdapterSingleton::get()->toSkinData($this->getSkin()))]));
+	}
 }

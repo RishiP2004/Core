@@ -27,7 +27,7 @@ interface Broadcasts {
         "popup" => 5,
         "title" => 5
     ];
-    const Messages = [
+    const MESSAGES = [
         "{PREFIX}" . "Daily Updates!",
         "{PREFIX}" . "Thanks for Playing!",
         "{PREFIX}" . "Follow us on twitter: @GratonePix"

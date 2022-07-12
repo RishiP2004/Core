@@ -6,21 +6,21 @@ namespace core\network;
 
 use core\Core;
 
-use core\utils\Math;
+use core\utils\MathUtils;
 
 class Timer implements Networking {
     const NORMAL = 0;
     const OVERLOADED = 1;
 
-    public $time = 0;
+    public int $time = 0;
 
-    public $paused = false;
+    public bool $paused = false;
 
     public function __construct() {
         $this->time = self::RESTART * 60;
     }
 
-    public function addTime(int $seconds) {
+    public function addTime(int $seconds) : void {
         $this->setTime($this->getTime() + $seconds);
     }
 
@@ -28,19 +28,19 @@ class Timer implements Networking {
         return $this->time;
     }
 
-    public function setTime(int $seconds) {
+    public function setTime(int $seconds) : void {
         $this->time = $seconds;
     }
 
-    public function subtractTime(int $seconds) {
+    public function subtractTime(int $seconds) : void {
         $this->setTime($this->getTime() - $seconds);
     }
 
-    public function initiateRestart(int $mode) {
+    public function initiateRestart(int $mode) : void {
         switch($mode) {
             case self::NORMAL:
                 foreach(\pocketmine\Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
-                    if(\pocketmine\Server::getInstance()->getIp() === Network::getInstance()->getServer("Lobby")->getIp() and \pocketmine\Server::getInstance()->getPort() === 19132) {
+                    if(\pocketmine\Server::getInstance()->getIp() === NetworkManager::getInstance()->getServer("Lobby")->getIp() and \pocketmine\Server::getInstance()->getPort() === 19132) {
                         $onlinePlayer->sendMessage(Core::PREFIX . "Server Restarted, you will be rejoined");
                     }
                     $onlinePlayer->sendMessage(Core::PREFIX . "Server Restarted, you will be transferred to the Lobby");
@@ -49,7 +49,7 @@ class Timer implements Networking {
             break;
             case self::OVERLOADED:
                 foreach(\pocketmine\Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
-                    if(\pocketmine\Server::getInstance()->getIp() === Network::getInstance()->getServer("Lobby")->getIp() and \pocketmine\Server::getInstance()->getPort() === 19132) {
+                    if(\pocketmine\Server::getInstance()->getIp() === NetworkManager::getInstance()->getServer("Lobby")->getIp() and \pocketmine\Server::getInstance()->getPort() === 19132) {
                         $onlinePlayer->sendMessage(Core::PREFIX . "Server Restarted because of Overload, you will be rejoined");
                     }
                     $onlinePlayer->sendMessage(Core::PREFIX . "Server Restarted because of Overload, you will be transferred to the Lobby");
@@ -57,19 +57,19 @@ class Timer implements Networking {
                 \pocketmine\Server::getInstance()->getLogger()->info(Core::PREFIX . "Server Restarted because of Overload");
             break;
         }
-        \pocketmine\Server::getInstance()->shutdown();
+        NetworkManager::getInstance()->restartServer();
     }
 
     public function isPaused() : bool {
         return $this->paused;
     }
 
-    public function setPaused(bool $state) {
+    public function setPaused(bool $state) : void {
         $this->paused = $state;
     }
 
-    public function broadcastTime($message, $messageType) {
-        $time = Math::toArray($this->getTime());
+    public function broadcastTime($message, $messageType) : void {
+        $time = MathUtils::toArray($this->getTime());
         $outMessage = str_replace([
             "{PREFIX}",
             "{FORMATTED_TIME}",
@@ -79,7 +79,7 @@ class Timer implements Networking {
             "{TIME}"
         ], [
 			Core::PREFIX,
-            Math::getFormattedTime($this->getTime()),
+            MathUtils::getFormattedTime($this->getTime()),
             $time[0],
             $time[1],
             $time[2],
@@ -87,13 +87,13 @@ class Timer implements Networking {
         ], $message);
 
         switch($messageType) {
-            case Network::CHAT:
+            case NetworkManager::CHAT:
                 \pocketmine\Server::getInstance()->broadcastMessage($outMessage);
             break;
-            case Network::POPUP:
+            case NetworkManager::POPUP:
                 \pocketmine\Server::getInstance()->broadcastPopup($outMessage);
             break;
-            case Network::TITLE:
+            case NetworkManager::TITLE:
                 \pocketmine\Server::getInstance()->broadcastTitle($outMessage);
             break;
         }

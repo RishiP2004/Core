@@ -19,7 +19,7 @@ interface VoteData {
 		"339:3000:1"
     ];
     const COMMANDS = [
-        "kit Vote {PLAYER}",
+        "kit VoteManager {PLAYER}",
 		"givecoins {PLAYER} 10"
     ];
 }

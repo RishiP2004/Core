@@ -4,25 +4,28 @@ declare(strict_types = 1);
 
 namespace core\broadcast\bossbar;
 
+use xenialdan\apibossbar\BossBar as APIBossBar;
+
 use core\Core;
-use core\CorePlayer;
+
+use core\player\CorePlayer;
 
 use pocketmine\Server;
 
-use pocketmine\level\Level;
+use pocketmine\world\World;
 
 class BossBar implements Messages {
-    public $bossBar;
+    public APIBossBar $bossBar;
 
-    private $run = 0;
+    private int $run = 0;
 
-    public $int = 0;
+    public int $int = 0;
 
     public function __construct() {
-        $this->bossBar = new \xenialdan\apibossbar\BossBar();
+        $this->bossBar = new APIBossBar();
     }
 
-    public function get() {
+    public function get() : APIBossBar {
     	return $this->bossBar;
 	}
 
@@ -34,10 +37,10 @@ class BossBar implements Messages {
 				$worlds = $this->getWorlds();
 
 				foreach($worlds as $world) {
-					if($world instanceof Level) {
+					if($world instanceof World) {
 						foreach($world->getPlayers() as $player) {
 							if($player instanceof CorePlayer) {
-								$player->setText();
+								$player->setBarText();
 								$this->int++;
 							}
 						}
@@ -49,28 +52,28 @@ class BossBar implements Messages {
 
     public function getWorlds() : ?array {
         $mode = self::MODE;
-        $worldNames = $this->getWorlds();
+        $worldNames = self::WORLDS;
         $worlds = [];
 
         switch($mode) {
             case 0:
-                $worlds = Server::getInstance()->getLevels();
+                $worlds = Server::getInstance()->getWorldManager()->getWorlds();
             break;
             case 1:
                 foreach($worldNames as $name) {
-                    if(is_null($level = Server::getInstance()->getLevelByName($name))) {
-                        Server::getInstance()->getLogger()->error(Core::PREFIX . "World provided in BossBar config does not exist");
+                    if(is_null($level = Server::getInstance()->getWorldManager()->getWorldByName($name))) {
+                        Server::getInstance()->getLogger()->error(Core::PREFIX . "World provided in BossBar does not exist");
                     } else {
                         $worlds[] = $level;
                     }
                 }
             break;
             case 2:
-                $worlds = Server::getInstance()->getLevels();
+                $worlds = Server::getInstance()->getWorldManager()->getWorlds();
 
                 foreach($worlds as $world) {
-                    if($world instanceof Level) {
-                        if(!in_array(strtolower($world->getName()), $worldNames)) {
+                    if($world instanceof World) {
+                        if(!in_array(strtolower($world->getFolderName()), $worldNames)) {
                             $worlds[] = $world;
                         }
                     }

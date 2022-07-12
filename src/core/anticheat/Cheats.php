@@ -16,6 +16,7 @@ interface Cheats {
     const MAX_ENTITIES = [
     	"animals" => 60,
 		"monsters" => 60,
-		"items" => 300
+		"items" => 300,
+		"entities" => 60
 	];
 }

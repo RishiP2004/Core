@@ -5,11 +5,15 @@ declare(strict_types = 1);
 namespace core\broadcast;
 
 use core\Core;
-use core\CorePlayer;
-use core\CoreUser;
-use core\network\Network;
-use core\stats\Stats;
-use core\stats\rank\Rank;
+
+use core\player\{
+	CorePlayer,
+	CoreUser
+};
+
+use core\network\NetworkManager;
+
+use core\player\PlayerManager;
 
 use pocketmine\event\Listener;
 
@@ -19,11 +23,10 @@ use pocketmine\event\player\{
 	PlayerPreLoginEvent,
 	PlayerQuitEvent
 };
-
 use pocketmine\event\entity\{
 	EntityDamageEvent,
 	EntityDamageByBlockEvent,
-	EntityLevelChangeEvent
+	EntityTeleportEvent
 };
 
 use pocketmine\event\server\DataPacketReceiveEvent;
@@ -38,14 +41,10 @@ use pocketmine\entity\Living;
 use pocketmine\Server;
 
 class BroadcastListener implements Listener {
-	private $manager;
+	public function __construct(private BroadcastManager $manager) {}
 
-	public function __construct(Broadcast $manager) {
-		$this->manager = $manager;
-	}
-
-	public function onPlayerDeath(PlayerDeathEvent $event) {
-		$player = $event->getPlayer();
+	public function onPlayerDeath(PlayerDeathEvent $event) : void {
+		$player = $event->getEntity();
 
 		if($player instanceof CorePlayer) {
 			$replaces = [
@@ -139,7 +138,7 @@ class BroadcastListener implements Listener {
 		}
 	}
 
-	public function onPlayerJoin(PlayerJoinEvent $event) {
+	public function onPlayerJoin(PlayerJoinEvent $event) : void {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
@@ -147,11 +146,8 @@ class BroadcastListener implements Listener {
 
 			if(!$player->hasPlayedBefore()) {
 				if(!empty($this->manager::JOINS["first"])) {
-					foreach(Stats::getInstance()->getRanks() as $r) {
-						if($r->getValue() === Rank::DEFAULT) {
-							$rank = $r->getNameTagFormat();
-						}
-					}
+					$rank = $player->getCoreUser()->getRank()->getNameTagFormat();
+
 					$message = str_replace([
 						"{PLAYER}",
 						"{TIME}",
@@ -181,71 +177,66 @@ class BroadcastListener implements Listener {
 		}
 	}
 
-	public function onPlayerPreLogin(PlayerPreLoginEvent $event) {
-		$player = $event->getPlayer();
+	public function onPlayerPreLogin(PlayerPreLoginEvent $event) : void {
+		$playerInfo = $event->getPlayerInfo();
 
-		if($player instanceof CorePlayer) {
-			Stats::getInstance()->getCoreUser($player->getXuid(), function(?CoreUser $user) use($player, $event) {
-				$message = "";
+		PlayerManager::getInstance()->getCoreUser($playerInfo->getUsername(), function(?CoreUser $user) use($playerInfo, $event) {
+			$message = "";
 
-				$server = Network::getInstance()->getServerFromIp(Server::getInstance()->getIp());
+			$server = NetworkManager::getInstance()->getServerFromIp(Server::getInstance()->getIp());
 
-				if(count(Server::getInstance()->getOnlinePlayers()) - 1 < Server::getInstance()->getMaxPlayers()) {
-					if(!empty($this->manager::KICKS["whitelisted"])) {
-						$message = str_replace([
-							"{PLAYER}",
-							"{TIME}",
-							"{ONLINE_PLAYERS}",
-							"{MAX_PLAYERS}",
-							"{PREFIX}"
-						], [
-							$player->getName(),
-							date($this->manager::FORMATS["date_time"]),
-							count(Server::getInstance()->getOnlinePlayers()),
-							Server::getInstance()->getMaxPlayers(),
-							Core::PREFIX
-						], $this->manager::KICKS["whitelisted"]);
-					}
-					if($user === null) {
-						if($server->isWhitelisted()) {
-							$player->close(null, $message);
-							return;
-						}
-					} else {
-						if($server->isWhitelisted() && !$user->hasPermission("core.network." . $server->getName() . ".whitelist") && !$user->hasPermission("core.network.whitelist")) {
-							$player->close(null, $message);
-							return;
-						}
+			if(count(Server::getInstance()->getOnlinePlayers()) - 1 < Server::getInstance()->getMaxPlayers()) {
+				if(!empty($this->manager::KICKS["whitelisted"])) {
+					$message = str_replace([
+						"{PLAYER}",
+						"{TIME}",
+						"{ONLINE_PLAYERS}",
+						"{MAX_PLAYERS}",
+						"{PREFIX}"
+					], [
+						$playerInfo->getUsername(),
+						date($this->manager::FORMATS["date_time"]),
+						count(Server::getInstance()->getOnlinePlayers()),
+						Server::getInstance()->getMaxPlayers(),
+						Core::PREFIX
+					], $this->manager::KICKS["whitelisted"]);
+				}
+				if($user === null) {
+					if($server->isWhitelisted()) {
+						$event->setKickReason($event::KICK_REASON_SERVER_WHITELISTED, $message);
 					}
 				} else {
-					if($user->loaded()) {
-						if(!$user->hasPermission("core.network." . $server->getName() . ".full")) {
-							if(!empty($this->manager::KICKS["full"])) {
-								$message = str_replace([
-									"{PLAYER}",
-									"{TIME}",
-									"{ONLINE_PLAYERS}",
-									"{MAX_PLAYERS}",
-									"{PREFIX}"
-								], [
-									$player->getName(),
-									date($this->manager::FORMATS["date_time"]),
-									count(Server::getInstance()->getOnlinePlayers()),
-									Server::getInstance()->getMaxPlayers(),
-									Core::PREFIX
-								], $this->manager::KICKS["full"]);
+					if($server->isWhitelisted() && !$user->hasPermission("network." . $server->getName() . ".whitelist") && !$user->hasPermission("network.whitelist")) {
+						$event->setKickReason($event::KICK_REASON_SERVER_WHITELISTED, $message);
+					}
+				}
+			} else {
+				if($user->loaded()) {
+					if(!$user->hasPermission("network." . $server->getName() . ".full")) {
+						if(!empty($this->manager::KICKS["full"])) {
+							$message = str_replace([
+								"{PLAYER}",
+								"{TIME}",
+								"{ONLINE_PLAYERS}",
+								"{MAX_PLAYERS}",
+								"{PREFIX}"
+							], [
+								$playerInfo->getUsername(),
+								date($this->manager::FORMATS["date_time"]),
+								count(Server::getInstance()->getOnlinePlayers()),
+								Server::getInstance()->getMaxPlayers(),
+								Core::PREFIX
+							], $this->manager::KICKS["full"]);
 
-								$player->close(null, $message);
-								return;
-							}
+							$event->setKickReason($event::KICK_REASON_SERVER_FULL, $message);
 						}
 					}
 				}
-			});
-		}
+			}
+		});
 	}
 
-	public function onPlayerQuit(PlayerQuitEvent $event) {
+	public function onPlayerQuit(PlayerQuitEvent $event) : void {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
@@ -269,17 +260,18 @@ class BroadcastListener implements Listener {
 		}
 	}
 
-	public function onEntityLevelChange(EntityLevelChangeEvent $event) {
+	public function onEntityLevelChange(EntityTeleportEvent $event) : void {
 		$entity = $event->getEntity();
 
 		if($entity instanceof CorePlayer) {
-			if(!in_array($event->getTarget(), $this->manager->getBossBar()->getWorlds())) {
-				$entity->removeBossBar();
+			if(!in_array($event->getTo()->getWorld(), $this->manager->getBossBar()->getWorlds())) {
+				BroadcastManager::getInstance()->getBossBar()->get()->addPlayer($entity);
+				$entity->setBarText();
 			} else {
-				$entity->sendBossBar();
+				BroadcastManager::getInstance()->getBossBar()->get()->removePlayer($entity);
 			}
-			$origin = $event->getOrigin();
-			$target = $event->getTarget();
+			$origin = $event->getFrom();
+			$target = $event->getTo();
 
 			if(!empty($this->manager::DIMENSIONS["change"])) {
 				$message = str_replace([
@@ -291,8 +283,8 @@ class BroadcastListener implements Listener {
 				], [
 					$entity->getName(),
 					date($this->manager::FORMATS["date_time"]),
-					$origin->getName(),
-					$target->getName(),
+					$origin->getWorld()->getFolderName(),
+					$target->getWorld()->getFolderName(),
 					str_replace("{DISPLAY_NAME}", $entity->getName(), $entity->getCoreUser()->getRank()->getNameTagFormat())
 				], $this->manager::DIMENSIONS["change"]);
 
@@ -301,29 +293,27 @@ class BroadcastListener implements Listener {
 		}
 	}
 
-	public function onDataPacketReceive(DataPacketReceiveEvent $event) {
-		$player = $event->getPlayer();
+	public function onDataPacketReceive(DataPacketReceiveEvent $event) : void {
+		$player = $event->getOrigin();
 		$pk = $event->getPacket();
 
 		if($player instanceof CorePlayer) {
-			switch(true) {
-				case $pk instanceof LoginPacket:
-					if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
-						if(!empty($this->manager::KICKS["outdated"]["client"])) {
-							$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date($this->manager::FORMATS["date_time"])], $this->manager::KICKS["outdated"]["client"]);
-
-							$player->close($message);
-							$event->setCancelled(true);
-						}
-					} else if($pk->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
-						if(!empty($this->manager::KICKS["outdated"]["server"])) {
-							$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date($this->manager::FORMATS["date_time"])], $this->manager::KICKS["outdated"]["server"]);
-
-							$player->close($message);
-							$event->setCancelled(true);
-						}
+			if($pk->pid() == LoginPacket::NETWORK_ID) {
+				if($pk->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
+					if(!empty($this->manager::KICKS["outdated"]["client"])) {
+						$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date($this->manager::FORMATS["date_time"])], $this->manager::KICKS["outdated"]["client"]);
+						//todo check
+						$player->close($message);
+						$event->cancel();
 					}
-				break;
+				} else if($pk->protocol > ProtocolInfo::CURRENT_PROTOCOL) {
+					if(!empty($this->manager::KICKS["outdated"]["server"])) {
+						$message = str_replace(["{PLAYER}", "{TIME}"], [$player->getName(), date($this->manager::FORMATS["date_time"])], $this->manager::KICKS["outdated"]["server"]);
+
+						$player->close($message);
+						$event->cancel();
+					}
+				}
 			}
 		}
 	}

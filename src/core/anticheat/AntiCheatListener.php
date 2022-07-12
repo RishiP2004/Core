@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace core\anticheat;
 
-use core\CorePlayer;
+use core\player\CorePlayer;
 
-use core\anticheat\cheat\AutoClicker;
+use core\anticheat\cheat\Cheat;
 
 use pocketmine\event\Listener;
 
@@ -16,32 +16,37 @@ use pocketmine\event\entity\{
 	EntitySpawnEvent,
 	EntityDespawnEvent
 };
-
 use pocketmine\entity\{
-	Human,
-	Animal,
-	Monster
+	Entity,
+	Human
 };
 
+use pocketmine\block\FenceGate;
+
 class AntiCheatListener implements Listener {
-	private $manager;
+	public function __construct(private AntiCheatManager $manager) {}
 
-	public function __construct(AntiCheat $manager) {
-		$this->manager = $manager;
-	}
-
-	public function onPlayerInteract(PlayerInteractEvent $event) {
+	public function onPlayerInteract(PlayerInteractEvent $event) : void {
 		$player = $event->getPlayer();
 
 		if($player instanceof CorePlayer) {
-			$autoClicker = $this->manager->getCheat(AutoClicker::AUTO_CLICKER);
+			$autoClicker = $this->manager->getCheat(Cheat::AUTO_CLICKER);
 
 			$autoClicker->set($player);
 			$autoClicker->onRun();
+
+			$block = $event->getBlock();
+
+			if ($block instanceof FenceGate) {
+				$antiGlitch = $this->manager->getCheat(Cheat::GLITCH);
+
+				$antiGlitch->set($player);
+				$antiGlitch->onRun();
+			}
 		}
 	}
 
-	public function onEntitySpawn(EntitySpawnEvent $event) {
+	public function onEntitySpawn(EntitySpawnEvent $event) : void {
 		$entity = $event->getEntity();
 
 		if($entity instanceof Human) {
@@ -49,7 +54,8 @@ class AntiCheatListener implements Listener {
 		}
 		$despawn = null;
 		$uuid = uniqid();
-
+		//Wait for PMMP to re-implement?
+		/*
 		if($entity instanceof Animal) {
 			$this->manager->ids[$entity->getId()] = $uuid;
 			$this->manager->animals[$uuid] = $entity;
@@ -64,6 +70,14 @@ class AntiCheatListener implements Listener {
 
 			if(count($this->manager->monsters) > $this->manager::MAX_ENTITIES["monsters"]) {
 				$despawn = array_shift($this->manager->monsters);
+			}
+		}*/
+		if($entity instanceof Entity) {
+			$this->manager->ids[$entity->getId()] = $uuid;
+			$this->manager->entities[$uuid] = $entity;
+
+			if(count($this->manager->entities) > $this->manager::MAX_ENTITIES["entities"]) {
+				$despawn = array_shift($this->manager->entities);
 			}
 		}
 		if($entity instanceof \pocketmine\entity\object\ItemEntity) {
@@ -83,7 +97,7 @@ class AntiCheatListener implements Listener {
 		$despawn->flagForDespawn();
 	}
 
-	public function onEntityDespawn(EntityDespawnEvent $event) {
+	public function onEntityDespawn(EntityDespawnEvent $event) : void {
 		$entity = $event->getEntity();
 
 		if(!isset($this->manager->ids[$entity->getId()])) {
@@ -92,18 +106,22 @@ class AntiCheatListener implements Listener {
 		$uuid = $this->manager->ids[$entity->getId()];
 
 		unset($this->manager->ids[$entity->getId()]);
-
-		if(isset($this->amanager->nimals[$uuid])) {
+		//Wait for PMMP to re-implement?
+		/**
+		if(isset($this->manager->animals[$uuid])) {
 			unset($this->manager->animals[$uuid]);
 			return;
 		}
 		if(isset($this->manager->monsters[$uuid])) {
 			unset($this->manager->monsters[$uuid]);
 			return;
+		}*/
+		if(isset($this->manager->entities[$uuid])) {
+			unset($this->manager->entities[$uuid]);
+			return;
 		}
 		if(isset($this->manager->itemEntities[$uuid])) {
 			unset($this->manager->itemEntities[$uuid]);
-			return;
 		}
 	}
 }

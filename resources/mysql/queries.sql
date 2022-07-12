@@ -1,5 +1,5 @@
 -- #!mysql
--- #{ stats
+-- #{ player
 
 -- # { init
 CREATE TABLE IF NOT EXISTS stats (
@@ -8,11 +8,12 @@ CREATE TABLE IF NOT EXISTS stats (
     username VARCHAR(16),
     ip VARCHAR(15),
     locale VARCHAR(6) DEFAULT 'en_us',
-	  coins BIGINT DEFAULT 0,
-    rank VARCHAR(16) DEFAULT 'Player',
+	coins BIGINT DEFAULT 0,
+    rank VARCHAR(16) DEFAULT 0,
     permissions TEXT,
     cheatHistory TEXT,
-		server VARCHAR(32) DEFAULT NULL
+	server VARCHAR(32) DEFAULT NULL,
+	dm INT DEFAULT 0
 )
 -- # }
 
@@ -21,7 +22,7 @@ CREATE TABLE IF NOT EXISTS stats (
 SELECT * FROM stats WHERE xuid = :key OR username = :key;
 -- # }
 
--- # { topCoins
+-- # { allCoins
 SELECT coins, username FROM stats;
 -- # }
 
@@ -59,8 +60,9 @@ INSERT INTO stats (
 -- #    :permissions string
 -- #    :cheatHistory string
 -- #    :server string | null
+-- #    :dm int
 -- #    :xuid string
-UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, rank = :rank, permissions = :permissions, cheatHistory = :cheatHistory, server = :server WHERE xuid = :xuid;
+UPDATE stats SET username = :username, ip = :ip, locale = :locale, coins = :coins, rank = :rank, permissions = :permissions, cheatHistory = :cheatHistory, server = :server, dm = :dm WHERE xuid = :xuid;
 -- # }
 
 -- # { delete
@@ -124,6 +126,33 @@ INSERT INTO sentences (
 -- #  :listType string,
 -- #  :type string
 DELETE FROM sentences WHERE xuid = :xuid AND listType = :listType AND type = :type;
+-- # }
+-- #}
+
+-- #{ discord
+
+-- # { init
+CREATE TABLE IF NOT EXISTS discord (
+    xuid VARCHAR(16) PRIMARY KEY,
+)
+-- # }
+
+-- # { get
+SELECT xuid FROM discord;
+-- # }
+
+-- # { register
+-- #    :xuid string
+INSERT INTO discord (
+    xuid
+) VALUES (
+    :xuid
+)
+-- # }
+
+-- # { unlink
+-- #  :xuid string,
+DELETE FROM discord WHERE xuid = :xuid;
 -- # }
 
 -- #}

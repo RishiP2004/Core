@@ -4,71 +4,146 @@ declare(strict_types = 1);
 
 namespace core\world\area;
 
-use pocketmine\level\Position;
+use pocketmine\world\Position;
 
-abstract class Area {
+use pocketmine\player\GameMode;
+
+class Area {
     const FLY_VANILLA = 0;
     const FLY_ENABLE = 1;
     const FLY_DISABLE = 2;
     const FLY_SUPERVISED = 3;
 
-    private $name = "";
-
-    public function __construct(string $name) {
-        $this->name = $name;
-    }
+    public function __construct(
+		protected string $name,
+		private Position $position1,
+		private Position $position2,
+		private bool $damage = false,
+		private bool $editable = false,
+		private bool $explosion = false,
+		private bool $allowedEnter = true,
+		private bool $allowedLeave = true,
+		private string $enterNotifications = "",
+		private string $leaveNotifications = "",
+		private bool $entityDamage = false,
+		private bool $usage = false,
+		private bool $consume = false,
+		private bool $projectile = false,
+		private bool $itemDrop = false,
+		private bool $itemPickup = false,
+		private bool $inventoryTransaction = true,
+		private bool $exhaust = false,
+		private bool $sleep = true,
+		private bool $sendChat = true,
+		private bool $receiveChat = true,
+		private int $getFly = self::FLY_DISABLE,
+		private int $gamemode = 0,
+		private array $areaEffects = [],
+		private array $blockedCommands = [],
+		private bool $entitySpawn = true
+	) {}
 
     public final function getName() : string {
         return $this->name;
     }
 
-    public abstract function getPosition1() : Position;
+    public function getPosition1() : Position {
+    	return $this->position1;
+	}
 
-    public abstract function getPosition2() : Position;
+    public function getPosition2() : Position {
+    	return $this->position2;
+	}
 
-    public abstract function allowedEnter() : bool;
+    public function allowedEnter() : bool {
+    	return $this->allowedEnter;
+	}
 
-    public abstract function allowedLeave() : bool;
+    public function allowedLeave() : bool {
+    	return $this->allowedLeave;
+	}
 
-    public abstract function getEnterNotifications() : string;
+    public function getEnterNotifications() : string {
+    	return $this->enterNotifications;
+	}
 
-    public abstract function getLeaveNotifications() : string;
+    public function getLeaveNotifications() : string {
+    	return $this->leaveNotifications;
+	}
 
-    public abstract function editable() : bool;
+    public function editable() : bool {
+    	return $this->editable;
+	}
 
-    public abstract function damage() : bool;
+    public function damage() : bool {
+    	return $this->damage;
+	}
 
-    public abstract function entityDamage() : bool;
+    public function entityDamage() : bool {
+    	return $this->entityDamage;
+	}
 
-    public abstract function usable() : bool;
+    public function usable() : bool {
+    	return $this->usage;
+	}
 
-    public abstract function consume() : bool;
+    public function consume() : bool {
+    	return $this->consume;
+	}
 
-    public abstract function projectile() : bool;
+    public function projectile() : bool {
+    	return $this->projectile;
+	}
 
-    public abstract function itemDrop() : bool;
+    public function itemDrop() : bool {
+    	return $this->itemDrop;
+	}
 
-    public abstract function itemPickup() : bool;
+    public function itemPickup() : bool {
+    	return $this->itemPickup;
+	}
 
-    public abstract function inventoryTransaction() : bool;
+    public function inventoryTransaction() : bool {
+    	return $this->inventoryTransaction;
+	}
 
-    public abstract function exhaust() : bool;
+    public function exhaust() : bool {
+    	return $this->exhaust;
+	}
 
-    public abstract function explosion() : bool;
+    public function explosion() : bool {
+    	return $this->explosion;
+	}
 
-    public abstract function sleep() : bool;
+    public function sleep() : bool {
+    	return $this->sleep;
+	}
 
-    public abstract function sendChat() : bool;
+    public function sendChat() : bool {
+    	return $this->sendChat;
+	}
 
-    public abstract function receiveChat() : bool;
+    public function receiveChat() : bool {
+    	return $this->receiveChat;
+	}
 
-    public abstract function getFly() : int;
+    public function getFly() : int {
+    	return $this->getFly;
+	}
 
-    public abstract function getGamemode() : int;
+    public function getGamemode() : GameMode {
+    	return GameMode::fromString((string) $this->gamemode);
+	}
 
-    public abstract function getAreaEffects() : array;
+    public function getAreaEffects() : array {
+		return $this->areaEffects;
+	}
 
-    public abstract function getBlockedCommands() : array;
+    public function getBlockedCommands() : array {
+		return $this->blockedCommands;
+	}
 
-    public abstract function entitySpawn() : bool;
+    public function entitySpawn() : bool {
+		return $this->entitySpawn;
+	}
 }
