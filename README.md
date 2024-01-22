@@ -3,7 +3,7 @@ Athena's Core
 
 Features:
 
-Base essential core 
+Base essential core - default network needs a server typically requires
 - Easy to implement features and use a base for other
   plugins 
 - Anticheat
