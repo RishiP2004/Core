@@ -1,5 +1,5 @@
 # Core
-Athena's Core
+Athena's Core plugin (PocketMine)
 
 Features:
 
